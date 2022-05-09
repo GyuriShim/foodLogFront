@@ -1,6 +1,12 @@
-import React from "react";
-import {View, StyleSheet, Text} from 'react-native';
+import React from "react"
+import {View, Text} from "react-native"
 
+const App = () => {
+	return(
+		<View>
+			<Text>Food Log</Text>
+		</View>
+	)
+}
 
-
-export default App;
+export default App
