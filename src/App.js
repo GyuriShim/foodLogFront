@@ -17,6 +17,7 @@ const App = () => {
 					fontSize: 48,
 					fontWeight: "600",
 					paddingBottom: 200,
+					fontFamily: "Multicolore Pro"
 				}}
 			>
 				Food{"\n"}Log</Text>
