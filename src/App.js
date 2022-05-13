@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react"
-import {View, Text} from "react-native"
 import Loading from "./components/Loading"
+import Login from "./components/Login"
 
 const App = () => {
 	const [ready, setReady] = useState(true)
@@ -12,26 +12,7 @@ const App = () => {
 			setReady(false) 
 		},2000)
 	},[]) 
-	return ready ? <Loading /> : (
-		<View 
-			style={{
-				flex: 1,
-				backgroundColor: "#ffffff",
-				alignItems: "center",
-				justifyContent: "center",
-			}}>
-			<Text
-				style={{
-					color: "#2f5d9a",
-					fontSize: 48,
-					fontWeight: "600",
-					paddingBottom: 300,
-					fontFamily: "Multicolore Pro"
-				}}
-			>
-				Food{"\n"}Log</Text>
-		</View>
-	)
+	return ready ? <Loading /> : <Login />
 }
 
 export default App
