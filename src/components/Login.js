@@ -1,3 +1,4 @@
+import { GoogleSigninButton } from "@react-native-google-signin/google-signin"
 import React from "react"
 import {View, Image, StyleSheet, StatusBar, Text} from "react-native"
 
@@ -15,6 +16,16 @@ const Login = () => {
 			</View>
 			<View style={styles.view2}>
 				<Text style= {styles.text}>LOGIN</Text>
+			</View>
+			<View style={{flex:1, backgroundColor:"#ffffff", alignItems:"center", paddingTop:30}}>
+				<GoogleSigninButton 
+					style={styles.googleButton}
+					size={GoogleSigninButton.Size.Wide}
+					color={GoogleSigninButton.Color.Light}
+					/*onPress={this._signIn}
+					disabled={this.state.isSigninInProgress}
+					로그인화면 파란색으로 변경*/
+				/>
 			</View>
 		</>
 	)}
@@ -45,7 +56,13 @@ const styles = StyleSheet.create({
 		color: "#2F5D9A",
 		fontFamily: "Multicolore Pro",
 		
+	},
+	googleButton: {
+		width: 192, 
+		height: 48 
 	}
+	
 })
+
 
 export default Login
