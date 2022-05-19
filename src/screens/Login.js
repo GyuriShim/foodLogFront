@@ -1,7 +1,15 @@
 import { GoogleSigninButton } from "@react-native-google-signin/google-signin"
+//import {GoogleSignin} from "@react-native-google-signin/google-signin"
 import React from "react"
-import {View, Image, StyleSheet, StatusBar, Text} from "react-native"
+import {View, Image, StyleSheet, StatusBar, Text, Linking} from "react-native"
 
+/*const googleSigninConfigure = () => {
+	GoogleSignin.configure({
+		webClientId:
+		//webclientid필요 
+		,
+	})
+}*/
 const Login = () => {
 	return(
 		<>
@@ -22,8 +30,8 @@ const Login = () => {
 					style={styles.googleButton}
 					size={GoogleSigninButton.Size.Wide}
 					color={GoogleSigninButton.Color.Light}
-					/*onPress={this._signIn}
-					disabled={this.state.isSigninInProgress}
+					onPress={()=>Linking.openURL("http://10.0.2.2:8000/google/login")}
+					/*disabled={this.state.isSigninInProgress}
 					로그인화면 파란색으로 변경*/
 				/>
 			</View>
