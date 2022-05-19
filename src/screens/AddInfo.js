@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from "react"
-import {StatusBar, View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView} from "react-native"
+import {StatusBar, View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Linking} from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
-import Input from "./Input"
+import Input from "./components/Input.js"
 import styled from "styled-components/native"
 import { RadioButton } from "react-native-paper"
 import axios from "axios"
@@ -78,7 +78,7 @@ const AddInfo = () => {
 				<Text style={styles.subTitle}>
                     프로필 등록
 				</Text>
-				<TouchableOpacity style={styles.profile}>
+				<TouchableOpacity style={styles.profile} onPress={()=>Linking.openURL("http://10.0.2.2:8000/google/login")}>
 					<Icon 
 						name="person-add-outline"
 						size={60}

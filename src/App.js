@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react"
-import AddInfo from "./components/AddInfo"
-import Loading from "./components/Loading"
-//import Login from "./components/Login"
+import AddInfo from "./screens/AddInfo"
+import Loading from "./screens/Loading"
+//import Login from "./screens/Login"
 
 const App = () => {
 	const [ready, setReady] = useState(true)
