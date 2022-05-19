@@ -5,6 +5,7 @@ import Input from "./Input"
 import styled from "styled-components/native"
 import { RadioButton } from "react-native-paper"
 import axios from "axios"
+import DateTimePicker from "react-native-modal-datetime-picker"
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -18,12 +19,13 @@ const ErrorText = styled.Text`
     font-style: normal
     color: red
 `
-
 const AddInfo = () => {
 	const [username, setUsername] = useState("")
 	const [selfBio, setSelfBio] = useState("")
 	const [errorMessage, sestErrorMessage] = useState("")
 	const [checked, setChecked] = useState("male")
+	const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+	const [birthday, setBirthday] = useState("")
 	//const [disabled, setDisabled] = useState(true)
 	//생일 추가해야함
 	//아이디 중복확인 버튼도 추가해야함
@@ -31,6 +33,19 @@ const AddInfo = () => {
 	const usernameRef = useRef()
 	const selfBioRef = useRef()
 
+	const showDatePicker = () => {
+		setDatePickerVisibility(true)
+	}
+
+	const hideDatePicker = () => {
+		setDatePickerVisibility(false)
+	}
+
+	const handleConfirm = (date) => {
+		// console.log(date.format("yyyy/MM/dd"))
+		// setBirthday(date.format("yyyy/MM/dd"))
+		hideDatePicker()
+	}
 	useEffect(() => {
 		let _errorMessage = ""
 		if (!username){
@@ -88,19 +103,21 @@ const AddInfo = () => {
 					maxLength={10}
 				>
 				</Input>
-				<TouchableOpacity style={{height: 20, width: 20, backgroundColor: "black"}} onPress={()=>
-					axios({
-						url: "http://10.0.0.2:8000/api/member/create/7",
-						method: "post",
-						data:{
-							"username": "akakakaka"
-						},
+				<TouchableOpacity style={{height: 20, width: 20, backgroundColor: "black"}} 
+					onPress={()=>(axios({
+						url: "http://10.0.2.2:8000/api/member/create/7",
+						method: "POST",
 						headers: {
-							"ACCESS-TOKEN" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjo3LCJpYXQiOjE2NTI4NTU5NjIsImV4cCI6MTY1Mjk0MjM2Mn0.gIgdF-EjSrsK2vksqikU-BFNRXD7ytBonU-qNdsSvxOaebfudhqB_BdYhjCDbdcDxMJHNKAvcKvMlEk0DLZTpA"
+							"ACCESS-TOKEN" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjo3LCJpYXQiOjE2NTI4NzYxNzcsImV4cCI6MTY1Mjk2MjU3N30.ZYTD4WsmAHkn7PkGS9MuKvNI5jvpSz9s5y69SLEuyelY2gS-DkvEvQpncjkyvVfTIsn4_SAGu93J1A46S72Rxg"
+						},
+						data: {
+							username: "akakakaka"
 						}
-					})
-					
-				}></TouchableOpacity>
+					})).catch((error)=> {
+						console.error("실패: ", error)
+					})}
+				>	
+				</TouchableOpacity>
 				<ErrorText>{errorMessage}</ErrorText>
 				<Input
 					height={100}
@@ -143,6 +160,20 @@ const AddInfo = () => {
 							여자
 						</Text>
 					</View>
+				</View>
+				<View>
+					<TouchableOpacity style={{height:20, width:20, backgroundColor: "grey"}}
+						onPress={showDatePicker}>
+						<Text>생일</Text>
+						<DateTimePicker
+							isVisible={isDatePickerVisible}
+							mode="date"
+							onConfirm={handleConfirm}
+							onCancel={hideDatePicker}
+							
+						/>
+					</TouchableOpacity>
+					<Text style={styles.subTitle}>{birthday}</Text>
 				</View>
 			</View>	
 		</KeyboardAvoidingView>
