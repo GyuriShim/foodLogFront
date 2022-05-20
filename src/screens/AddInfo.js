@@ -1,14 +1,13 @@
 import React, {useState, useRef, useEffect} from "react"
-import {Image, StatusBar, View, Text, StyleSheet, TouchableOpacity, Platform} from "react-native"
+import {Image, StatusBar, View, Text, StyleSheet, TouchableOpacity, Platform, Alert} from "react-native"
 import styled from "styled-components/native"
 import { RadioButton } from "react-native-paper"
 import axios from "axios"
-//import DateTimePicker from "react-native-modal-datetime-picker"
 import Input from "../components/Input.js"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import Button from "../components/Button.js"
-import {launchImageLibrary} from "react-native-image-picker"
-
+import { launchImageLibrary } from "react-native-image-picker"
+import { removeWhitespace, validateBirthday, validateUsername } from "../utils/common.js"
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -24,26 +23,43 @@ const ErrorText = styled.Text`
 `
 const AddInfo = () => {
 	const [username, setUsername] = useState("")
+	const [doubleCheck, setDoubleCheck] = useState(false)
 	const [selfBio, setSelfBio] = useState("")
-	const [errorMessage, setErrorMessage] = useState("")
-	const [checked, setChecked] = useState("male")
+	const [idErrorMessage, setIdErrorMessage] = useState("")
+	const [birthErrorMessage, setBirthErrorMessage] = useState("")
+	const [gender, setGender] = useState("male")
 	const [birthday, setBirthday] = useState("")
 	const [response, setResonse] = useState(null)
-	//const [disabled, setDisabled] = useState(true)
+	const [disabled, setDisabled] = useState(true)
 
-	const usernameRef = useRef()
 	const selfBioRef = useRef()
 
 	const _handleJoinButtonPress = () => {}
 
-	const handlePress = (e) => {
-		const format = /[0-9]{8}/
-		if(format.test(e)){
-			setBirthday(e)
-		} else {
-			setErrorMessage("형식에 맞게 입력해주세요.")
+	const _handleDoubleCheckPress = async () => {
+		try {
+			Alert.alert("사용가능한 아이디입니다.", username)
+			setDoubleCheck(true)
+		} catch(e) {
+			Alert.alert("이미 사용중인 아이디입니다.", e.message)
+			setDoubleCheck(false)
 		}
 	}
+	//중복확인 버튼 누르면 서버랑 통신해서 중복되는 값 있는지 확인하는 코드 필요
+
+	/* onPress={()=>(axios({
+						url: "http://10.0.2.2:8000/api/member/create/7",
+						method: "POST",
+						headers: {
+							"ACCESS-TOKEN" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjo3LCJpYXQiOjE2NTI4NzYxNzcsImV4cCI6MTY1Mjk2MjU3N30.ZYTD4WsmAHkn7PkGS9MuKvNI5jvpSz9s5y69SLEuyelY2gS-DkvEvQpncjkyvVfTIsn4_SAGu93J1A46S72Rxg"
+						},
+						data: {
+							username: "akakakaka"
+						}
+					})).catch((error)=> {
+						console.error("실패: ", error)
+					})}
+				>*/
 
 	const onSelectImage = () => {
 		launchImageLibrary(
@@ -66,24 +82,41 @@ const AddInfo = () => {
 		let _errorMessage = ""
 		if (!username){
 			_errorMessage = "아이디를 입력해주세요."
-		} else if (username.length > 11) {
-			_errorMessage = "10자 이내로 입력해주세요."
-		} else {
+		} else if(username.length < 8) {
+			_errorMessage = "8자 이상 입력해주세요."
+		} else if(!validateUsername(username)) {
+			_errorMessage = "아이디는 숫자, 영문, 밑줄, 마침표만 사용가능합니다."
+		}  else {
 			_errorMessage = ""
 		}
-		setErrorMessage(_errorMessage)
+		setIdErrorMessage(_errorMessage)
 	}, [username])
-	//유효성 관련 에러메시지도 추가해야함
-	//사용가능하다는것도 해야하눼
-	//중복도
-	//에러메시지 인풋 별로 분리해야겠군,,
 
-	/* useEffect(() => {
-        setDisabled(
-            !(username && birthday && gender && !errorMessage)
-        )
-    }, [username, birthday, gender, errorMessage]) */
-	//아이디 생일 성별(? 이거는 일단 디폴트 값이있낭) 입력하고 에러메시지 없어야 버튼 활성화 될수 있게
+	//username이 변경될때마다 중복확인값 false로 변경
+	useEffect(() => {
+		setDoubleCheck(false)
+	},[username])
+
+	useEffect(() => {
+		let _errorMessage = ""
+		if (!birthday){
+			_errorMessage = "생년월일을 입력해주세요."
+		} else if(!validateBirthday(birthday)) {
+			_errorMessage = "형식에 맞게 입력해주세요."
+		}else {
+			_errorMessage = ""
+		}
+		setBirthErrorMessage(_errorMessage)
+	}, [birthday])
+	
+	
+	//중복확인 결과도 포함,,
+	useEffect(() => {
+		setDisabled(
+			!(username && birthday && !idErrorMessage  && !birthErrorMessage && doubleCheck)
+		)
+	}, [username, birthday, idErrorMessage, birthErrorMessage, doubleCheck])
+
 	return (
 		<KeyboardAwareScrollView
 			extraScrollHeight={30}
@@ -104,65 +137,46 @@ const AddInfo = () => {
 				<Input
 					height= {40}
 					value={username}
-					onChangeText={text=>setUsername(text)}
-					onSubmitEditing={() => {
-						setUsername(username.trim())
-						usernameRef.current.focus()
-					}}
-					onBlur={() => setUsername(username.trim())}
-					placeholder="아이디를 입력해주세요(특수문자 포함 10자이내)"
+					onChangeText={text => setUsername(removeWhitespace(text))}
+					onSubmitEditing={() => selfBioRef.current.focus()}
+					placeholder="아이디를 입력해주세요(밑줄,마침표 포함 8~15자)"
 					returnKeyType="next"
-					maxLength={10}
+					maxLength={15}
 				>
 				</Input>
-				<TouchableOpacity style={styles.button} 
-					onPress={()=>(axios({
-						url: "http://10.0.2.2:8000/api/member/create/7",
-						method: "POST",
-						headers: {
-							"ACCESS-TOKEN" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjo3LCJpYXQiOjE2NTI4NzYxNzcsImV4cCI6MTY1Mjk2MjU3N30.ZYTD4WsmAHkn7PkGS9MuKvNI5jvpSz9s5y69SLEuyelY2gS-DkvEvQpncjkyvVfTIsn4_SAGu93J1A46S72Rxg"
-						},
-						data: {
-							username: "akakakaka"
-						}
-					})).catch((error)=> {
-						console.error("실패: ", error)
-					})}
-				>
-					<Text>아이디 중복확인</Text>	
-				</TouchableOpacity>
-				<ErrorText>{errorMessage}</ErrorText>
+				
+				<Button 
+					title="아이디 중복확인" 
+					isFilled={true} 
+					disabled={idErrorMessage !== ""}
+					containerStyle={styles.button}
+					onPress={_handleDoubleCheckPress}
+				></Button>
+				<ErrorText>{idErrorMessage}</ErrorText>
 				<Input
 					height={100}
-					ref={usernameRef}
+					ref={selfBioRef}
 					value={selfBio}
 					onChangeText={text=>setSelfBio(text)}
-					onSubmitEditing={()=>selfBioRef.current.focus()}
 					placeholder="자기소개를 작성해주세요."
 					returnKeyType="done"
 					maxLength={50}
 					multiline={true}
 				/>
-				<Text style={{
-					fontSize: 13,
-					fontWeight: "300",
-					color: "black",
-					paddingLeft: 5
-				}}>생일</Text>
+				<Text style={styles.label}>생일</Text>
 				<Input
 					height={40}
 					value={birthday}
-					onChangeText={text=>setBirthday(text)}
+					onChangeText={text => setBirthday(removeWhitespace(text))}
 					onSubmitEditing={() => {
 						setBirthday(birthday.trim())
-						handlePress(birthday)
 						_handleJoinButtonPress
 					}}
-					placeholder="yyyy/mm/dd"
+					placeholder="생년월일 8자리를 입력해주세요."
 					maxLength={8}
 				>
 				</Input>
-				<ErrorText>{errorMessage}</ErrorText>
+				<ErrorText>{birthErrorMessage}</ErrorText>
 				<View
 					style={{
 						flexDirection: "row", 
@@ -172,8 +186,8 @@ const AddInfo = () => {
 					<View style={styles.radioButtonContainer}>
 						<RadioButton
 							value="male"
-							status={checked === "male" ? "checked":"unchecked"}
-							onPress={() => setChecked("male")}
+							status={gender === "male" ? "checked":"unchecked"}
+							onPress={() => setGender("male")}
 							color="#FF8383"
 							uncheckedColor="#FFB7B7"
 						/>
@@ -184,8 +198,8 @@ const AddInfo = () => {
 					<View style={styles.radioButtonContainer}>
 						<RadioButton
 							value="female"
-							status={checked === "female" ? "checked":"unchecked"}
-							onPress={() => setChecked("female")}
+							status={gender === "female" ? "checked":"unchecked"}
+							onPress={() => setGender("female")}
 							color="#FF8383"
 							uncheckedColor="#FFB7B7"
 						/>
@@ -194,9 +208,20 @@ const AddInfo = () => {
 						</Text>
 					</View>
 				</View>
-				<View style={{flexDirection: "row", alignSelf:"center", justifyContent:"space-between"}}>
-					<Button title="BACK" isFilled={true}></Button>
-					<Button title="JOIN" isFilled={true}></Button>
+				<View style={{flexDirection: "row", alignSelf:"center"}}>
+					<Button 
+						title="BACK" 
+						isFilled={true} 
+						containerStyle={styles.smallButton}
+					></Button>
+					<Button 
+						title="JOIN" 
+						isFilled={true} 
+						disabled={disabled} 
+						containerStyle={styles.smallButton}
+						onPress={_handleJoinButtonPress}
+					></Button>
+					{/* join버튼 눌렀을 때 프로필 정보 서버로 보내줘야함 */}
 				</View>
 			</View>	
 		</KeyboardAwareScrollView>
@@ -219,7 +244,7 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontFamily: "SF-Pro-Text-Medium",
 		color: "#2F5D9A",
-		paddingBottom: 20
+		paddingBottom: 15
 	},
 	profile: {
 		width: 81,
@@ -240,13 +265,22 @@ const styles = StyleSheet.create({
 	},
 	button:{
 		height: 35, 
-		width: "100%", 
-		backgroundColor: "rgba(165, 212, 233, 0.5)", 
-		borderRadius: 4, 
-		alignItems: "center", 
-		justifyContent:"center", 
+		width: "100%",
 		fontFamily:"Arial",
 		marginBottom: 10
+	},
+	smallButton: {
+		width: "45%",
+		marginHorizontal: 10,
+		marginTop: 10,
+		height: 34,
+		justifyContent: "center",
+	},
+	label: {
+		fontSize: 13,
+		fontWeight: "300",
+		color: "black",
+		paddingLeft: 5
 	}
 })
 export default AddInfo
