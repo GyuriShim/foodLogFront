@@ -1,11 +1,14 @@
 import React, {useState, useRef, useEffect} from "react"
-import {StatusBar, View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Linking} from "react-native"
-import Icon from "react-native-vector-icons/Ionicons"
-import Input from "./components/Input.js"
+import {Image, StatusBar, View, Text, StyleSheet, TouchableOpacity, Platform} from "react-native"
 import styled from "styled-components/native"
 import { RadioButton } from "react-native-paper"
 import axios from "axios"
-import DateTimePicker from "react-native-modal-datetime-picker"
+//import DateTimePicker from "react-native-modal-datetime-picker"
+import Input from "../components/Input.js"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import Button from "../components/Button.js"
+import {launchImageLibrary} from "react-native-image-picker"
+
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -22,30 +25,43 @@ const ErrorText = styled.Text`
 const AddInfo = () => {
 	const [username, setUsername] = useState("")
 	const [selfBio, setSelfBio] = useState("")
-	const [errorMessage, sestErrorMessage] = useState("")
+	const [errorMessage, setErrorMessage] = useState("")
 	const [checked, setChecked] = useState("male")
-	const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
 	const [birthday, setBirthday] = useState("")
+	const [response, setResonse] = useState(null)
 	//const [disabled, setDisabled] = useState(true)
-	//생일 추가해야함
-	//아이디 중복확인 버튼도 추가해야함
 
 	const usernameRef = useRef()
 	const selfBioRef = useRef()
 
-	const showDatePicker = () => {
-		setDatePickerVisibility(true)
+	const _handleJoinButtonPress = () => {}
+
+	const handlePress = (e) => {
+		const format = /[0-9]{8}/
+		if(format.test(e)){
+			setBirthday(e)
+		} else {
+			setErrorMessage("형식에 맞게 입력해주세요.")
+		}
 	}
 
-	const hideDatePicker = () => {
-		setDatePickerVisibility(false)
+	const onSelectImage = () => {
+		launchImageLibrary(
+			{
+				mediaType: "photo",
+				maxWidth: 512,
+				maxHeight: 512,
+				includeBase64: Platform.OS === "android"
+			},
+			(res) => {
+				if (res.didCancel){
+					return
+				}
+				setResonse(res)
+			}
+		)
 	}
 
-	const handleConfirm = (date) => {
-		// console.log(date.format("yyyy/MM/dd"))
-		// setBirthday(date.format("yyyy/MM/dd"))
-		hideDatePicker()
-	}
 	useEffect(() => {
 		let _errorMessage = ""
 		if (!username){
@@ -55,7 +71,7 @@ const AddInfo = () => {
 		} else {
 			_errorMessage = ""
 		}
-		sestErrorMessage(_errorMessage)
+		setErrorMessage(_errorMessage)
 	}, [username])
 	//유효성 관련 에러메시지도 추가해야함
 	//사용가능하다는것도 해야하눼
@@ -69,7 +85,9 @@ const AddInfo = () => {
     }, [username, birthday, gender, errorMessage]) */
 	//아이디 생일 성별(? 이거는 일단 디폴트 값이있낭) 입력하고 에러메시지 없어야 버튼 활성화 될수 있게
 	return (
-		<KeyboardAvoidingView>
+		<KeyboardAwareScrollView
+			extraScrollHeight={30}
+		>
 			<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
 			<View style={styles.view}>
 				<Text style={styles.title}>
@@ -78,16 +96,10 @@ const AddInfo = () => {
 				<Text style={styles.subTitle}>
                     프로필 등록
 				</Text>
-				<TouchableOpacity style={styles.profile} onPress={()=>Linking.openURL("http://10.0.2.2:8000/google/login")}>
-					<Icon 
-						name="person-add-outline"
-						size={60}
-						color={"black"}
-						style={{
-							padding: 5,
-							paddingRight:10,
-							paddingTop: 7
-						}} />
+				<TouchableOpacity onPress={onSelectImage}>
+					<Image 
+						style={styles.profile}
+						source={{uri: response?.assets[0]?.uri}} />
 				</TouchableOpacity>
 				<Input
 					height= {40}
@@ -103,7 +115,7 @@ const AddInfo = () => {
 					maxLength={10}
 				>
 				</Input>
-				<TouchableOpacity style={{height: 20, width: 20, backgroundColor: "black"}} 
+				<TouchableOpacity style={styles.button} 
 					onPress={()=>(axios({
 						url: "http://10.0.2.2:8000/api/member/create/7",
 						method: "POST",
@@ -116,7 +128,8 @@ const AddInfo = () => {
 					})).catch((error)=> {
 						console.error("실패: ", error)
 					})}
-				>	
+				>
+					<Text>아이디 중복확인</Text>	
 				</TouchableOpacity>
 				<ErrorText>{errorMessage}</ErrorText>
 				<Input
@@ -130,6 +143,26 @@ const AddInfo = () => {
 					maxLength={50}
 					multiline={true}
 				/>
+				<Text style={{
+					fontSize: 13,
+					fontWeight: "300",
+					color: "black",
+					paddingLeft: 5
+				}}>생일</Text>
+				<Input
+					height={40}
+					value={birthday}
+					onChangeText={text=>setBirthday(text)}
+					onSubmitEditing={() => {
+						setBirthday(birthday.trim())
+						handlePress(birthday)
+						_handleJoinButtonPress
+					}}
+					placeholder="yyyy/mm/dd"
+					maxLength={8}
+				>
+				</Input>
+				<ErrorText>{errorMessage}</ErrorText>
 				<View
 					style={{
 						flexDirection: "row", 
@@ -161,29 +194,19 @@ const AddInfo = () => {
 						</Text>
 					</View>
 				</View>
-				<View>
-					<TouchableOpacity style={{height:20, width:20, backgroundColor: "grey"}}
-						onPress={showDatePicker}>
-						<Text>생일</Text>
-						<DateTimePicker
-							isVisible={isDatePickerVisible}
-							mode="date"
-							onConfirm={handleConfirm}
-							onCancel={hideDatePicker}
-							
-						/>
-					</TouchableOpacity>
-					<Text style={styles.subTitle}>{birthday}</Text>
+				<View style={{flexDirection: "row", alignSelf:"center", justifyContent:"space-between"}}>
+					<Button title="BACK" isFilled={true}></Button>
+					<Button title="JOIN" isFilled={true}></Button>
 				</View>
 			</View>	
-		</KeyboardAvoidingView>
+		</KeyboardAwareScrollView>
 	)
 }
 
 const styles = StyleSheet.create({
 	view: {
 		alignItems: "flex-start",
-		margin: 30,
+		marginHorizontal: 30,
 		paddingTop: 30
 	},
 	title: {
@@ -214,6 +237,16 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontFamily: "SF-Pro-Text-Regular",
 		paddingTop: 5
+	},
+	button:{
+		height: 35, 
+		width: "100%", 
+		backgroundColor: "rgba(165, 212, 233, 0.5)", 
+		borderRadius: 4, 
+		alignItems: "center", 
+		justifyContent:"center", 
+		fontFamily:"Arial",
+		marginBottom: 10
 	}
 })
 export default AddInfo
