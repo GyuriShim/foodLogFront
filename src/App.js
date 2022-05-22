@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react"
 import Loading from "./screens/Loading"
-import Login from "./screens/Login"
+import {StatusBar} from "react-native"
+import Navigation from "./navigations"
 
 const App = () => {
 	const [ready, setReady] = useState(true)
@@ -12,7 +13,14 @@ const App = () => {
 			setReady(false) 
 		},2000)
 	},[]) 
-	return ready ? <Loading /> : <Login />
+
+	
+	return (ready? <Loading /> :
+		(<>
+			<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
+			<Navigation />
+		</>)
+	)
 }
 
 export default App
