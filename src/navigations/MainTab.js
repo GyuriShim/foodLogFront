@@ -17,15 +17,20 @@ const MainTab = () => {
 		<>
 			<StatusBar backgroundColor="white" barStyle="dark-content"/>
 			<Tab.Navigator
-				tabBarOptions={{inactiveTintColor:"black"}}
 				screenOptions={{
-					tabBarStyle:{
-						backgroundColor: "rgb(216, 243, 255)",
-						borderTopColor: "rgb(216, 243, 255)",
-						borderBottomColor: "rgb(216, 243, 255)",
-						borderTopWidth: 2,
-						borderBottomWidth: 2,
-					}
+					tabBarHideOnKeyboard: true,
+					tabBarInactiveTintColor: "black",
+					tabBarStyle:[
+						{
+							backgroundColor: "rgb(216, 243, 255)",
+							borderTopColor: "rgb(216, 243, 255)",
+							borderBottomColor: "rgb(216, 243, 255)",
+							borderTopWidth: 2,
+							borderBottomWidth: 2,
+							height: 58
+						},
+						null
+					]
 				}}
 			>	
 				<Tab.Screen name="지도" component={MapScreen} options={{headerShown:false, tabBarIcon: props => Location({...props, name:"location-outline", size: 24})}}/>
