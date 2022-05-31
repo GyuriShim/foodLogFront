@@ -4,7 +4,7 @@ import AuthStack from "./AuthStack"
 import MainStack from "./MainStack"
 
 const Navigation = () => {
-	const [login, setLogin] = useState(false)
+	const [login, setLogin] = useState(true)
 
 	return(
 		<NavigationContainer>
