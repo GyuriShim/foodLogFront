@@ -1,7 +1,7 @@
 import React, {useState, useEffect,} from "react"
 import styled from "styled-components"
 import MapView from "react-native-maps"
-import { TextInput } from "react-native-gesture-handler"
+import { TextInput, TouchableOpacity } from "react-native-gesture-handler"
 import { FontIcon } from "../assets/icons/Fontisto"
 import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal} from "react-native"
 import Geolocation from "react-native-geolocation-service"
@@ -10,7 +10,6 @@ import { markers } from "../model/mapData"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
 
 const Container = styled.View`
-    align-items: center
 	background-color: white
 	flex: 1
 	padding: 15px
@@ -34,12 +33,12 @@ const requestPermission = async() => {
 			url:,
 			method: "POST",
 			data: {
-
+				searchKeyword: text
 			}
 		})
 		const resJson = await res.json()
 		const newResJson = resJson
-		setData()
+		setData(newResJson)
 	} catch(e){
 		console.log("axios 실패")
 	}
@@ -51,8 +50,9 @@ const MapScreen = ({navigation}) => {
 	}
 
 	const [state, setState] = useState(initialMapState)
-	const [location, setLocation] = useState({latitude: 37.5666, longitude: 126.9784})
-	const [modalVisible, setModalVisible] = useState(false)
+	const [location, setLocation] = useState()
+	const [subpostVisible, setSubpostVisible] = useState(false)
+	const [filterVisible, setFilterVisible] = useState(false)
 
 	useEffect(() => {
 		let isComponentMounted = true
@@ -61,19 +61,20 @@ const MapScreen = ({navigation}) => {
 			if (result === "granted"){
 				Geolocation.getCurrentPosition(
 					position => {
-						const {latitude, longitude} = position.coords
+						setLocation(position.coords)
 						if (isComponentMounted){
-							setLocation({
-								latitude,
-								longitude
-							})
+							setLocation(position.coords)
 						}
 						
 					},
 					error => {
 						console.log(error.code, error.message)
 					},
-					{enableHighAccuracy: true, timeout: 15000, maximumAge: 10000}
+					{
+						enableHighAccuracy: true, 
+						timeout: 15000, 
+						maximumAge: 10000
+					}
 				)
 			}
 		})
@@ -81,6 +82,14 @@ const MapScreen = ({navigation}) => {
 			isComponentMounted = false
 		}
 	},[])
+
+	if(!location){
+		return (
+			<View>
+				<Text>Splash Screen</Text>
+			</View>
+		)
+	}
 
 	return(
 		<Container>
@@ -91,18 +100,23 @@ const MapScreen = ({navigation}) => {
 					borderColor: "rgba(165, 212, 233, 0.5)", 
 					borderWidth: 5,
 					borderRadius: 90,
-					paddingLeft: 18
+					paddingLeft: 20
 				}}
 				placeholder="메뉴, 음식점, 지역 검색"
 				onPressIn={() => navigation.navigate("search")}
 			/>
-			
-			<View style={{flexDirection: "row", alignSelf: "flex-start", justifyContent: "center", paddingLeft: "5%", paddingVertical:7}}>
-				<Pressable>
+			<TouchableOpacity onPress={() => setFilterVisible(!filterVisible)} style={{
+				flexDirection: "row",
+				alignContent: "flex-start",
+				alignItems: "center",
+				marginLeft: "5%", 
+				paddingVertical:7,}}
+			>
+				<Pressable style={{marginRight: 3}}>
 					<FontIcon name="equalizer" size={34} color="rgb(47, 93, 154)"/>
 				</Pressable>
 				<Text style={{fontSize: 14,color:"rgb(47, 93, 154)", fontFamily:"Arial", fontWeight: "700"}}>Filter</Text>
-			</View>
+			</TouchableOpacity>
 			<MapView
 				style={{height: "85%", width: "100%", borderRadius: 90}}
 				initialRegion={{
@@ -113,10 +127,11 @@ const MapScreen = ({navigation}) => {
 				}}
 				showsUserLocation={true}
 				showsMyLocationButton={true}
+				customMapStyle={mapStyle}
 			>
 				{state.markers.map((marker, index) => {
 					return (
-						<MapView.Marker key={index} coordinate={marker.coordinate} onPress={() => setModalVisible(!modalVisible)}>
+						<MapView.Marker key={index} coordinate={marker.coordinate} onPress={() => setSubpostVisible(!subpostVisible)}>
 							<Animated.View style={[styles.markerWrap]}>
 								<Animated.Image
 									source={require("../assets/images/marker.png")}
@@ -130,22 +145,23 @@ const MapScreen = ({navigation}) => {
 			</MapView>
 			<Modal
 				transparent={true}
-				visible={modalVisible}
+				visible={subpostVisible}
 				onRequestClose={() => {
-					setModalVisible(!modalVisible)
+					setSubpostVisible(!subpostVisible)
 				}}
 			>
+				<Pressable style={{flex:1, backgroundColor:"transparent",}} onPress={()=>setSubpostVisible(!subpostVisible)}/>
 				<View style={styles.subPost}>
 					<View style={{
 						flexDirection: "row", 
 						alignItems:"center", 
 						justifyContent:"space-between", 
 						paddingTop: 17,
-						paddingRight: 16
+						paddingRight: 16,
 					}}>
 						<Text numberOfLines={1} style={styles.storeName}>햄버거</Text>
 						<Pressable
-							onPress={() => setModalVisible(!modalVisible)}
+							onPress={() => setSubpostVisible(!subpostVisible)}
 						>
 							<OcticonsIcon name="x" size={20} color="black"/>
 						</Pressable>
@@ -154,7 +170,7 @@ const MapScreen = ({navigation}) => {
 				
 					<View style={{flexDirection: "row", alignItems:"center"}}>
 						<OcticonsIcon name="location" size={12} color="black"/>
-						<Text numberOfLines={1} style={styles.storeAddress}>경기도 어쩌구 저쩌구</Text>
+						<Text numberOfLines={1} style={styles.storeAddress}>경기도</Text>
 					</View>
 				
 					<Animated.ScrollView
@@ -175,7 +191,21 @@ const MapScreen = ({navigation}) => {
 					</Animated.ScrollView>
 				</View>
 			</Modal>
-			<View style={styles.filter}></View>
+			<Modal
+				transparent={true}
+				visible={filterVisible}
+				onRequestClose={() => {
+					setFilterVisible(!filterVisible)
+				}}
+			>
+				<Pressable style={{flex:1, backgroundColor:"transparent",}} onPress={()=>setFilterVisible(!filterVisible)}/>
+				<View style={styles.filter}>
+					
+				</View>
+			</Modal>
+			
+			
+			
 		</Container>
 	)
 }
@@ -186,6 +216,24 @@ MapScreen.propTypes = {
 	}).isRequired,
 }
 export default MapScreen
+
+const mapStyle = [
+	{
+		"stylers": [
+			{
+				"lightness": 15
+			}
+		]
+	},
+	{
+		"featureType": "road",
+		"stylers": [
+			{
+				"visibility": "simplified"
+			}
+		]
+	}
+]
 
 const styles = StyleSheet.create({
 	markerWrap: {
@@ -234,13 +282,13 @@ const styles = StyleSheet.create({
 		color: "black"
 	},
 	filter: {
-		height: "85%", 
+		height: "70%", 
 		width: "100%", 
 		backgroundColor: "#fff", 
 		position:"absolute", 
-		bottom: 0, 
+		bottom: 58, 
 		borderTopLeftRadius:26, 
-		borderTopRightRadius: 26
+		borderTopRightRadius: 26,
 	}
 
 })
