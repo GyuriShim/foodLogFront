@@ -32,7 +32,7 @@ const Button = ({containerStyle, title, onPress, isFilled, disabled}) => {
 	)
 }
 
-Button.defaulProps = {
+Button.defaultProps = {
 	isFilled : true
 }
 
