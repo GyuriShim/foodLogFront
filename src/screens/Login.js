@@ -1,4 +1,4 @@
-import {GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin"
+import {GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin"
 import axios from "axios"
 import React, {Component} from "react"
 import {View, Image, StyleSheet, StatusBar, Text, Linking} from "react-native"
@@ -6,6 +6,8 @@ import Loading from "./Loading"
 
 GoogleSignin.configure({
 	webClientId : "177696185773-g2433eafo6etl3t3qhbrm7e77sd8i8d4.apps.googleusercontent.com",
+	offlineAccess: true,
+	forceCodeForRefreshToken: true
 })
 
 class Login extends Component {
@@ -22,16 +24,33 @@ class Login extends Component {
 			await GoogleSignin.hasPlayServices()
 			const userInfo = await GoogleSignin.signIn()
 			this.setState({
-				userGoogleInfo : userInfo,
-				loaded : true
+				userGoogleInfo: userInfo,
+				loaded: true
 			})
+			const email = this.state.userGoogleInfo.user.email
 			console.log(userInfo)
+			const response =  await axios({
+				url : "http://10.0.2.2:8000/login",
+				method: "post",
+				data: {email: this.state.userGoogleInfo.user.email},
+			})
+			console.log("response", response)
 		} 
 		catch(error){
-			console.log(error.message)
+			if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+			  // user cancelled the login flow
+			} else if (error.code === statusCodes.IN_PROGRESS) {
+			  // operation (e.g. sign in) is in progress already
+			} else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+			  // play services not available or outdated
+			} else {
+			  // some other error happened
+			  console.log(error)
+			}
 		}
 	}
 
+	
 	
 	render(){
 		return(
@@ -58,7 +77,7 @@ class Login extends Component {
 						//엑시오스로 데이터를 가져온다. 
 						//겟매핑으로 데이터를 가져오기.
 					/>
-					{this.state.loaded ? <Loading/>: <Text>Not signedIn</Text>}
+					{/* {this.state.loaded ? this.postData() : <Text>Not signedIn</Text>} */}
 				</View>
 			</>
 		)
