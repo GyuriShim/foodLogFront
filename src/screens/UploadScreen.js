@@ -7,6 +7,7 @@ import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import NativeImagePickerIOS from "react-native/Libraries/Image/NativeImagePickerIOS"
 import ImagePick from "../components/ImagePick"
 import {useRoute} from "@react-navigation/native"
+import onlaunchimagelibrary from "react-native/lib/onlaunchimagelibrary"
 
 
 /*const Container = styled.View`
@@ -24,19 +25,19 @@ const UploadScreen = () => {
 	const {width} = useWindowDimensions()
 
 	return(
-		<View style={styles.block}>
-			<Image
-				source={{uri: res.assets[0]?.uri}}
-				style={[styles.image, {height: width}]}
-				resizeMode="cover"
-			/>
-			<TextInput
-				style={styles.input}
-				multiline={true}
-				placeholder="게시글을 입력하세요"
-				textAlignVertical="top"
-			/>
-		</View>
+		onlaunchimagelibrary() 
+	/* <View style={styles.block}>
+				<Image
+					source={{uri: res.assets[0]?.uri}}
+					style={[styles.image, {height: width}]}
+					resizeMode="cover"/>
+				<TextInput
+					style={styles.input}
+					multiline={true}
+					placeholder="게시글을 입력하세요"
+					textAlignVertical="top"
+				/>
+			</View> */
 	)
 }
 const styles = StyleSheet.create({
