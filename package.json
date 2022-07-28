@@ -10,7 +10,6 @@
     "lint": "eslint --ext .jsx --ext .js src/"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "react-native-gesture-handler": "^2.4.2",
@@ -21,12 +20,6 @@
     "prop-types": "^15.8.1",
     "@react-native-async-storage/async-storage": "^1.17.7",
     "@react-native-google-signin/google-signin": "^7.2.2",
-
-=======
-    "@react-navigation/bottom-tabs": "^6.3.1",
-    "@react-navigation/native": "^6.0.10",
-    "@react-navigation/stack": "^6.2.1",
->>>>>>> 03cbeb5 (feat: 네비게이션 컴포넌트 설치)
     "react": "17.0.2",
     "react-native": "0.68.1",
     "react-native-image-picker": "^4.8.3",
