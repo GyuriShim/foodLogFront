@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack"
 import React from "react"
 import Login from "../screens/Login"
-//import {AddInfo} from "../screens/Addinfo"
+import AddInfo from "../screens/AddInfo"
 
 const Stack = createStackNavigator()
 
@@ -15,11 +15,11 @@ const AuthStack = () => {
 				component={Login}
 				options={{headerShown: false}}
 			/>
-			{/* <Stack.Screen 
-                name="Signup"
-                component={AddInfo}
-                options={{headerShown: false}}
-            /> */}
+			<Stack.Screen 
+				name="Signup"
+				component={AddInfo}
+				options={{headerShown: false}}
+			/>
 		</Stack.Navigator>
 	)
 }
