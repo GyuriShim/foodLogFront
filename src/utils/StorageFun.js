@@ -4,7 +4,7 @@ export const getItemFromAsync = async(storageName) => {
 	try {
 		await AsyncStorage.getItem(storageName, (err, result) => {
 			const data = JSON.parse(result)
-			console.log(data)
+			return data
 		})
 	} catch (error) {
 		console.log("불러오기 실패")
