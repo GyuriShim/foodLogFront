@@ -1,8 +1,8 @@
 import {GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin"
 import axios from "axios"
 import React, {Component} from "react"
-import {View, Image, StyleSheet, StatusBar, Text, Linking} from "react-native"
-import Loading from "./Loading"
+import {View, Image, StyleSheet, StatusBar, Text} from "react-native"
+import { setItemToAsync } from "../utils/StorageFun"
 
 GoogleSignin.configure({
 	webClientId : "177696185773-g2433eafo6etl3t3qhbrm7e77sd8i8d4.apps.googleusercontent.com",
@@ -28,15 +28,34 @@ class Login extends Component {
 				loaded: true
 			})
 			const email = this.state.userGoogleInfo.user.email
-			console.log(userInfo)
 			const response =  await axios({
-				url : "http://10.0.2.2:8000/login",
+				url : "http://10.0.2.2:8000/api/member/login",
 				method: "post",
 				data: {email: this.state.userGoogleInfo.user.email},
+			}).then ((response) => {
+				if (response.status === 200) {
+					setItemToAsync("AccessToken", response.data.accessToken)
+				}  
+			}).catch(function (error) {
+				if (error.response) {
+					// 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
+					console.log(error.response.data);
+					console.log(error.response.status);
+					console.log(error.response.headers);
+				}
+				else if (error.request) {
+					// 요청이 이루어 졌으나 응답을 받지 못했습니다.
+					// `error.request`는 브라우저의 XMLHttpRequest 인스턴스 또는
+					// Node.js의 http.ClientRequest 인스턴스입니다.
+					console.log(error.request);
+				}
+				else {
+					// 오류를 발생시킨 요청을 설정하는 중에 문제가 발생했습니다.
+					console.log('Error', error.message);
+				}
+				console.log(error.config);
 			})
-			console.log("response", response)
-		} 
-		catch(error){
+		}catch(error){
 			if (error.code === statusCodes.SIGN_IN_CANCELLED) {
 			  // user cancelled the login flow
 			} else if (error.code === statusCodes.IN_PROGRESS) {
@@ -73,9 +92,6 @@ class Login extends Component {
 						size={GoogleSigninButton.Size.Wide}
 						color={GoogleSigninButton.Color.Light}
 						onPress={this.signIn}
-						//http://10.0.2.2:8000/google/login")}
-						//엑시오스로 데이터를 가져온다. 
-						//겟매핑으로 데이터를 가져오기.
 					/>
 					{/* {this.state.loaded ? this.postData() : <Text>Not signedIn</Text>} */}
 				</View>
@@ -112,7 +128,7 @@ const styles = StyleSheet.create({
 		
 	},
 	googleButton: {
-		width: 192, 
+		width: 230, 
 		height: 48 
 	}
 	
