@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from "react"
+import React, {useState, useRef, useEffect, useContext} from "react"
 import {Image, StatusBar, View, Text, StyleSheet, TouchableOpacity, Platform, Alert} from "react-native"
 import styled from "styled-components/native"
 import { RadioButton } from "react-native-paper"
@@ -8,6 +8,10 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import Button from "../components/Button.js"
 import { launchImageLibrary } from "react-native-image-picker"
 import { removeWhitespace, validateBirthday, validateUsername } from "../utils/common.js"
+import PropTypes from "prop-types"
+import UserContext from "../contexts/User.js"
+import { getItemFromAsync } from "../utils/StorageFun.js"
+import moment from "moment"
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -21,45 +25,63 @@ const ErrorText = styled.Text`
     font-style: normal
     color: red
 `
-const AddInfo = () => {
+const AddInfo = ({navigation}) => {
 	const [username, setUsername] = useState("")
 	const [doubleCheck, setDoubleCheck] = useState(false)
 	const [selfBio, setSelfBio] = useState("")
 	const [idErrorMessage, setIdErrorMessage] = useState("")
 	const [birthErrorMessage, setBirthErrorMessage] = useState("")
-	const [gender, setGender] = useState("male")
+	const [gender, setGender] = useState("M")
 	const [birthday, setBirthday] = useState("")
-	const [response, setResonse] = useState(null)
+	const [response, setResponse] = useState(null)
 	const [disabled, setDisabled] = useState(true)
+	const {dispatch} = useContext(UserContext)
+	const id = getItemFromAsync("Id")
+	const token = getItemFromAsync("AccessToken")
 
 	const selfBioRef = useRef()
 
-	const _handleJoinButtonPress = () => {}
+	const _handleJoinButtonPress = async () => {
+		try {
+			await axios ({
+				url: `http://10.0.2.2:8000/api/member/profile/${id}`,
+				method: "post",
+				headers: token,
+				data: {
+					birthday: birthday,
+					gender: gender,
+					selfBio: selfBio,
+					username: username
+				}
+			})
+			dispatch(true)
+		} catch (error) {
+			console.log(error)
+		}
+		
+	}
 
+	//403 에러남 
 	const _handleDoubleCheckPress = async () => {
 		try {
-			Alert.alert("사용가능한 아이디입니다.", username)
-			setDoubleCheck(true)
+			await axios ({
+				url : "http://10.0.2.2:8000/api/member/profile/check/username",
+				method: "post",
+				data: username,
+			}).then((response) => {
+				if (response.data == true) {
+					Alert.alert("이미 사용중인 아이디입니다.")
+					setDoubleCheck(false)
+				} else {
+					Alert.alert("사용가능한 아이디입니다.", username)
+					setDoubleCheck(true)
+				}
+			})
 		} catch(e) {
-			Alert.alert("이미 사용중인 아이디입니다.", e.message)
-			setDoubleCheck(false)
+			console.log(e)
 		}
 	}
 	//중복확인 버튼 누르면 서버랑 통신해서 중복되는 값 있는지 확인하는 코드 필요
-
-	/* onPress={()=>(axios({
-						url: "http://10.0.2.2:8000/api/member/create/7",
-						method: "POST",
-						headers: {
-							"ACCESS-TOKEN" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjo3LCJpYXQiOjE2NTI4NzYxNzcsImV4cCI6MTY1Mjk2MjU3N30.ZYTD4WsmAHkn7PkGS9MuKvNI5jvpSz9s5y69SLEuyelY2gS-DkvEvQpncjkyvVfTIsn4_SAGu93J1A46S72Rxg"
-						},
-						data: {
-							username: "akakakaka"
-						}
-					})).catch((error)=> {
-						console.error("실패: ", error)
-					})}
-				>*/
 
 	const onSelectImage = () => {
 		launchImageLibrary(
@@ -73,7 +95,17 @@ const AddInfo = () => {
 				if (res.didCancel){
 					return
 				}
-				setResonse(res)
+				//type 넣어주기
+
+				// eslint-disable-next-line no-undef
+				var profilePic = new FormData()
+				let file = {
+					uri: res?.assets[0]?.uri,
+					type: "",
+					name: res?.assets[0]?.fileName,
+				}
+				profilePic.append("profileImage", file)
+				setResponse(profilePic)
 			}
 		)
 	}
@@ -109,7 +141,6 @@ const AddInfo = () => {
 		setBirthErrorMessage(_errorMessage)
 	}, [birthday])
 	
-	
 	//중복확인 결과도 포함,,
 	useEffect(() => {
 		setDisabled(
@@ -119,6 +150,7 @@ const AddInfo = () => {
 
 	return (
 		<KeyboardAwareScrollView
+			style={{flex: 1, backgroundColor: "#ffffff"}}
 			extraScrollHeight={30}
 		>
 			<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
@@ -169,11 +201,10 @@ const AddInfo = () => {
 					value={birthday}
 					onChangeText={text => setBirthday(removeWhitespace(text))}
 					onSubmitEditing={() => {
-						setBirthday(birthday.trim())
-						_handleJoinButtonPress
+						setBirthday(moment(new Date(birthday.trim())).format("YYYY-MM-DD"))
 					}}
 					placeholder="생년월일 8자리를 입력해주세요."
-					maxLength={8}
+					maxLength={10}
 				>
 				</Input>
 				<ErrorText>{birthErrorMessage}</ErrorText>
@@ -185,9 +216,9 @@ const AddInfo = () => {
 				>
 					<View style={styles.radioButtonContainer}>
 						<RadioButton
-							value="male"
-							status={gender === "male" ? "checked":"unchecked"}
-							onPress={() => setGender("male")}
+							value="M"
+							status={gender === "M" ? "checked":"unchecked"}
+							onPress={() => setGender("M")}
 							color="#FF8383"
 							uncheckedColor="#FFB7B7"
 						/>
@@ -197,9 +228,9 @@ const AddInfo = () => {
 					</View>	
 					<View style={styles.radioButtonContainer}>
 						<RadioButton
-							value="female"
-							status={gender === "female" ? "checked":"unchecked"}
-							onPress={() => setGender("female")}
+							value="F"
+							status={gender === "F" ? "checked":"unchecked"}
+							onPress={() => setGender("F")}
 							color="#FF8383"
 							uncheckedColor="#FFB7B7"
 						/>
@@ -213,6 +244,7 @@ const AddInfo = () => {
 						title="BACK" 
 						isFilled={true} 
 						containerStyle={styles.smallButton}
+						onPress={() => {navigation.navigate("Login")}}
 					></Button>
 					<Button 
 						title="JOIN" 
@@ -228,11 +260,18 @@ const AddInfo = () => {
 	)
 }
 
+AddInfo.propTypes = {
+	navigation : PropTypes.shape({
+		navigate : PropTypes.func.isRequired,
+	}).isRequired
+}
+
 const styles = StyleSheet.create({
 	view: {
 		alignItems: "flex-start",
-		marginHorizontal: 30,
-		paddingTop: 30
+		paddingHorizontal: 30,
+		paddingTop: 30,
+		backgroundColor: "#ffffff",
 	},
 	title: {
 		fontSize:24, 
@@ -267,7 +306,7 @@ const styles = StyleSheet.create({
 		height: 35, 
 		width: "100%",
 		fontFamily:"Arial",
-		marginBottom: 10
+		marginBottom: 10,
 	},
 	smallButton: {
 		width: "45%",
