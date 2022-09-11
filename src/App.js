@@ -2,6 +2,8 @@ import React, {useState, useEffect} from "react"
 import Loading from "./screens/Loading"
 import {StatusBar} from "react-native"
 import Navigation from "./navigations"
+import { UserProvider } from "./contexts/User"
+import { ProgressProvider } from "./contexts/Progress"
 
 
 const App = () => {
@@ -15,11 +17,14 @@ const App = () => {
 		},2000)
 	},[]) 
 
-	return (ready? <Loading /> :
-		(<>
-			<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
-			<Navigation />
-		</>)
+	return (ready? <Loading /> :(
+		<UserProvider>
+			<ProgressProvider>
+				<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
+				<Navigation />
+			</ProgressProvider>
+		</UserProvider>
+	)
 	)
 
 }
