@@ -3,6 +3,7 @@ import React, {useContext} from "react"
 import Spinner from "../components/Spinner"
 import { ProgressContext } from "../contexts/Progress"
 import UserContext from "../contexts/User"
+import { SearchContextProvider } from "../contexts/SearchContext"
 import AuthStack from "./AuthStack"
 import MainStack from "./MainStack"
 
@@ -12,8 +13,10 @@ const Navigation = () => {
 
 	return(
 		<NavigationContainer>
-			{user ? <MainStack /> : <AuthStack />}
-			{inProgress && <Spinner />}
+			<SearchContextProvider>
+				{user ? <MainStack /> : <AuthStack />}
+				{inProgress && <Spinner />}
+			</SearchContextProvider>
 		</NavigationContainer>
 	)
 }
