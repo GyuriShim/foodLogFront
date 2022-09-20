@@ -1,14 +1,14 @@
 import React,{useState, useEffect, useRef} from "react"
 import { launchImageLibrary } from "react-native-image-picker"
-import {Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet, Alert} from "react-native"
+import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet, Alert} from "react-native"
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import {useRoute} from "@react-navigation/native"
 import axios from "axios"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import styled from "styled-components"
 import Button from "../components/Button"
-import DateTimePicker from "@react-native-community/datetimepicker"
-import {SelMenuScreen} from "../screens/SelMenuScreen"
+import DateTimePickerModal from "react-native-modal-datetime-picker"
+import RNPickerSelect from "react-native-picker-select"
 
 const Container = styled.View` 
   flex: 1
@@ -49,6 +49,14 @@ const Box5= styled.View`
   background-color: white
   border: 2px rgba(164, 212, 234, 0.8)
 ` 
+const Box6 = styled.View`
+  flex: 3
+  border-radius: 7px
+  padding: 8px
+  margin: 5px 10px
+  background-color: white
+  border: 2px rgba(164, 212, 234, 0.8)
+`
 const styles = StyleSheet.create({
 	customRatingBarStyle : {
 		justifyContent: "center",
@@ -80,32 +88,37 @@ const styles = StyleSheet.create({
 		color: "black"
 	},
 })
-function UploadScreen(){
+function UploadScreen({date, onChangeDate}){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
-	const [date, setDate] = useState(new Date())
+	//const [date, setDate] = useState(log ? new Date(log.date) : new Date())
 	const [mode, setMode] = useState("date")
-	const [show, setShow] = useState(false)
+	const [visible, setVisible] = useState(false)
+	//const [show, setShow] = useState(false)
 	const [text, setText] = useState("Empty")
 
-	const onChange = (event, selectedDate) => {
-		const currentDate = selectedDate || date
-		setShow(Platform.OS === "android")
-		setDate(currentDate)
 
-		let tempDate = new Date(currentDate)
-		let fDate = tempDate.getDate() + "/" + (tempDate.getMonth() + 1) + "/" + tempDate.getFullYear()
-		let fTime = "Hours: " + tempDate.getHours() + " | Minutes: " + tempDate.getMinutes() 
-		setText(fDate + "\n" + fTime)
-
-		console.log(fDate + " (" + fTime + ")")
+	const onPressDate = () => {
+		setMode("date")
+		setVisible(true)
 	}
 
-	const showMode = (currentMode) => {
+	const onConfirm = (selectedDate) => {
+		setVisible(false)
+		onChangeDate(selectedDate)
+		console.log(onChangeDate)
+	}
+
+	const onCancel = () => {
+		setVisible(false)
+	}
+
+
+	/* const showMode = (currentMode) => {
 		setShow(true)
 		setMode(currentMode)
-	}
+	} */
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
@@ -173,7 +186,7 @@ function UploadScreen(){
 	const headers = {
 		"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
 	}
-	axios.post("https://localhost:8080/post/new", formdata, {headers: headers})
+	axios.post("https://localhost:8080/post", formdata, {headers: headers})
 		.then(res => {
 			if(res){
         
@@ -202,63 +215,85 @@ function UploadScreen(){
 		//<SafeAreaView>
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1}}>
 			<Container >
-				<Box1>
-					<View style={{flex:0, padding:1}}>
-						<Button title="이미지 업로드" color={"lightblue"} onPress={ShowPicker}></Button>
-						<Image style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-							source={{uri: "https://foodlogstorage.s3.ap-northeast-2.amazonaws.com/88ac415a-34df-44fa-bc1d-3bd5736710d7.jpeg"}}
-							//style={styled.image}
-							resizeMode="cover"
-						/>
-					</View>
-				</Box1>
-				<Box2>
-					<Text>날짜</Text>
-					<View style={{alignSelf: "flex-end", justifyContent: "center"}}>
-						<Button style={{justifyContent: "center"}} title="수정" onPress={()=>showMode("date")}/>
-					</View>
-					{/* <TextInput
+				<ScrollView>
+					<Box1>
+						<View style={{flex:0, padding:1}}>
+							<Button title="이미지 업로드" color={"lightblue"} onPress={ShowPicker}></Button>
+							<Image style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+								source={{uri: "https://foodlogstorage.s3.ap-northeast-2.amazonaws.com/88ac415a-34df-44fa-bc1d-3bd5736710d7.jpeg"}}
+								//style={styled.image}
+								resizeMode="cover"
+							/>
+						</View>
+					</Box1>
+					<Box2>
+						<Text>{date}</Text>
+						{/* <TextInput style={styles.smallInput}>
+						<Text>{date} </Text>
+					</TextInput> */}
+						<View style={{alignSelf: "flex-end", justifyContent: "center"}}>
+							<Button style={{justifyContent: "center"}} title="수정" onPress={onPressDate}/>
+						</View>
+						{/* <TextInput
 							style = {styled.input}
 							multiline = {true}
 							placeholder = "날짜 입력받기"
 							textAlignVertical="center"
 						/> */}
-					{show && (
-						<DateTimePicker 
+						<DateTimePickerModal
+							isVisible={visible}
 							testID="dateTimePicker"
 							value={date}
 							mode={mode}
+							onConfirm={onConfirm}
+							onCancel={onCancel}
 							is24Hour={true}
 							display= "default"
-							onChange={onChange}
+							date={date}
 						/>
-					)}
-				</Box2>
-				<Box3>
-					<TextInput
-						style = {styled.input}
-						multiline = {true}
-						placeholder = "상호명"
-						textAlignVertical="center"
-					/>
-				</Box3>
-				<Box4>
-					<CustomRatingBar/>
-				</Box4>
-				<Box5>
-					<TextInput
-						style = {styled.input}
-						multiline = {true}
-						placeholder = "내용을 입력하세요"
-						textAlignVertical="center"
-					/>
-				</Box5>
+					</Box2>
+					<Box3>
+						<TextInput
+							style = {styled.input}
+							multiline = {true}
+							placeholder = "상호명"
+							textAlignVertical="center"
+						/>
+					</Box3>
+					<Box4>
+						<CustomRatingBar/>
+					</Box4>
+					<Box5>
+						<TextInput
+							style = {styled.input}
+							multiline = {true}
+							placeholder = "내용을 입력하세요"
+							textAlignVertical="center"
+						/>
+					</Box5>
+					<Box6>
+						<View>
+							<Text>목적</Text>
+							<RNPickerSelect
+								onValueChange={(value) => console.log(value)}
+								items={[
+									{ label: "친구", value: "" },
+									{ label: "혼밥", value: "" },
+									{ label: "가족", value: "" },
+									{ label: "회식", value: "" },
+									{ label: "데이트", value: "" },
+									{ label: "기타", value: "" },
+								]}
+							/> 
+						</View>
+					</Box6>
+				</ScrollView>
 				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
 					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {}} />
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {SelMenuScreen}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {}}/>
 					)}
 				</View>
 			</Container> 
