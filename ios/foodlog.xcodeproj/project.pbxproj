@@ -102,6 +102,11 @@
 		E5B9AF6F89F8450299A04BEE /* Multicolore Pro.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Multicolore Pro.otf"; path = "../src/assets/fonts/Multicolore Pro.otf"; sourceTree = "<group>"; };
 		E713A02A05134E139712CD8C /* SF-Pro-Text-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Black.otf"; path = "../src/assets/fonts/SF-Pro-Text-Black.otf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+<<<<<<< HEAD
+=======
+		E5B9AF6F89F8450299A04BEE /* Multicolore Pro.otf */ = {isa = PBXFileReference; name = "Multicolore Pro.otf"; path = "../src/assets/fonts/Multicolore Pro.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9C4DEE52323145D691AD9505 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; name = "Roboto-Medium.ttf"; path = "../src/assets/fonts/Roboto-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+>>>>>>> 9f261eb62208bf1b8572c942ec34b82161e443dc
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
