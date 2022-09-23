@@ -5,17 +5,38 @@ import {View, Image, StyleSheet, StatusBar, Text, TouchableOpacity} from "react-
 import UserContext from "../contexts/User"
 import { clearAll, getItemFromAsync, setItemToAsync } from "../utils/StorageFun"
 import PropTypes from "prop-types"
+import { login } from "../service/login"
 
 GoogleSignin.configure({
 	webClientId : "177696185773-g2433eafo6etl3t3qhbrm7e77sd8i8d4.apps.googleusercontent.com",
 	offlineAccess: true,
 	forceCodeForRefreshToken: true
 })
-
+// member 로그인하면 -> dispatch(true);
 
 const Login = ({navigation}) => {
 	const [loaded, setLoaded] = useState(false)
 	const {dispatch} = useContext(UserContext)
+	const googleLogin = (email) => {
+		console.log(email)
+		login(email)
+			.then((res) => {
+				if (res.status === 200) {
+					console.log(res.data.member)
+					setItemToAsync("AccessToken", res.data.accessToken)
+					setItemToAsync("Email", res.data.email)
+					setItemToAsync("Id", res.data.id)
+					if (res.data.member==false) {
+						navigation.navigate("AddInfo")
+					} else {
+						dispatch(true)
+					}
+				}
+			})
+			.catch((error) => {
+				console.log("login error", error)
+			})
+	}
 	
 	const signIn = async () => {
 		try{
@@ -23,43 +44,8 @@ const Login = ({navigation}) => {
 			const userInfo = await GoogleSignin.signIn()
 			const email = userInfo.user.email
 			setLoaded(true)
-			await axios({
-				url : "http://10.0.2.2:8000/api/member/login",
-				method: "post",
-				data: {email: email},
-			}).then ((response) => {
-				if (response.status === 200) {
-					//수정 및 테스트 필요
-					console.log("res", response)
-					setItemToAsync("AccessToken", response.data.accessToken)
-					setItemToAsync("Member", response.data.member)
-					setItemToAsync("Id", response.data.id)
-					/* if(!response.data.member){
-						
-					}else{
-					} */
-					//navigation.navigate("AddInfo")
-				}
-			}).catch(function (error) {
-				if (error.response) {
-					// 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
-					console.log("1", error.response.data)
-					console.log("2", error.response.status)
-					console.log("3", error.response.headers)
-				}
-				else if (error.request) {
-					// 요청이 이루어 졌으나 응답을 받지 못했습니다.
-					// `error.request`는 브라우저의 XMLHttpRequest 인스턴스 또는
-					// Node.js의 http.ClientRequest 인스턴스입니다.
-					console.log("4", error.request)
-				}
-				else {
-					// 오류를 발생시킨 요청을 설정하는 중에 문제가 발생했습니다.
-					console.log("Error", error.message)
-				}
-				console.log("5", error.config)
-			})
-		}catch(error){
+			googleLogin(email)
+		} catch(error){
 			if (error.code === statusCodes.SIGN_IN_CANCELLED) {
 				// user cancelled the login flow
 			} else if (error.code === statusCodes.IN_PROGRESS) {
