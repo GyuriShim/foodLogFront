@@ -1,13 +1,14 @@
-import React, {useState, useEffect,} from "react"
+import React, {useState, useEffect, useRef} from "react"
 import styled from "styled-components"
 import MapView from "react-native-maps"
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler"
 import { FontIcon } from "../assets/icons/Fontisto"
-import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal} from "react-native"
+import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Button, Alert} from "react-native"
 import Geolocation from "react-native-geolocation-service"
 import PropTypes from "prop-types"
 import { markers } from "../model/mapData"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
+import { TagSelect } from "react-native-tag-select"
 
 const Container = styled.View`
 	background-color: white
@@ -53,6 +54,39 @@ const MapScreen = ({navigation}) => {
 	const [location, setLocation] = useState()
 	const [subpostVisible, setSubpostVisible] = useState(false)
 	const [filterVisible, setFilterVisible] = useState(false)
+	const [isFilled, setIsFilled] = useState(false)
+	const ratingRef = useRef()
+	const purposeRef = useRef()
+	const categoryRef = useRef()
+	const rating = [
+		{id : "all", label: "전체"},
+		{id : 3, label: "3.0"},
+		{id : 3.5, label: "3.5"},
+		{id : 4, label: "4.0"},
+		{id : 4.5, label: "4.5"}
+	]
+
+	const purpose = [
+		{id : "SOLO", label: "혼밥"},
+		{id : "COUPLE", label: "데이트"},
+		{id : "FRIEND", label: "친구"},
+		{id : "FAMILY", label: "가족"},
+		{id : "MEETING", label: "회식"},
+		{id : "ECT", label: "기타"},
+	]
+
+	const category = [
+		{id : "WESTERN", label: "양식"},
+		{id : "CHINESE", label: "중식"},
+		{id : "JAPANESE", label: "일식"},
+		{id : "KOREAN", label: "한식"},
+		{id : "SNACK", label: "분식"},
+		{id : "ASIAN", label: "아시안"},
+		{id : "CHICKEN", label: "치킨"},
+		{id : "DESSERT", label: "디저트"},
+		{id : "CAFE", label: "카페"},
+		{id : "ECT", label: "기타"},
+	]
 
 	useEffect(() => {
 		let isComponentMounted = true
@@ -200,8 +234,54 @@ const MapScreen = ({navigation}) => {
 			>
 				<Pressable style={{flex:1, backgroundColor:"transparent",}} onPress={()=>setFilterVisible(!filterVisible)}/>
 				<View style={styles.filter}>
-					
+					<Text style={styles.title}>최소 평점</Text>
+					<View style={{paddingHorizontal: 20}}>
+						<TagSelect
+							data={rating}
+							max={1}
+							ref={ratingRef}
+							itemStyle={styles.item}
+							itemStyleSelected={styles.itemSelected}
+							itemLabelStyleSelected={styles.labelSelected}
+							onMaxError={() => {Alert.alert("평점은 하나만 선택가능합니다.")}}
+						/>
+					</View>
+					<Text style={styles.title}>목적</Text>
+					<View style={{paddingHorizontal: 20}}>
+						<TagSelect
+							data={purpose}
+							ref={purposeRef}
+							itemStyle={styles.item}
+							itemStyleSelected={styles.itemSelected}
+							itemLabelStyleSelected={styles.labelSelected}
+						/>
+					</View>
+					<Text style={styles.title}>음식 종류</Text>
+					<View style={{paddingHorizontal: 20}}>
+						<TagSelect
+							data={category}
+							ref={categoryRef}
+							itemStyle={styles.item}
+							itemStyleSelected={styles.itemSelected}
+							itemLabelStyleSelected={styles.labelSelected}
+						/>
+					</View>
 				</View>
+				<Button
+					title="Get selected"
+					onPress={() => {
+						var rating = ratingRef.current.itemsSelected[0]
+						if (ratingRef.current.itemsSelected[0].id === "all") {
+							rating = null
+						}
+						const purpose = purposeRef.current.itemsSelected
+						const purposeTest = purpose.map((value) => {return value.id})
+						const category = categoryRef.current.itemsSelected
+						const categoryTest = category.map((value) => {return value.id})
+						Alert.alert("Selected items:", JSON.stringify([rating.id, purposeTest, categoryTest]))
+					}}
+				/>
+				
 			</Modal>
 			
 			
@@ -282,13 +362,32 @@ const styles = StyleSheet.create({
 		color: "black"
 	},
 	filter: {
-		height: "70%", 
+		height: "80%", 
 		width: "100%", 
 		backgroundColor: "#fff", 
 		position:"absolute", 
 		bottom: 58, 
 		borderTopLeftRadius:26, 
 		borderTopRightRadius: 26,
+	},
+	item: {
+		marginTop: 5,
+		backgroundColor: "rgba(196, 196, 196, 0.45)",
+		width: 70,
+		alignItems: "center"
+	},
+	itemSelected: {
+		backgroundColor:"rgba(157, 225, 255, 0.4)"
+	},
+	labelSelected: {
+		color: "black"
+	},
+	title: {
+		fontSize: 16,
+		paddingHorizontal: 20,
+		paddingTop: 15,
+		fontWeight: "600",
+		color: "black"
 	}
 
 })
