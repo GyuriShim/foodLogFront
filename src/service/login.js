@@ -11,3 +11,24 @@ export function login(email) {
 	})
 }
 
+// 회원가입
+export function join(formData) {
+	return instance({
+		url: "/v1/join", formData,
+		method: "post",
+	})
+}
+
+// username 중복확인
+export function checkUsername(username) {
+	return instance({
+		url: "/v1/member/username",
+		method: "post",
+		headers: {
+			"Content-Type" : "text/plain"
+		},
+		data: {
+			username
+		},
+	})
+}

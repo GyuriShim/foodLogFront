@@ -1,7 +1,11 @@
 import axios from "axios"
 
+const local = "10.0.2.2"
+const dev = "ec2-3-36-145-130.ap-northeast-2.compute.amazonaws.com"
+const prd = "food-log-dku.com" //현재 안됨
+
 const instance = axios.create({
-	baseURL: "http://10.0.2.2:8080/api",
+	baseURL: "http://" + prd + ":8080/api",
 	timeout: 1000,
 })
 

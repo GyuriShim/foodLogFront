@@ -12,6 +12,7 @@ import PropTypes from "prop-types"
 import UserContext from "../contexts/User.js"
 import { getItemFromAsync } from "../utils/StorageFun.js"
 import moment from "moment"
+import { join, checkUsername } from "../service/login"
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -37,24 +38,29 @@ const AddInfo = ({navigation}) => {
 	const [disabled, setDisabled] = useState(true)
 	const {dispatch} = useContext(UserContext)
 	const id = getItemFromAsync("Id")
-	const token = getItemFromAsync("AccessToken")
+	const email = getItemFromAsync("AccessToken")
+	// eslint-disable-next-line no-undef
+	const formData = new FormData()
 
 	const selfBioRef = useRef()
 
 	const _handleJoinButtonPress = async () => {
 		try {
-			await axios ({
-				url: `http://10.0.2.2:8000/api/member/profile/${id}`,
-				method: "post",
-				headers: token,
-				data: {
-					birthday: birthday,
-					gender: gender,
-					selfBio: selfBio,
-					username: username
-				}
-			})
-			dispatch(true)
+			const data = {
+				email: email,
+				username: username,
+				birthday: birthday,
+				selfBio: selfBio,
+				gender: gender
+			}
+			formData.append(
+				"memberJoinDto",
+				// eslint-disable-next-line no-undef
+				new Blob([JSON.stringify(data)], { type: "application/json" })
+			)
+
+			console.log(data)
+			join(formData)
 		} catch (error) {
 			console.log(error)
 		}
@@ -64,19 +70,16 @@ const AddInfo = ({navigation}) => {
 	//403 에러남 
 	const _handleDoubleCheckPress = async () => {
 		try {
-			await axios ({
-				url : "http://10.0.2.2:8000/api/member/profile/check/username",
-				method: "post",
-				data: username,
-			}).then((response) => {
-				if (response.data == true) {
-					Alert.alert("이미 사용중인 아이디입니다.")
-					setDoubleCheck(false)
-				} else {
-					Alert.alert("사용가능한 아이디입니다.", username)
-					setDoubleCheck(true)
-				}
-			})
+			checkUsername(username)
+				.then((response) => {
+					if (response.data == true) {
+						Alert.alert("이미 사용중인 아이디입니다.")
+						setDoubleCheck(false)
+					} else {
+						Alert.alert("사용가능한 아이디입니다.", username)
+						setDoubleCheck(true)
+					}
+				})
 		} catch(e) {
 			console.log(e)
 		}
@@ -98,14 +101,13 @@ const AddInfo = ({navigation}) => {
 				//type 넣어주기
 
 				// eslint-disable-next-line no-undef
-				var profilePic = new FormData()
 				let file = {
 					uri: res?.assets[0]?.uri,
 					type: "",
 					name: res?.assets[0]?.fileName,
 				}
-				profilePic.append("profileImage", file)
-				setResponse(profilePic)
+				formData.append("profileImage", file)
+				// setResponse(profilePic)
 			}
 		)
 	}

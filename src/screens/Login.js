@@ -1,5 +1,4 @@
 import {GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin"
-import axios from "axios"
 import React, { useContext, useEffect, useState} from "react"
 import {View, Image, StyleSheet, StatusBar, Text, TouchableOpacity} from "react-native"
 import UserContext from "../contexts/User"

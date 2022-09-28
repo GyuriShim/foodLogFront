@@ -15,7 +15,7 @@ export const setItemToAsync = async(storageName, item) => {
 	try{
 		await AsyncStorage.setItem(storageName, JSON.stringify(item))
 		console.log("save successfully")
-	}catch(e){
+	} catch (e){
 		console.log("save error : Asynce Storage")
 	}
 	
