@@ -38,7 +38,7 @@ const AddInfo = ({navigation}) => {
 	const [disabled, setDisabled] = useState(true)
 	const {dispatch} = useContext(UserContext)
 	const id = getItemFromAsync("Id")
-	const email = getItemFromAsync("AccessToken")
+	const email = getItemFromAsync("Email")
 	// eslint-disable-next-line no-undef
 	const formData = new FormData()
 
@@ -58,12 +58,12 @@ const AddInfo = ({navigation}) => {
 				// eslint-disable-next-line no-undef
 				new Blob([JSON.stringify(data)], { type: "application/json" })
 			)
-
+			console.log(email)
 			console.log(data)
 			join(formData)
 		} catch (error) {
 			console.log(error)
-		}
+		} // Email이 값에 안담김
 		
 	}
 
