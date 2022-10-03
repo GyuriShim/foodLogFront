@@ -9,10 +9,12 @@ import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
+import PostScreen from "../screens/PostScreen"
+
 
 const Container = styled.View` 
   flex: 1
-  background-color: "#fff"
+  background-color: white //배경
 `
 const Box1 = styled.View`
   flex: 7
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
 		color: "black"
 	},
 })
-function UploadScreen({date, onChangeDate}){
+function UploadScreen({date, onChangeDate, navigation}){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
@@ -96,7 +98,11 @@ function UploadScreen({date, onChangeDate}){
 	const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
 	//const [show, setShow] = useState(false)
+	
+	//목적선택
 	const [text, setText] = useState("Empty")
+	const placeholder = "목적을 입력해주세요."
+
 
 
 	const onPressDate = () => {
@@ -114,11 +120,10 @@ function UploadScreen({date, onChangeDate}){
 		setVisible(false)
 	}
 
-
-	/* const showMode = (currentMode) => {
+	const showMode = (currentMode) => {
 		setShow(true)
 		setMode(currentMode)
-	} */
+	} 
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
@@ -149,10 +154,8 @@ function UploadScreen({date, onChangeDate}){
 		)
 	}
 	const ShowPicker = async() => {
-		const formdata = new FormData()
-		formdata.append("multipartFile", image)
-		console.log(image)
-		console.log(formdata)
+
+		//console.log(formdata)
 		const image = {
 			uri: "",
 			type: "",
@@ -173,43 +176,50 @@ function UploadScreen({date, onChangeDate}){
 				image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
 			}
 		})
+		const formdata = new FormData()
+		formdata.append("multipartFile", image)
 		//launchImageLibrary : 사용자 앨범 접근
-		launchImageLibrary({}, (res)=>{
-			/* alert(res.assets[0].uri)
-			formdata.append("file", res.assets[0].uri) */
-			console.log(res)
+		//alert(res.assets[0].uri)
 		
-		})
-	}
-
-	const formdata = new FormData()
-	const headers = {
-		"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
-	}
-	axios.post("https://localhost:8080/post", formdata, {headers: headers})
-		.then(res => {
-			if(res){
+		const headers = {
+			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
+		}
+		console.log(image)
+		console.log(formdata)
+	
+		axios.post("https://localhost:8080/post", formdata, {headers: headers})
+			.then(response => {
+				if(response){
         
-				console.log(res.data)
-			}
-		})
-		.catch((error)=> {
-			if (error.res) {
+					console.log(/* res.data */response.data)
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
 				// The request was made and the server responded with a status code
 				// that falls out of the range of 2xx
-				console.log(error.res.data)
-				console.log(error.res.status)
-				console.log(error.res.headers)
-			} else if (error.request) {
+					console.log(error.response.data)
+					console.log(error.response.status)
+					console.log(error.response.headers)
+				} else if (error.request) {
 				// The request was made but no response was received
 				// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
 				// http.ClientRequest in node.js
-				console.log(error.request)
-			} else {
+					console.log(error.request)
+				} else {
 				// Something happened in setting up the request that triggered an Error
-				console.log("Error", error.message)
-			}
-		})
+					console.log("Error", error.message)
+				}
+			})
+
+		/* const PickerScreen = ()  => {
+				;
+				
+				const onChangeText = (value) => {
+					console.warn(value)
+					setText(value);
+				}  */
+	}
 
 	return (
 		//<SafeAreaView>
@@ -275,7 +285,14 @@ function UploadScreen({date, onChangeDate}){
 						<View>
 							<Text>목적</Text>
 							<RNPickerSelect
+								textInputProps={{ underlineColorAndroid: "transparent"}}
+								placeholder={{
+									label: placeholder,
+								}}
+								fixAndroidTouchableBug={true}//안드로이드에서 클릭을 여러번해야 picker가 나오는 경우가 있어 추가를 하였습니다. true로 설정하면 이런 에러가 사라집니다.
+								value={text}
 								onValueChange={(value) => console.log(value)}
+								useNativeAndroidPickerStyle={false}
 								items={[
 									{ label: "친구", value: "" },
 									{ label: "혼밥", value: "" },
@@ -289,11 +306,11 @@ function UploadScreen({date, onChangeDate}){
 					</Box6>
 				</ScrollView>
 				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {}} />
+					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.goBack()} />
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.navigate("PostScreen")}/>
 					)}
 				</View>
 			</Container> 
