@@ -70,6 +70,7 @@ const MainStack = () => {
 				options={{title: "계정 아이디"}}
 			/>
 		</Stack.Navigator>
+		
 	)
 }
 export default MainStack
