@@ -1,11 +1,12 @@
 import React from "react"
-import { Button } from "react-native"
+import { Button, ScrollView } from "react-native"
 import styled from "styled-components"
+import RcmdPost from "../components/RcmdPost"
 
 const Container = styled.View`
     align-items: center
     background-color: white
-	flex: 1
+	padding-horizontal: 15px
 `
 const StyledText = styled.Text`
     font-size: 30px
@@ -13,10 +14,15 @@ const StyledText = styled.Text`
 `
 const RcmdScreen = () => {
 	return(
-		<Container>
-			<StyledText>추천</StyledText>
-			<Button title="hello anyang" style={{height: 20, width: 50}}/>
-		</Container>
+		<>
+			<Container>
+			</Container>	
+			<ScrollView style={{paddingHorizontal: 15, backgroundColor: "white"}}>
+				<RcmdPost/>
+				<RcmdPost/>
+			</ScrollView>
+		</>
+		
 	)
 }
 export default RcmdScreen
