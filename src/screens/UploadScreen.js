@@ -158,56 +158,46 @@ function UploadScreen({date, onChangeDate, navigation }){
 	}
 	
 	const selectImage = async() => {
-		launchImageLibrary(
+		const image = {
+			uri: "",
+			type: "",
+			name: "",
+		}
+		await launchImageLibrary(
 			{
 				mediaType: "photo",
 				includeBase64: Platform.OS === "android",
 			},
 			(res) =>{
 				setResponse(res)
+				if(res.didCancel){
+					console.log("User cancelled image picker")
+				}
+				else if(res.errorCode){
+					console.log("ImagePicker Error: ", res.errorCode)
+				}
+				else if(res.assets){ //정상적으로 사진을 반환 받았을 때
+					console.log("ImagePicker res", res)
+					image.name = res.assets[0].fileName
+					image.type = res.assets[0].type
+					image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
+				}
 			}
 		)
-	}
-
-	/* 	const ShowPicker = async() => {
-
-		//console.log(formdata)
-		const img = {
-			uri: "",
-			type: "",
-			name: "",
-		}
-	
-		await launchImageLibrary({}, (res) => {
-			if(res.didCancel){
-				console.log("User cancelled image picker")
-			}
-			else if(res.errorCode){
-				console.log("ImagePicker Error: ", res.errorCode)
-			}
-			else if(res.assets){ //정상적으로 사진을 반환 받았을 때
-				console.log("ImagePicker res", res)
-				img.name = res.assets[0].fileName
-				img.type = res.assets[0].type
-				img.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
-			}
-		})
 		const formdata = new FormData()
-		formdata.append("multipartFile", img)
-		//launchImageLibrary : 사용자 앨범 접근
+		formdata.append("multipartFile", image)
 		//alert(res.assets[0].uri)
-		
 		const headers = {
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
 		}
-		console.log(img)
+		console.log(image)
 		console.log(formdata)
-	
+
 		axios.post("https://localhost:8080/post", formdata, {headers: headers})
 			.then(response => {
 				if(response){
         
-					console.log(/* res.data response.data)
+					console.log( response.data)
 				}
 			})
 			.catch((error)=> {
@@ -226,8 +216,8 @@ function UploadScreen({date, onChangeDate, navigation }){
 				// Something happened in setting up the request that triggered an Error
 					console.log("Error", error.message)
 				}
-			})*/
-
+			})
+	}
 	return (
 		//<SafeAreaView>
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1}}>
@@ -239,22 +229,8 @@ function UploadScreen({date, onChangeDate, navigation }){
 							<Image 
 								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
 								source={{uri: response?.assets[0]?.uri}}
-							/>
-							{/* {image ?   // 이미지가 있으면 라이브러리에서 받아온 이미지로 출력, 없으면 디폴트 이미지 출력!
-								<TouchableOpacity style={styles.imgWrapper} onPress={()=>pickImg()}>
-									<Image source={{uri: image}} style={styles.imgStyle}/>
-								</TouchableOpacity>  
-								:
-								<TouchableOpacity style={styles.imgWrapper} onPress={()=>pickImg()}>
-									<Image source={image} style={styles.imgStyle}/>
-								</TouchableOpacity>
-							} */}
-							{/* <Image style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-								//source={{uri: "https://foodlogstorage.s3.ap-northeast-2.amazonaws.com/88ac415a-34df-44fa-bc1d-3bd5736710d7.jpeg"}}
-								//style={styled.image}
-								//source={{uri: ""}}
 								resizeMode="cover"
-							/> */}
+							/>
 						</View>
 					</Box1>
 					<View style = {styles.Box2}>
