@@ -9,7 +9,6 @@ import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
-import PostScreen from "../screens/PostScreen"
 
 
 const Container = styled.View` 
@@ -102,9 +101,9 @@ function UploadScreen({date, onChangeDate, navigation}){
 	const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
 	//const [show, setShow] = useState(false)
-	//목적선택
 	const [text, setText] = useState("Empty")
 	const placeholder = "목적을 입력해주세요."
+	const [img, setImageSource ] = useState("")
 
 
 
@@ -232,12 +231,21 @@ function UploadScreen({date, onChangeDate, navigation}){
 					<Box1>
 						<View style={{flex:0, padding:1}}>
 							<Button title="이미지 업로드" color={"lightblue"} onPress={ShowPicker}></Button>
-							<Image style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							{img ?   // 이미지가 있으면 라이브러리에서 받아온 이미지로 출력, 없으면 디폴트 이미지 출력!
+								<TouchableOpacity style={styles.imgWrapper} onPress={()=>pickImg()}>
+									<Image source={{uri: img}} style={styles.imgStyle}/>
+								</TouchableOpacity>  
+								:
+								<TouchableOpacity style={styles.imgWrapper} onPress={()=>pickImg()}>
+									<Image source={defaultImg} style={styles.imgStyle}/>
+								</TouchableOpacity>
+							}
+							{/* <Image style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
 								//source={{uri: "https://foodlogstorage.s3.ap-northeast-2.amazonaws.com/88ac415a-34df-44fa-bc1d-3bd5736710d7.jpeg"}}
 								//style={styled.image}
 								//source={{uri: ""}}
 								resizeMode="cover"
-							/>
+							/> */}
 						</View>
 					</Box1>
 					<View style = {styles.Box2}>
