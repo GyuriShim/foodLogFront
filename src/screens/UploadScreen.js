@@ -93,17 +93,18 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 })
-function UploadScreen({date, onChangeDate, navigation}){
+function UploadScreen({date, onChangeDate, navigation }){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
 	//const [date, setDate] = useState(log ? new Date(log.date) : new Date())
 	const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
-	//const [show, setShow] = useState(false)
+	const [show, setShow] = useState(false)
 	const [text, setText] = useState("Empty")
 	const placeholder = "목적을 입력해주세요."
-	const [img, setImageSource ] = useState("")
+	const [response, setResponse] = useState(null)
+	
 
 
 
@@ -133,7 +134,7 @@ function UploadScreen({date, onChangeDate, navigation}){
 		return (
 			<View style={styles.customRatingBarStyle}>
 				{
-					maxRating.map((item, key)=>{
+					maxRating.map((item)=>{
 						return (
 							<TouchableOpacity
 								activeOpacity={0.7}
@@ -155,10 +156,23 @@ function UploadScreen({date, onChangeDate, navigation}){
 			</View>
 		)
 	}
-	const ShowPicker = async() => {
+	
+	const selectImage = async() => {
+		launchImageLibrary(
+			{
+				mediaType: "photo",
+				includeBase64: Platform.OS === "android",
+			},
+			(res) =>{
+				setResponse(res)
+			}
+		)
+	}
+
+	/* 	const ShowPicker = async() => {
 
 		//console.log(formdata)
-		const image = {
+		const img = {
 			uri: "",
 			type: "",
 			name: "",
@@ -173,27 +187,27 @@ function UploadScreen({date, onChangeDate, navigation}){
 			}
 			else if(res.assets){ //정상적으로 사진을 반환 받았을 때
 				console.log("ImagePicker res", res)
-				image.name = res.assets[0].fileName
-				image.type = res.assets[0].type
-				image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
+				img.name = res.assets[0].fileName
+				img.type = res.assets[0].type
+				img.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
 			}
 		})
 		const formdata = new FormData()
-		formdata.append("multipartFile", image)
+		formdata.append("multipartFile", img)
 		//launchImageLibrary : 사용자 앨범 접근
 		//alert(res.assets[0].uri)
 		
 		const headers = {
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
 		}
-		console.log(image)
+		console.log(img)
 		console.log(formdata)
 	
 		axios.post("https://localhost:8080/post", formdata, {headers: headers})
 			.then(response => {
 				if(response){
         
-					console.log(/* res.data */response.data)
+					console.log(/* res.data response.data)
 				}
 			})
 			.catch((error)=> {
@@ -212,16 +226,7 @@ function UploadScreen({date, onChangeDate, navigation}){
 				// Something happened in setting up the request that triggered an Error
 					console.log("Error", error.message)
 				}
-			})
-
-		/* const PickerScreen = ()  => {
-				;
-				
-				const onChangeText = (value) => {
-					console.warn(value)
-					setText(value);
-				}  */
-	}
+			})*/
 
 	return (
 		//<SafeAreaView>
@@ -230,16 +235,20 @@ function UploadScreen({date, onChangeDate, navigation}){
 				<ScrollView>
 					<Box1>
 						<View style={{flex:0, padding:1}}>
-							<Button title="이미지 업로드" color={"lightblue"} onPress={ShowPicker}></Button>
-							{img ?   // 이미지가 있으면 라이브러리에서 받아온 이미지로 출력, 없으면 디폴트 이미지 출력!
+							<Button title="이미지 업로드" color={"lightblue"} onPress={selectImage}></Button>
+							<Image 
+								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+								source={{uri: response?.assets[0]?.uri}}
+							/>
+							{/* {image ?   // 이미지가 있으면 라이브러리에서 받아온 이미지로 출력, 없으면 디폴트 이미지 출력!
 								<TouchableOpacity style={styles.imgWrapper} onPress={()=>pickImg()}>
-									<Image source={{uri: img}} style={styles.imgStyle}/>
+									<Image source={{uri: image}} style={styles.imgStyle}/>
 								</TouchableOpacity>  
 								:
 								<TouchableOpacity style={styles.imgWrapper} onPress={()=>pickImg()}>
-									<Image source={defaultImg} style={styles.imgStyle}/>
+									<Image source={image} style={styles.imgStyle}/>
 								</TouchableOpacity>
-							}
+							} */}
 							{/* <Image style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
 								//source={{uri: "https://foodlogstorage.s3.ap-northeast-2.amazonaws.com/88ac415a-34df-44fa-bc1d-3bd5736710d7.jpeg"}}
 								//style={styled.image}
@@ -321,8 +330,5 @@ function UploadScreen({date, onChangeDate, navigation}){
 		//</SafeAreaView>
 	)
 }
-
-
-
 
 export default UploadScreen
