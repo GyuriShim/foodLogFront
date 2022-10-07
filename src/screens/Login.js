@@ -21,11 +21,14 @@ const Login = ({navigation}) => {
 		login(email)
 			.then((res) => {
 				if (res.status === 200) {
-					console.log(res.data.member)
-					setItemToAsync("AccessToken", res.data.accessToken)
-					setItemToAsync("Email", res.data.email)
-					setItemToAsync("Id", res.data.id)
-					if (res.data.member==false) {
+					console.log("login success", res.data)
+					const user = {
+						"accessToken" : res.data.accessToken,
+						"id" : res.data.id,
+						"email" : email,
+					}
+					setItemToAsync("user", JSON.stringify(user))
+					if (res.data.member == false) {
 						navigation.navigate("AddInfo")
 					} else {
 						dispatch(true)
