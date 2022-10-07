@@ -1,8 +1,9 @@
-import React from "react"
+import React, {useState} from "react"
 import { View, StyleSheet, Image, Text, ScrollView, Pressable } from "react-native"
 import styled from "styled-components"
 import MapView from "react-native-maps"
 import PropTypes from "prop-types"
+import { getItemFromAsync } from "../utils/StorageFun"
 
 const Container = styled.View`
 	align-items: center
@@ -14,6 +15,12 @@ const Container = styled.View`
 `
 
 const AccountScreen = ({navigation}) => {
+	const [url, setUrl] = useState()
+	const [follower, setFollower] = useState()
+	const [following, setFolloing] = useState()
+	const [userName, setUserName] = useState()
+	const [selfBio, setSelfBio] = useState()
+
 	return(
 		<>
 			<Container>
@@ -23,7 +30,9 @@ const AccountScreen = ({navigation}) => {
 					<View
 						style={{flexDirection: "row", justifyContent: "space-between",alignItems:"center", paddingBottom: 5}}
 					>
-						<Image style={styles.profile}/>
+						<Image 
+							style={styles.profile}
+							source={{uri: `${url}`}}/>
 						<View
 							style={{
 								width: "70%", 
@@ -35,23 +44,26 @@ const AccountScreen = ({navigation}) => {
 							}}
 						>
 							<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("follower")}>
-								<Text style={{alignSelf: "center"}}>123</Text>
+								<Text style={{alignSelf: "center"}}>{follower}</Text>
 								<Text style={{alignSelf: "center"}}>팔로워</Text>
 							</Pressable>
 							<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("following")}>
-								<Text style={{alignSelf: "center"}}>321</Text>
+								<Text style={{alignSelf: "center"}}>{following}</Text>
 								<Text style={{alignSelf: "center"}}>팔로잉</Text>
 							</Pressable>
 							<Pressable style={{justifyContent: "center"}}>
-								<Text>수정</Text>
+								{userName==="asdf"? 
+									<Text>수정</Text>:
+									<Text>구독</Text>
+								}
+								
 							</Pressable>
 						</View>
 					</View>
 					<View>
-						<Text>@adnsf</Text>
+						<Text>@{userName}</Text>
 						<ScrollView style ={{height: 40, marginBottom:10}}>
-							<Text>dsfefeff</Text>
-							<Text>fwfewg</Text>
+							<Text>{selfBio}</Text>
 						</ScrollView>
 						
 					</View>
