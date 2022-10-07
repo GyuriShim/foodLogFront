@@ -93,11 +93,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 })
-function UploadScreen({date, onChangeDate, navigation }){
+function UploadScreen({onChangeDate, navigation }){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
-	//const [date, setDate] = useState(log ? new Date(log.date) : new Date())
+	//const [date, setDate] = useState( log ? new Date(log.date) : new Date())
 	const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
 	const [show, setShow] = useState(false)
@@ -105,16 +105,13 @@ function UploadScreen({date, onChangeDate, navigation }){
 	const placeholder = "목적을 입력해주세요."
 	const [response, setResponse] = useState(null)
 	
-
-
-
 	const onPressDate = () => {
 		setMode("date")
 		setVisible(true)
 	}
 
 	const onConfirm = (selectedDate) => {
-		setVisible(false)
+		setVisible(true)
 		onChangeDate(selectedDate)
 		console.log(onChangeDate)
 	}
@@ -162,6 +159,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 			uri: "",
 			type: "",
 			name: "",
+			timestamp:"",
 		}
 		await launchImageLibrary(
 			{
@@ -177,33 +175,36 @@ function UploadScreen({date, onChangeDate, navigation }){
 					console.log("ImagePicker Error: ", res.errorCode)
 				}
 				else if(res.assets){ //정상적으로 사진을 반환 받았을 때
-					console.log("ImagePicker res", res)
+					
 					image.name = res.assets[0].fileName
 					image.type = res.assets[0].type
 					image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
+					image.timestamp = res.assets[0].timestamp
+					//console.log(image.timestamp)
 				}
+				
 			}
 		)
-		const formdata = new FormData()
-		formdata.append("multipartFile", image)
+		const formData = new FormData()
+		formData.append("multipartFile", image)
 		//alert(res.assets[0].uri)
 		const headers = {
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
 		}
 		console.log(image)
-		console.log(formdata)
+		console.log(formData)
 
-		axios.post("https://localhost:8080/post", formdata, {headers: headers})
+		axios.post("https://localhost:8080/post", formData, {headers: headers})
 			.then(response => {
 				if(response){
-        
-					console.log( response.data)
+					console.log("rrrr", response.data)
 				}
 			})
 			.catch((error)=> {
 				if (error.res) {
-				// The request was made and the server responded with a status code
-				// that falls out of the range of 2xx
+					console.log("errormessage", error)
+					// The request was made and the server responded with a status code
+					// that falls out of the range of 2xx
 					console.log(error.response.data)
 					console.log(error.response.status)
 					console.log(error.response.headers)
@@ -241,13 +242,13 @@ function UploadScreen({date, onChangeDate, navigation }){
 						<DateTimePickerModal
 							isVisible={visible}
 							testID="dateTimePicker"
-							value={date}
+							//value={date}
 							mode={mode}
 							onConfirm={onConfirm}
 							onCancel={onCancel}
 							is24Hour={true}
 							display= "default"
-							date={date}
+							//date={date}
 						/>
 					</View>
 					<Box3>
@@ -298,8 +299,12 @@ function UploadScreen({date, onChangeDate, navigation }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.navigate("PostScreen")}/>
-					)}
+						<form onSubmit= {selectImage} entype="multipart/form-data">
+							<input type="file"/>
+							<Button type="submit" title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.navigate("PostScreen")}/>
+						</form>)
+					}
+					
 				</View>
 			</Container> 
 		</KeyboardAwareScrollView>
