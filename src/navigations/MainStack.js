@@ -14,7 +14,6 @@ import AccountScreen from "../screens/AccountScreen"
 const Stack = createStackNavigator()
 const MainStack = () => {
 	return (
-		
 		<Stack.Navigator
 			screenOptions={{
 				cardStyle: {backgroundColor: "white"}
@@ -78,7 +77,6 @@ const MainStack = () => {
 			<Stack.Screen name="PostScreen" component={PostScreen}
 				options={{title: "게시물", headerBackTitle: "back"}}/>
 		</Stack.Navigator>
-		
 	)
 }
 export default MainStack
