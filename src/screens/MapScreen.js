@@ -3,12 +3,13 @@ import styled from "styled-components"
 import MapView from "react-native-maps"
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler"
 import { FontIcon } from "../assets/icons/Fontisto"
-import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Button, Alert} from "react-native"
+import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Alert} from "react-native"
 import Geolocation from "react-native-geolocation-service"
 import PropTypes from "prop-types"
 import { markers } from "../model/mapData"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
 import { TagSelect } from "react-native-tag-select"
+import Button from "../components/Button"
 
 const Container = styled.View`
 	background-color: white
@@ -58,6 +59,7 @@ const MapScreen = ({navigation}) => {
 	const ratingRef = useRef()
 	const purposeRef = useRef()
 	const categoryRef = useRef()
+	
 	const rating = [
 		{id : "all", label: "전체"},
 		{id : 3, label: "3.0"},
@@ -87,6 +89,7 @@ const MapScreen = ({navigation}) => {
 		{id : "CAFE", label: "카페"},
 		{id : "ECT", label: "기타"},
 	]
+
 
 	useEffect(() => {
 		let isComponentMounted = true
@@ -266,21 +269,34 @@ const MapScreen = ({navigation}) => {
 							itemLabelStyleSelected={styles.labelSelected}
 						/>
 					</View>
+					<View style={{flexDirection: "row", justifyContent: "space-evenly", marginTop: 10}}>
+						<Button
+							title="취소"
+							containerStyle={{width: "40%"}}
+							onPress={() => setFilterVisible(!filterVisible)}
+						/>
+						<Button
+							title="적용"
+							containerStyle={{width: "40%"}}
+							onPress={() => {
+								var rating = ratingRef.current.itemsSelected[0].id
+								if (ratingRef.current.itemsSelected[0].id === "all") {
+									rating = null
+								}
+								const purpose = purposeRef.current.itemsSelected
+								const purposeTest = purpose.map((value) => {return value.id})
+								const category = categoryRef.current.itemsSelected
+								const categoryTest = category.map((value) => {return value.id})
+								Alert.alert("Selected items:", JSON.stringify([rating, purposeTest, categoryTest]))
+							}}
+						/>
+						
+					</View>
+					
+					
 				</View>
-				<Button
-					title="Get selected"
-					onPress={() => {
-						var rating = ratingRef.current.itemsSelected[0]
-						if (ratingRef.current.itemsSelected[0].id === "all") {
-							rating = null
-						}
-						const purpose = purposeRef.current.itemsSelected
-						const purposeTest = purpose.map((value) => {return value.id})
-						const category = categoryRef.current.itemsSelected
-						const categoryTest = category.map((value) => {return value.id})
-						Alert.alert("Selected items:", JSON.stringify([rating.id, purposeTest, categoryTest]))
-					}}
-				/>
+					
+				
 				
 			</Modal>
 			
