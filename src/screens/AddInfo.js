@@ -26,6 +26,7 @@ const ErrorText = styled.Text`
     font-style: normal
     color: red
 `
+
 const AddInfo = ({navigation}) => {
 	const [username, setUsername] = useState("")
 	const [doubleCheck, setDoubleCheck] = useState(false)
@@ -36,38 +37,73 @@ const AddInfo = ({navigation}) => {
 	const [birthday, setBirthday] = useState("")
 	const [response, setResponse] = useState(null)
 	const [disabled, setDisabled] = useState(true)
-	const {dispatch} = useContext(UserContext)
-	const id = getItemFromAsync("Id")
-	const email = getItemFromAsync("Email")
+	const { dispatch } = useContext(UserContext)
+	
 	// eslint-disable-next-line no-undef
 	const formData = new FormData()
 
 	const selfBioRef = useRef()
 
+	const join = async(formData) => {
+		try {			
+			await fetch("http://10.0.2.2:8080/api/v1/join", {
+				method: "POST",
+				cache: "no-cache",
+				headers: {
+					"Content-Type": "multipart/form-data"
+				},
+				body: formData
+			}).then((response) => response.json()).then((data) => {
+				console.log(data)
+			})
+			// await axios.post("http://10.0.2.2:8080/api/v1/join", formData, {
+			// 	headers: {
+			// 		accept: "application/json",
+			// 		"Content-Type": "multipart/form-data",
+			// 	},
+			// 	transformRequest: formData => formData
+			// })
+			// 	.then((res) => {
+			// 		console.log("222222222", res)
+			// 		if (res.status === 200) {
+			// 			console.log(res.data)
+			// 		} else {
+			// 			console.log(res)
+			// 		}
+			// 	})
+			// 	.catch((error) => {
+			// 		console.log("addInfo error", error)
+			// 	})
+			// console.log("hello", response)
+
+		} catch (error) {
+			console.log("error", error)
+
+		}
+	}
+
 	const _handleJoinButtonPress = async () => {
 		try {
+			const userInfo = JSON.parse(await getItemFromAsync("user"))
+			console.log("userInfo", userInfo)
 			const data = {
-				email: email,
+				email: userInfo.email,
 				username: username,
 				birthday: birthday,
 				selfBio: selfBio,
 				gender: gender
 			}
 			formData.append(
-				"memberJoinDto",
-				// eslint-disable-next-line no-undef
-				new Blob([JSON.stringify(data)], { type: "application/json" })
+				"memberJoinDto", new Blob([JSON.stringify(data)], { type: "application/json" })
 			)
-			console.log(email)
 			console.log(data)
 			join(formData)
 		} catch (error) {
-			console.log(error)
-		} // Email이 값에 안담김
+			console.log("join button error", error)
+		}
 		
 	}
 
-	//403 에러남 
 	const _handleDoubleCheckPress = async () => {
 		try {
 			checkUsername(username)
@@ -106,7 +142,7 @@ const AddInfo = ({navigation}) => {
 					type: "",
 					name: res?.assets[0]?.fileName,
 				}
-				formData.append("profileImage", file)
+				// formData.append("profileImage", file)
 				// setResponse(profilePic)
 			}
 		)
@@ -203,7 +239,7 @@ const AddInfo = ({navigation}) => {
 					value={birthday}
 					onChangeText={text => setBirthday(removeWhitespace(text))}
 					onSubmitEditing={() => {
-						setBirthday(moment(new Date(birthday.trim())).format("YYYY-MM-DD"))
+						setBirthday(moment(birthday, "YYYYMMDD").format("YYYY-MM-DD"))
 					}}
 					placeholder="생년월일 8자리를 입력해주세요."
 					maxLength={10}
