@@ -18,7 +18,7 @@ const RcmdHeader = () => {
 					selectedValue={selectedValue}
 					style={{height: 50, width: width-30, borderWidth: 0}}
 					onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-					
+					mode={"dropdown"}
 				>
 					<Picker.Item label="전체" value="null" fontFamily="SF-Pro-Text-Semibold"/>
 					<Picker.Item label="혼밥하기 좋은 곳" value="SOLO" fontFamily="SF-Pro-Text-Semibold"/>
@@ -26,7 +26,7 @@ const RcmdHeader = () => {
 					<Picker.Item label="친구랑 가기 좋은 곳" value="FRIEND" fontFamily="SF-Pro-Text-Semibold"/>
 					<Picker.Item label="가족이랑 가기 좋은 곳" value="FAMILY" fontFamily="SF-Pro-Text-Semibold"/>
 					<Picker.Item label="회식하기 좋은 곳" value="MEETING" fontFamily="SF-Pro-Text-Semibold"/>
-					
+					<Picker.Item label="기타" value="ETC" fontFamily="SF-Pro-Text-Semibold"/>
 				</Picker>
 			</View>
 		</>
