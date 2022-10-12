@@ -74,7 +74,7 @@ const MapScreen = ({navigation}) => {
 		{id : "FRIEND", label: "친구"},
 		{id : "FAMILY", label: "가족"},
 		{id : "MEETING", label: "회식"},
-		{id : "ECT", label: "기타"},
+		{id : "ETC", label: "기타"},
 	]
 
 	const category = [
