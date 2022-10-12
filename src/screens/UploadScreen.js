@@ -10,8 +10,8 @@ import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
 import ImagePicker from "react-native-image-picker"
-import Exif from "react-native-exif"
-
+//import Exif from "react-native-exif"
+import { createPostApi } from "../service/post"
 
 const Container = styled.View` 
   flex: 1
@@ -101,7 +101,7 @@ function UploadScreen({onChangeDate, navigation }){
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
 	const [date, setDate] = useState("")
-	const [mode, setMode] = useState("date")
+	//const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
 	const [show, setShow] = useState(false)
 	const [text, setText] = useState("Empty")
@@ -109,7 +109,28 @@ function UploadScreen({onChangeDate, navigation }){
 	const [response, setResponse] = useState(null)
 	const [image, setImage] = useState("")
 	
-	const onPressDate = () => {
+	const [review, setReview] = useState()
+	const [rating, setRating] = useState()
+	const [purpose, setPurpose] = useState()
+
+	const formdata = new FormData() //지원
+	const formData = new FormData()
+
+	const showDatePicker = () => {
+		setVisible(!visible)
+	}
+	const hideDatePicker = () => {
+		setVisible(!visible)
+	}
+	const handleConfirm = (date) => {
+		console.log(date)
+		var splitDate = date.toISOString().split("T")
+		console.log(splitDate)
+		setDate(splitDate[0])
+		hideDatePicker()
+	}
+
+	/* const onPressDate = () => {
 		setMode("date")
 		setVisible(true)
 
@@ -123,15 +144,105 @@ function UploadScreen({onChangeDate, navigation }){
 
 	const onCancel = () => {
 		setVisible(false)
-	}
+	} 
 
 	const showMode = (currentMode) => {
 		setShow(true)
 		setMode(currentMode)
-	} 
+	} */
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
+	const createPost = async (review, rating, purpose) => {
+		const newPost = {
+			memberId: 40,
+			review: "hellooooo",
+			rating: 4,
+			purpose: "FRIEND",
+			date: "2020-10-10",
+			place: {
+				kakaoId : "1110210115",
+				name : "빨강파이프",
+				address: "경기 용인시 수지구 죽전로144번길 7-5",
+				category: "분식",
+				longitude: "127.124165839734",
+				latitude: "37.3235861851341"
+			},
+			
+		}
+
+		const imageFile = {
+			name: "rn_image_picker_lib_temp_9b40ac5b-b785-4289-8a4a-2fd53aca9b52.jpg", 
+			type: "image/jpeg", 
+			uri: "file:///data/user/0/com.foodlog/cache/rn_image_picker_lib_temp_9b40ac5b-b785-4289-8a4a-2fd53aca9b52.jpg"
+		}
+		
+		
+		formData.append("post", new Blob([JSON.stringify(newPost)], {type: "application/json"}))
+		//formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
+		// formData.append("file", imageFile)
+				
+		const headers = {
+			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
+			"access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MkBnbWFpbC5jb20iLCJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjoxMSwiaWF0IjoxNjY1NTU0ODI0LCJleHAiOjE2NjU1NjU2MjR9.4W2xLDHE41H0J_7y1VLG6Pm04NHqplAOwPveOadtohBSNGXVKods2wH6ownGPiXA5XIVxvo9YwsaY2zsfk_hUg"
+		}
+
+		console.log(formData)
+
+		await axios.post("http://10.0.2.2:8080/api/v1/post",formData, {headers})
+			.then(response => {
+				if(response){
+					console.log(response)
+					console.log("create post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			})
+			
+		/*
+			await axios.post("http://food-log-dku.com:8080/api/v1/post", formData, {
+				headers: {
+				  'Content-Type': 'multipart/form-data',
+				  'ACCESS-TOKEN': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTQ2Njg4MiwiZXhwIjoxNjY1NDc3NjgyfQ.q6AHcVmnCioQvJU99NUM8aBkzl9oMBosXZ4EwnmPePHEGw1XyF7uuIC_MlrNgAaWA-GL6B02imd4TX115JyNZg'
+				},
+				transformRequest: (data, headers) => {
+				  return data;
+				},
+			  }).then(response => {
+				if(response){
+					console.log(response)
+					console.log("create post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			});*/
+
+
+			
+
+			
+		
+	}
 	const CustomRatingBar = () => {
 		return (
 			<View style={styles.customRatingBarStyle}>
@@ -141,7 +252,10 @@ function UploadScreen({onChangeDate, navigation }){
 							<TouchableOpacity
 								activeOpacity={0.7}
 								key= {item}
-								onPress = {()=>setdefaultRating(item)}
+								onPress = {()=>{setdefaultRating(item),
+								setRating(item)
+								console.log(rating)
+								}}
 							>
 								<Image
 									style={styles.starImgStyle} 
@@ -192,14 +306,19 @@ function UploadScreen({onChangeDate, navigation }){
 				includeBase64: Platform.OS === "android",
 				includeExtra: true,
 			},
-			(response) => {
-				setResponse(response)
-				var originDate = response.assets[0].timestamp.split("T")
-				setDate(originDate[0])
+			(res) => {
+				if(res.didCancel){
+					return
+				}
+				setResponse(res)
+				if(res?.assets[0]?.timestamp !== null){
+					var originDate = res?.assets[0]?.timestamp.split("T")
+					setDate(originDate[0])
+				}
 				
-				console.log("response: ", response.assets[0].timestamp)
-				console.log("response latitude: ", response.latitude)
-				console.log("response longitude: ", response.longitude)
+				
+				//console.log("response latitude: ", response.latitude)
+				//console.log("response longitude: ", response.longitude)
 			}
 			/* (res) =>{
 				setResponse(res)
@@ -246,6 +365,31 @@ function UploadScreen({onChangeDate, navigation }){
 				console.log(error.response.status)
 				console.log(error.response.headers)
 			} else if (error.request) {
+			},
+			formdata.append("file", image)
+		)
+		
+		
+		//alert(res.assets[0].uri)
+		console.log("image:", image)
+		console.log("formData:", formData)
+
+		/*
+		axios.post("https://localhost:8080/post", formdata, {headers: headers})
+			.then(response => {
+				if(response){
+					console.log( response.data)
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("errormessage", error)
+					// The request was made and the server responded with a status code
+					// that falls out of the range of 2xx
+					console.log(error.response.data)
+					console.log(error.response.status)
+					console.log(error.response.headers)
+				} else if (error.request) {
 				// The request was made but no response was received
 				// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
 				// http.ClientRequest in node.js
@@ -264,30 +408,30 @@ function UploadScreen({onChangeDate, navigation }){
 					<Box1>
 						<View style={{flex:0, padding:1}}>
 							<Button title="이미지 업로드" color={"lightblue"} onPress={selectImage}></Button>
-							<ImageBackground
+							<Image
 								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-								source={{uri: response?.assets[0]?.uri}}// }}
+								source={{uri: response?.assets[0]?.uri}}
 								resizeMode="cover"
 							/>
 						</View>
 					</Box1>
 					<View style = {styles.Box2}>
-						{response ? 
-							<Text style={{flex: 1}}>{date}</Text>:
-							<Text style={{flex: 1}}>{"날짜"}</Text>}
+						{date ? 
+							<Text style={{flex: 1}}>{date}</Text> :
+							<Text style={{flex: 1}}>날짜</Text>}
 						
 						<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-							<Button title="등록" onPress={onPressDate}/>
+							<Button title="등록" onPress={showDatePicker}/>
 						</TouchableOpacity>
 						<DateTimePickerModal
 							isVisible={visible}
 							testID="dateTimePicker"
-							//value={date}
-							mode={mode}
-							onConfirm={onConfirm}
-							onCancel={onCancel}
+							value={date}
+							mode={"date"}
+							onConfirm={handleConfirm}
+							onCancel={hideDatePicker}
 							is24Hour={true}
-							display= "default"
+							//display= "default"
 							//date={date}
 						/>
 					</View>
@@ -297,10 +441,13 @@ function UploadScreen({onChangeDate, navigation }){
 							multiline = {true}
 							placeholder = "상호명"
 							textAlignVertical="center"
-						/>
+						>
+
+						</TextInput>
 					</Box3>
 					<Box4>
-						<CustomRatingBar/>
+						<CustomRatingBar
+						/>
 					</Box4>
 					<Box5>
 						<TextInput
@@ -308,7 +455,10 @@ function UploadScreen({onChangeDate, navigation }){
 							multiline = {true}
 							placeholder = "내용을 입력하세요"
 							textAlignVertical="center"
+							value={review}
+							onChangeText={ text => setReview(text)}
 						/>
+						
 					</Box5>
 					<Box6>
 						<View>
@@ -320,30 +470,27 @@ function UploadScreen({onChangeDate, navigation }){
 								}}
 								fixAndroidTouchableBug={true}//안드로이드에서 클릭을 여러번해야 picker가 나오는 경우가 있어 추가를 하였습니다. true로 설정하면 이런 에러가 사라집니다.
 								value={text}
-								onValueChange={(value) => console.log(value)}
+								onValueChange={(value) => {console.log(value), setPurpose(value)}}
 								useNativeAndroidPickerStyle={false}
 								items={[
-									{ label: "친구", value: "" },
-									{ label: "혼밥", value: "" },
-									{ label: "가족", value: "" },
-									{ label: "회식", value: "" },
-									{ label: "데이트", value: "" },
-									{ label: "기타", value: "" },
+									{ label: "친구", value: "FRIEND" },
+									{ label: "혼밥", value: "SOLO" },
+									{ label: "가족", value: "FAMILY" },
+									{ label: "회식", value: "MEETING" },
+									{ label: "데이트", value: "COUPLE" },
+									{ label: "기타", value: "ETC" },
 								]}
 							/> 
 						</View>
 					</Box6>
 				</ScrollView>
 				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.goBack()} />
+					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null)}} />
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.navigate("PostScreen")}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose),navigation.navigate("PostScreen")}}/>
 					)}
-					{/* <form onSubmit= {selectImage} entype="multipart/form-data">
-							<input type="file"/>
-						</form>*/}
 				</View>
 			</Container> 
 		</KeyboardAwareScrollView>
