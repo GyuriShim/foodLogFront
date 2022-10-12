@@ -8,6 +8,7 @@ import styled from "styled-components"
 import Button from "../components/Button"
 import { format, formatDistanceToNow } from "date-fns"
 import {ko} from "date-fns/locale"
+import { getPost } from "../service/post"
 
 const Box1 = styled.View`
   flex: 1
@@ -85,27 +86,11 @@ function PostScreen(date){
 			setError(null)
 			// loading 상태를 true 로 바꿉니다.
 			setLoading(true)
-			const response = await axios.get("http://food-log-dku.com:8080/api/v1/post/37", {
-				headers: {
-					"ACCESS-TOKEN" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MkBnbWFpbC5jb20iLCJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjoxMSwiaWF0IjoxNjY1Mzc4MTEzLCJleHAiOjE2NjUzODg5MTN9.Jsjr8GXurCMk6Y3MfIKJC9uMGRNnubWNgmnm7Fw8iZkwdhJeQFFB8zHJ7hObedQuI6FRPP9oRgZb1qFGhoOKfQ"
-				}
-			})
+			const response = await getPost(37)
 			setPost(response.data)
 			setPlace(response.data.place)
 			setComment(response.data.comment)
 			setPictures(response.data.pictures)
-			// .then((res) => {
-			// 	if (res.status === 200) {
-			// 		setPost(res.data)
-			// 		console.log("hihihihi",res.data.member)
-			// 	} else {
-			// 		console.log(res)
-			// 	}
-			// })
-			// .catch((error) => {
-			// 	console.log("get Post error", error)
-			// })
-
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
