@@ -9,7 +9,7 @@ import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
-
+import { createPostApi } from "../service/post"
 
 const Container = styled.View` 
   flex: 1
@@ -93,11 +93,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 })
-function UploadScreen({date, onChangeDate, navigation }){
+function UploadScreen({onChangeDate, navigation }){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
-	//const [date, setDate] = useState(log ? new Date(log.date) : new Date())
+	//const [date, setDate] = useState( log ? new Date(log.date) : new Date())
 	const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
 	const [show, setShow] = useState(false)
@@ -105,8 +105,12 @@ function UploadScreen({date, onChangeDate, navigation }){
 	const placeholder = "목적을 입력해주세요."
 	const [response, setResponse] = useState(null)
 	
+	const [review, setReview] = useState()
+	const [rating, setRating] = useState()
+	const [purpose, setPurpose] = useState()
 
-
+	const formdata = new FormData() //지원
+	const formData = new FormData()
 
 	const onPressDate = () => {
 		setMode("date")
@@ -114,7 +118,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 	}
 
 	const onConfirm = (selectedDate) => {
-		setVisible(false)
+		setVisible(true)
 		onChangeDate(selectedDate)
 		console.log(onChangeDate)
 	}
@@ -130,6 +134,95 @@ function UploadScreen({date, onChangeDate, navigation }){
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
+	const createPost = async (review, rating, purpose) => {
+		const newPost = {
+			memberId: 40,
+			review: review,
+			rating: rating,
+			purpose: purpose,
+			date: "2020-10-10",
+			place: {
+				kakaoId : "1110210115",
+				name : "빨강파이프",
+				address : "경기 용인시 수지구 죽전로144번길 7-5",
+			},
+			category: "분식",
+			longitude: "127.124165839734",
+			latitude: "37.3235861851341"
+		}
+
+		const imageFile = {
+			name: "rn_image_picker_lib_temp_9b40ac5b-b785-4289-8a4a-2fd53aca9b52.jpg", 
+			type: "image/jpeg", 
+			uri: "file:///data/user/0/com.foodlog/cache/rn_image_picker_lib_temp_9b40ac5b-b785-4289-8a4a-2fd53aca9b52.jpg"
+		}
+		
+		
+		formData.append('post', new Blob([JSON.stringify(newPost)], {type: "application/json"}))
+		//formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
+		formData.append('file', imageFile)
+				
+		const headers = {
+			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
+			"access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTQ3MDEwMiwiZXhwIjoxNjY1NDgwOTAyfQ.CFcAEjPsmRCqvfB3X4TbdQDuxqGx5Y9-fvQ6n1RCzD0aLChfkwCvlESDa_LtaipZDBPCCx61Mp5ZyVWZ6TlDdQ"
+		}
+
+		console.log(formData)
+
+		await axios.post("http://food-log-dku.com:8080/api/v1/post",formData, {headers})
+			.then(response => {
+				if(response){
+					console.log(response)
+					console.log("create post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			})
+			
+			/*
+			await axios.post("http://food-log-dku.com:8080/api/v1/post", formData, {
+				headers: {
+				  'Content-Type': 'multipart/form-data',
+				  'ACCESS-TOKEN': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTQ2Njg4MiwiZXhwIjoxNjY1NDc3NjgyfQ.q6AHcVmnCioQvJU99NUM8aBkzl9oMBosXZ4EwnmPePHEGw1XyF7uuIC_MlrNgAaWA-GL6B02imd4TX115JyNZg'
+				},
+				transformRequest: (data, headers) => {
+				  return data;
+				},
+			  }).then(response => {
+				if(response){
+					console.log(response)
+					console.log("create post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			});*/
+
+
+			
+
+			
+		
+	}
 	const CustomRatingBar = () => {
 		return (
 			<View style={styles.customRatingBarStyle}>
@@ -139,7 +232,10 @@ function UploadScreen({date, onChangeDate, navigation }){
 							<TouchableOpacity
 								activeOpacity={0.7}
 								key= {item}
-								onPress = {()=>setdefaultRating(item)}
+								onPress = {()=>{setdefaultRating(item),
+									setRating(item)
+									console.log(rating)
+								}}
 							>
 								<Image
 									style={styles.starImgStyle} 
@@ -162,6 +258,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 			uri: "",
 			type: "",
 			name: "",
+			timestamp:"",
 		}
 		await launchImageLibrary(
 			{
@@ -177,33 +274,37 @@ function UploadScreen({date, onChangeDate, navigation }){
 					console.log("ImagePicker Error: ", res.errorCode)
 				}
 				else if(res.assets){ //정상적으로 사진을 반환 받았을 때
-					console.log("ImagePicker res", res)
+					
 					image.name = res.assets[0].fileName
 					image.type = res.assets[0].type
 					image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
+					image.timestamp = res.assets[0].timestamp
+					//console.log(image.timestamp)
 				}
+				
 			}
 		)
-		const formdata = new FormData()
+		
 		formdata.append("multipartFile", image)
 		//alert(res.assets[0].uri)
 		const headers = {
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
 		}
 		console.log(image)
-		console.log(formdata)
+		console.log(formData)
 
+		/*
 		axios.post("https://localhost:8080/post", formdata, {headers: headers})
 			.then(response => {
 				if(response){
-        
 					console.log( response.data)
 				}
 			})
 			.catch((error)=> {
 				if (error.res) {
-				// The request was made and the server responded with a status code
-				// that falls out of the range of 2xx
+					console.log("errormessage", error)
+					// The request was made and the server responded with a status code
+					// that falls out of the range of 2xx
 					console.log(error.response.data)
 					console.log(error.response.status)
 					console.log(error.response.headers)
@@ -216,7 +317,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 				// Something happened in setting up the request that triggered an Error
 					console.log("Error", error.message)
 				}
-			})
+			})*/
 	}
 	return (
 		//<SafeAreaView>
@@ -241,13 +342,13 @@ function UploadScreen({date, onChangeDate, navigation }){
 						<DateTimePickerModal
 							isVisible={visible}
 							testID="dateTimePicker"
-							value={date}
+							//value={date}
 							mode={mode}
 							onConfirm={onConfirm}
 							onCancel={onCancel}
 							is24Hour={true}
 							display= "default"
-							date={date}
+							//date={date}
 						/>
 					</View>
 					<Box3>
@@ -256,10 +357,13 @@ function UploadScreen({date, onChangeDate, navigation }){
 							multiline = {true}
 							placeholder = "상호명"
 							textAlignVertical="center"
-						/>
+						>
+
+						</TextInput>
 					</Box3>
 					<Box4>
-						<CustomRatingBar/>
+						<CustomRatingBar
+							/>
 					</Box4>
 					<Box5>
 						<TextInput
@@ -267,7 +371,10 @@ function UploadScreen({date, onChangeDate, navigation }){
 							multiline = {true}
 							placeholder = "내용을 입력하세요"
 							textAlignVertical="center"
+							value={review}
+							onChangeText={ text => setReview(text)}
 						/>
+						
 					</Box5>
 					<Box6>
 						<View>
@@ -279,15 +386,15 @@ function UploadScreen({date, onChangeDate, navigation }){
 								}}
 								fixAndroidTouchableBug={true}//안드로이드에서 클릭을 여러번해야 picker가 나오는 경우가 있어 추가를 하였습니다. true로 설정하면 이런 에러가 사라집니다.
 								value={text}
-								onValueChange={(value) => console.log(value)}
+								onValueChange={(value) => {console.log(value), setPurpose(value)}}
 								useNativeAndroidPickerStyle={false}
 								items={[
-									{ label: "친구", value: "" },
-									{ label: "혼밥", value: "" },
-									{ label: "가족", value: "" },
-									{ label: "회식", value: "" },
-									{ label: "데이트", value: "" },
-									{ label: "기타", value: "" },
+									{ label: "친구", value: "FRIEND" },
+									{ label: "혼밥", value: "SOLO" },
+									{ label: "가족", value: "FAMILY" },
+									{ label: "회식", value: "MEETING" },
+									{ label: "데이트", value: "COUPLE" },
+									{ label: "기타", value: "ETC" },
 								]}
 							/> 
 						</View>
@@ -298,7 +405,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.navigate("PostScreen")}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose),navigation.navigate("PostScreen")}}/>
 					)}
 				</View>
 			</Container> 
