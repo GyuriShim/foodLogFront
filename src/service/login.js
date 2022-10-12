@@ -1,12 +1,12 @@
 import axios from "axios"
-import instance from "./request"
+// import instance from "./request"
 
 // 로그인
 export const login = async(email) => {
-	data = {
+	const data = {
 		email: email
 	}
-	headers = {
+	const headers = {
 		"content-type": "application/json"
 	}
 	const response = await axios.post("http://food-log-dku.com:8080/api/v1/login", data, {headers})
@@ -15,7 +15,7 @@ export const login = async(email) => {
 
 // 회원가입
 export const join = async(formData) => {
-	headers = {
+	const headers = {
 		"Content-Type" : "multipart/form-data"
 	}
 	const response = await axios.post("http://food-log-dku.com:8080/api/v1/join", formData, {headers})
@@ -25,7 +25,7 @@ export const join = async(formData) => {
 
 // username 중복확인
 export const checkUsername = async(username) => {
-	headers = {
+	const headers = {
 		"Content-Type" : "text/plain"
 	}
 	const response = await axios.post("http://food-log-dku.com:8080/api/v1/member/username", username, {headers})
