@@ -14,8 +14,12 @@ export function login(email) {
 // 회원가입
 export function join(formData) {
 	return instance({
-		url: "/v1/join", formData,
+		url: "/v1/join",
 		method: "post",
+		formData,
+		headers: {
+			"Content-Type" : "multipart/form-data"
+		}
 	})
 }
 

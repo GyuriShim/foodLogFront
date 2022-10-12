@@ -9,7 +9,6 @@ import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
-import PostScreen from "../screens/PostScreen"
 
 
 const Container = styled.View` 
@@ -23,15 +22,7 @@ const Box1 = styled.View`
   border: 2px rgba(190, 235, 255, 0.4)
   align-items: center
 `
-const Box2 = styled.View`
-  flex: 1
-  border-radius: 7px
-  padding: 8px
-  margin: 3px 10px
-  background-color: white
-  border: 2px rgba(164, 212, 234, 0.8)
 
-`
 const Box3 = styled.View`
   flex: 1
   border-radius: 7px
@@ -89,19 +80,31 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: "black"
 	},
+	Box2:{
+		flex:1,
+		margin: 10,
+		borderRadius: 7,
+		borderWidth: 2,
+		backgroundcolor: "white",
+		borderColor: "#a4d3ea",
+		flexDirection: "row",
+		backgroundColor: "white",
+		alignContent: "center",
+		alignItems: "center",
+	},
 })
-function UploadScreen({date, onChangeDate, navigation}){
+function UploadScreen({date, onChangeDate, navigation }){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
 	//const [date, setDate] = useState(log ? new Date(log.date) : new Date())
 	const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
-	//const [show, setShow] = useState(false)
-	
-	//목적선택
+	const [show, setShow] = useState(false)
 	const [text, setText] = useState("Empty")
 	const placeholder = "목적을 입력해주세요."
+	const [response, setResponse] = useState(null)
+	
 
 
 
@@ -131,7 +134,7 @@ function UploadScreen({date, onChangeDate, navigation}){
 		return (
 			<View style={styles.customRatingBarStyle}>
 				{
-					maxRating.map((item, key)=>{
+					maxRating.map((item)=>{
 						return (
 							<TouchableOpacity
 								activeOpacity={0.7}
@@ -153,45 +156,48 @@ function UploadScreen({date, onChangeDate, navigation}){
 			</View>
 		)
 	}
-	const ShowPicker = async() => {
-
-		//console.log(formdata)
+	
+	const selectImage = async() => {
 		const image = {
 			uri: "",
 			type: "",
 			name: "",
 		}
-	
-		await launchImageLibrary({}, (res) => {
-			if(res.didCancel){
-				console.log("User cancelled image picker")
+		await launchImageLibrary(
+			{
+				mediaType: "photo",
+				includeBase64: Platform.OS === "android",
+			},
+			(res) =>{
+				setResponse(res)
+				if(res.didCancel){
+					console.log("User cancelled image picker")
+				}
+				else if(res.errorCode){
+					console.log("ImagePicker Error: ", res.errorCode)
+				}
+				else if(res.assets){ //정상적으로 사진을 반환 받았을 때
+					console.log("ImagePicker res", res)
+					image.name = res.assets[0].fileName
+					image.type = res.assets[0].type
+					image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
+				}
 			}
-			else if(res.errorCode){
-				console.log("ImagePicker Error: ", res.errorCode)
-			}
-			else if(res.assets){ //정상적으로 사진을 반환 받았을 때
-				console.log("ImagePicker res", res)
-				image.name = res.assets[0].fileName
-				image.type = res.assets[0].type
-				image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
-			}
-		})
+		)
 		const formdata = new FormData()
 		formdata.append("multipartFile", image)
-		//launchImageLibrary : 사용자 앨범 접근
 		//alert(res.assets[0].uri)
-		
 		const headers = {
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
 		}
 		console.log(image)
 		console.log(formdata)
-	
+
 		axios.post("https://localhost:8080/post", formdata, {headers: headers})
 			.then(response => {
 				if(response){
         
-					console.log(/* res.data */response.data)
+					console.log( response.data)
 				}
 			})
 			.catch((error)=> {
@@ -211,16 +217,7 @@ function UploadScreen({date, onChangeDate, navigation}){
 					console.log("Error", error.message)
 				}
 			})
-
-		/* const PickerScreen = ()  => {
-				;
-				
-				const onChangeText = (value) => {
-					console.warn(value)
-					setText(value);
-				}  */
 	}
-
 	return (
 		//<SafeAreaView>
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1}}>
@@ -228,28 +225,19 @@ function UploadScreen({date, onChangeDate, navigation}){
 				<ScrollView>
 					<Box1>
 						<View style={{flex:0, padding:1}}>
-							<Button title="이미지 업로드" color={"lightblue"} onPress={ShowPicker}></Button>
-							<Image style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-								source={{uri: "https://foodlogstorage.s3.ap-northeast-2.amazonaws.com/88ac415a-34df-44fa-bc1d-3bd5736710d7.jpeg"}}
-								//style={styled.image}
+							<Button title="이미지 업로드" color={"lightblue"} onPress={selectImage}></Button>
+							<Image 
+								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+								source={{uri: response?.assets[0]?.uri}}
 								resizeMode="cover"
 							/>
 						</View>
 					</Box1>
-					<Box2>
-						<Text>{date}</Text>
-						{/* <TextInput style={styles.smallInput}>
-						<Text>{date} </Text>
-					</TextInput> */}
-						<View style={{alignSelf: "flex-end", justifyContent: "center"}}>
-							<Button style={{justifyContent: "center"}} title="수정" onPress={onPressDate}/>
-						</View>
-						{/* <TextInput
-							style = {styled.input}
-							multiline = {true}
-							placeholder = "날짜 입력받기"
-							textAlignVertical="center"
-						/> */}
+					<View style = {styles.Box2}>
+						<Text style={{flex: 1}}>{"날짜"}</Text>
+						<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
+							<Button title="등록" onPress={onPressDate}/>
+						</TouchableOpacity>
 						<DateTimePickerModal
 							isVisible={visible}
 							testID="dateTimePicker"
@@ -261,7 +249,7 @@ function UploadScreen({date, onChangeDate, navigation}){
 							display= "default"
 							date={date}
 						/>
-					</Box2>
+					</View>
 					<Box3>
 						<TextInput
 							style = {styled.input}
@@ -318,8 +306,5 @@ function UploadScreen({date, onChangeDate, navigation}){
 		//</SafeAreaView>
 	)
 }
-
-
-
 
 export default UploadScreen
