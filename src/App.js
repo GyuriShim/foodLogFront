@@ -4,6 +4,8 @@ import {StatusBar} from "react-native"
 import Navigation from "./navigations"
 import { UserProvider } from "./contexts/User"
 import { ProgressProvider } from "./contexts/Progress"
+import { SubSearchContextProvider } from "./contexts/SubSearchContext"
+import { SearchContextProvider } from "./contexts/SearchContext"
 
 
 const App = () => {
@@ -19,10 +21,14 @@ const App = () => {
 
 	return (ready? <Loading /> :(
 		<UserProvider>
-			<ProgressProvider>
-				<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
-				<Navigation />
-			</ProgressProvider>
+			<SubSearchContextProvider>
+				<SearchContextProvider>
+					<ProgressProvider>
+						<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
+						<Navigation />
+					</ProgressProvider>
+				</SearchContextProvider>
+			</SubSearchContextProvider>
 		</UserProvider>
 	)
 	)

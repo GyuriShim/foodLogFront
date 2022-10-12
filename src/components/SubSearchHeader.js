@@ -10,11 +10,11 @@ import {
 	StatusBar
 } from "react-native"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
-import SearchContext from "../contexts/SearchContext"
+import SubSearchContext from "../contexts/SubSearchContext"
 
 const SubSearchHeader = () => {
 	const {width} = useWindowDimensions()
-	const {keyword, onChangeText} = useContext(SearchContext)
+	const {userKeyword, onChangeSearchText} = useContext(SubSearchContext)
 
 	return (
 		<>
@@ -24,12 +24,12 @@ const SubSearchHeader = () => {
 						returnKeyType="search"
 						style={styles.input} 
 						placeholder = "사용자 검색"
-						value={keyword}
-						onChangeText={onChangeText} 
+						value={userKeyword}
+						onChangeText={onChangeSearchText} 
 						autoFocus/>
 					<Pressable
 						style={({pressed}) => [styles.button, pressed && {opacity: 0.5}]}
-						onPress={() => onChangeText("")}
+						onPress={() => onChangeSearchText("")}
 					>
 						<OcticonsIcon name="x" size={25} color="black"/>
 					</Pressable>
