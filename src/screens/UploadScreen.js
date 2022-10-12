@@ -158,8 +158,8 @@ function UploadScreen({onChangeDate, navigation }){
 		}
 		
 		
-		//formData.append('post', new Blob([JSON.stringify(newPost)], {type: "application/json"}))
-		formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
+		formData.append('post', new Blob([JSON.stringify(newPost)], {type: "application/json"}))
+		//formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
 		formData.append('file', imageFile)
 				
 		const headers = {
@@ -284,8 +284,8 @@ function UploadScreen({onChangeDate, navigation }){
 				
 			}
 		)
-		const formData = new FormData()
-		formData.append("multipartFile", image)
+		
+		formdata.append("multipartFile", image)
 		//alert(res.assets[0].uri)
 		const headers = {
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
@@ -293,10 +293,11 @@ function UploadScreen({onChangeDate, navigation }){
 		console.log(image)
 		console.log(formData)
 
-		axios.post("https://localhost:8080/post", formData, {headers: headers})
+		/*
+		axios.post("https://localhost:8080/post", formdata, {headers: headers})
 			.then(response => {
 				if(response){
-					console.log("rrrr", response.data)
+					console.log( response.data)
 				}
 			})
 			.catch((error)=> {
@@ -404,12 +405,8 @@ function UploadScreen({onChangeDate, navigation }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<form onSubmit= {selectImage} entype="multipart/form-data">
-							<input type="file"/>
-							<Button type="submit" title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.navigate("PostScreen")}/>
-						</form>)
-					}
-					
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.navigate("PostScreen")}/>
+					)}
 				</View>
 			</Container> 
 		</KeyboardAwareScrollView>
