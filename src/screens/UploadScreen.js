@@ -93,11 +93,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 })
-function UploadScreen({date, onChangeDate, navigation }){
+function UploadScreen({onChangeDate, navigation }){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
-	//const [date, setDate] = useState(log ? new Date(log.date) : new Date())
+	//const [date, setDate] = useState( log ? new Date(log.date) : new Date())
 	const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
 	const [show, setShow] = useState(false)
@@ -118,7 +118,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 	}
 
 	const onConfirm = (selectedDate) => {
-		setVisible(false)
+		setVisible(true)
 		onChangeDate(selectedDate)
 		console.log(onChangeDate)
 	}
@@ -158,8 +158,8 @@ function UploadScreen({date, onChangeDate, navigation }){
 		}
 		
 		
-		//formData.append('post', new Blob([JSON.stringify(newPost)], {type: "application/json"}))
-		formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
+		formData.append('post', new Blob([JSON.stringify(newPost)], {type: "application/json"}))
+		//formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
 		formData.append('file', imageFile)
 				
 		const headers = {
@@ -258,6 +258,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 			uri: "",
 			type: "",
 			name: "",
+			timestamp:"",
 		}
 		await launchImageLibrary(
 			{
@@ -273,11 +274,14 @@ function UploadScreen({date, onChangeDate, navigation }){
 					console.log("ImagePicker Error: ", res.errorCode)
 				}
 				else if(res.assets){ //정상적으로 사진을 반환 받았을 때
-					console.log("ImagePicker res", res)
+					
 					image.name = res.assets[0].fileName
 					image.type = res.assets[0].type
 					image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
+					image.timestamp = res.assets[0].timestamp
+					//console.log(image.timestamp)
 				}
+				
 			}
 		)
 		
@@ -287,7 +291,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
 		}
 		console.log(image)
-		console.log(formdata)
+		console.log(formData)
 
 		/*
 		axios.post("https://localhost:8080/post", formdata, {headers: headers})
@@ -298,8 +302,9 @@ function UploadScreen({date, onChangeDate, navigation }){
 			})
 			.catch((error)=> {
 				if (error.res) {
-				// The request was made and the server responded with a status code
-				// that falls out of the range of 2xx
+					console.log("errormessage", error)
+					// The request was made and the server responded with a status code
+					// that falls out of the range of 2xx
 					console.log(error.response.data)
 					console.log(error.response.status)
 					console.log(error.response.headers)
@@ -337,13 +342,13 @@ function UploadScreen({date, onChangeDate, navigation }){
 						<DateTimePickerModal
 							isVisible={visible}
 							testID="dateTimePicker"
-							value={date}
+							//value={date}
 							mode={mode}
 							onConfirm={onConfirm}
 							onCancel={onCancel}
 							is24Hour={true}
 							display= "default"
-							date={date}
+							//date={date}
 						/>
 					</View>
 					<Box3>
@@ -400,7 +405,7 @@ function UploadScreen({date, onChangeDate, navigation }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose),navigation.navigate("PostScreen")}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.navigate("PostScreen")}/>
 					)}
 				</View>
 			</Container> 
