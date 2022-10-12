@@ -137,18 +137,19 @@ function UploadScreen({onChangeDate, navigation }){
 	const createPost = async (review, rating, purpose) => {
 		const newPost = {
 			memberId: 40,
-			review: review,
-			rating: rating,
-			purpose: purpose,
+			review: "hellooooo",
+			rating: 4,
+			purpose: "FRIEND",
 			date: "2020-10-10",
 			place: {
 				kakaoId : "1110210115",
 				name : "빨강파이프",
-				address : "경기 용인시 수지구 죽전로144번길 7-5",
+				address: "경기 용인시 수지구 죽전로144번길 7-5",
+				category: "분식",
+				longitude: "127.124165839734",
+				latitude: "37.3235861851341"
 			},
-			category: "분식",
-			longitude: "127.124165839734",
-			latitude: "37.3235861851341"
+			
 		}
 
 		const imageFile = {
@@ -158,18 +159,18 @@ function UploadScreen({onChangeDate, navigation }){
 		}
 		
 		
-		formData.append('post', new Blob([JSON.stringify(newPost)], {type: "application/json"}))
+		formData.append("post", new Blob([JSON.stringify(newPost)], {type: "application/json"}))
 		//formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
-		formData.append('file', imageFile)
+		// formData.append("file", imageFile)
 				
 		const headers = {
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
-			"access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTQ3MDEwMiwiZXhwIjoxNjY1NDgwOTAyfQ.CFcAEjPsmRCqvfB3X4TbdQDuxqGx5Y9-fvQ6n1RCzD0aLChfkwCvlESDa_LtaipZDBPCCx61Mp5ZyVWZ6TlDdQ"
+			"access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MkBnbWFpbC5jb20iLCJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjoxMSwiaWF0IjoxNjY1NTU0ODI0LCJleHAiOjE2NjU1NjU2MjR9.4W2xLDHE41H0J_7y1VLG6Pm04NHqplAOwPveOadtohBSNGXVKods2wH6ownGPiXA5XIVxvo9YwsaY2zsfk_hUg"
 		}
 
 		console.log(formData)
 
-		await axios.post("http://food-log-dku.com:8080/api/v1/post",formData, {headers})
+		await axios.post("http://10.0.2.2:8080/api/v1/post",formData, {headers})
 			.then(response => {
 				if(response){
 					console.log(response)
@@ -189,7 +190,7 @@ function UploadScreen({onChangeDate, navigation }){
 				}
 			})
 			
-			/*
+		/*
 			await axios.post("http://food-log-dku.com:8080/api/v1/post", formData, {
 				headers: {
 				  'Content-Type': 'multipart/form-data',
@@ -233,8 +234,8 @@ function UploadScreen({onChangeDate, navigation }){
 								activeOpacity={0.7}
 								key= {item}
 								onPress = {()=>{setdefaultRating(item),
-									setRating(item)
-									console.log(rating)
+								setRating(item)
+								console.log(rating)
 								}}
 							>
 								<Image
@@ -282,16 +283,14 @@ function UploadScreen({onChangeDate, navigation }){
 					//console.log(image.timestamp)
 				}
 				
-			}
+			},
+			formdata.append("file", image)
 		)
 		
-		formdata.append("multipartFile", image)
+		
 		//alert(res.assets[0].uri)
-		const headers = {
-			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
-		}
-		console.log(image)
-		console.log(formData)
+		console.log("image:", image)
+		console.log("formData:", formData)
 
 		/*
 		axios.post("https://localhost:8080/post", formdata, {headers: headers})
@@ -363,7 +362,7 @@ function UploadScreen({onChangeDate, navigation }){
 					</Box3>
 					<Box4>
 						<CustomRatingBar
-							/>
+						/>
 					</Box4>
 					<Box5>
 						<TextInput
