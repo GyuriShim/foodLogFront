@@ -8,7 +8,6 @@ const Container = styled.View`
     margin: 10px 0
 `
 const StyledTextInput = styled.TextInput`
-    placeholderTextColor: #C4C4C4
     background-color: white
     padding: 8px 10px
     font-size: 13px
