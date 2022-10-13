@@ -21,7 +21,6 @@ const Box1 = styled.View`
   flex: 7
   margin: 3px 10px
   background-color: white
-  border: 2px rgba(190, 235, 255, 0.4)
   align-items: center
 `
 
@@ -402,7 +401,7 @@ function UploadScreen({onChangeDate, navigation }){
 	
 	return (
 		//<SafeAreaView>
-		<KeyboardAwareScrollView contentContainerStyle={{flex:1}}>
+		<KeyboardAwareScrollView contentContainerStyle={{flex:1, backgroundColor:"white"}}>
 			<Container >
 				<ScrollView>
 					<Box1>
@@ -485,11 +484,11 @@ function UploadScreen({onChangeDate, navigation }){
 					</Box6>
 				</ScrollView>
 				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null)}} />
+					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null), setdefaultRating(null)}} />
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose),navigation.navigate("PostScreen")}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null)}}/>
 					)}
 				</View>
 			</Container> 
