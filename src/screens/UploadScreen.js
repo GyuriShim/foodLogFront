@@ -1,6 +1,6 @@
 import React,{useState, useEffect, useRef} from "react"
 import { launchImageLibrary } from "react-native-image-picker"
-import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet, Alert} from "react-native"
+import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet, Alert, ImageBackground} from "react-native"
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import {useRoute} from "@react-navigation/native"
 import axios from "axios"
@@ -9,6 +9,8 @@ import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
+import ImagePicker from "react-native-image-picker"
+//import Exif from "react-native-exif"
 import { createPostApi } from "../service/post"
 
 const Container = styled.View` 
@@ -91,19 +93,21 @@ const styles = StyleSheet.create({
 		backgroundColor: "white",
 		alignContent: "center",
 		alignItems: "center",
+		paddingLeft: 10,
 	},
 })
 function UploadScreen({onChangeDate, navigation }){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
-	//const [date, setDate] = useState( log ? new Date(log.date) : new Date())
-	const [mode, setMode] = useState("date")
+	const [date, setDate] = useState("")
+	//const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
 	const [show, setShow] = useState(false)
 	const [text, setText] = useState("Empty")
 	const placeholder = "목적을 입력해주세요."
 	const [response, setResponse] = useState(null)
+	const [image, setImage] = useState("")
 	
 	const [review, setReview] = useState()
 	const [rating, setRating] = useState()
@@ -112,25 +116,40 @@ function UploadScreen({onChangeDate, navigation }){
 	const formdata = new FormData() //지원
 	const formData = new FormData()
 
-	const onPressDate = () => {
-		setMode("date")
-		setVisible(true)
+	const showDatePicker = () => {
+		setVisible(!visible)
+	}
+	const hideDatePicker = () => {
+		setVisible(!visible)
+	}
+	const handleConfirm = (date) => {
+		console.log(date)
+		var splitDate = date.toISOString().split("T")
+		console.log(splitDate)
+		setDate(splitDate[0])
+		hideDatePicker()
 	}
 
-	const onConfirm = (selectedDate) => {
+	/* const onPressDate = () => {
+		setMode("date")
 		setVisible(true)
-		onChangeDate(selectedDate)
-		console.log(onChangeDate)
+
+	}
+
+	const onConfirm = (date) => {
+		setVisible(true)
+		onChangeDate(date)
+		console.log(date)
 	}
 
 	const onCancel = () => {
 		setVisible(false)
-	}
+	} 
 
 	const showMode = (currentMode) => {
 		setShow(true)
 		setMode(currentMode)
-	} 
+	} */
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
@@ -253,8 +272,28 @@ function UploadScreen({onChangeDate, navigation }){
 			</View>
 		)
 	}
+
+	/*const selectImage = async() =>{
+		
+		ImagePicker.openPicker({
+			width: 300,
+			height: 400,
+			cropping: true ,
+			includeExif: true,
+		}).then(image => {
+			console.log(image.modificationDate)
+			console.log(image.exif)
+			setImage(image.path)
+			const date = new Date(image.modificationDate)
+			date.setDate(date.getDate() - 1)
+			let month = `${date.getMonth() + 1}`
+			let day = `${date.getDate()}`
+		})
+		
+	}*/
 	
 	const selectImage = async() => {
+		//var ImagePicker = require("react-native-image-picker")
 		const image = {
 			uri: "",
 			type: "",
@@ -265,8 +304,23 @@ function UploadScreen({onChangeDate, navigation }){
 			{
 				mediaType: "photo",
 				includeBase64: Platform.OS === "android",
+				includeExtra: true,
 			},
-			(res) =>{
+			(res) => {
+				if(res.didCancel){
+					return
+				}
+				setResponse(res)
+				if(res?.assets[0]?.timestamp !== null){
+					var originDate = res?.assets[0]?.timestamp.split("T")
+					setDate(originDate[0])
+				}
+				
+				
+				//console.log("response latitude: ", response.latitude)
+				//console.log("response longitude: ", response.longitude)
+			}
+			/* (res) =>{
 				setResponse(res)
 				if(res.didCancel){
 					console.log("User cancelled image picker")
@@ -279,10 +333,38 @@ function UploadScreen({onChangeDate, navigation }){
 					image.name = res.assets[0].fileName
 					image.type = res.assets[0].type
 					image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
-					image.timestamp = res.assets[0].timestamp
-					//console.log(image.timestamp)
+					var assets0 = res.assets[0].timestamp
+					console.log(res.assets)
+					//const source = {uri: response.uri}
 				}
 				
+			} */
+		)
+	}
+	/* const formData = new FormData()
+	formData.append("multipartFile", image)
+	//alert(res.assets[0].uri)
+	const headers = {
+		"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
+	}
+	console.log(image)
+	console.log(formData)
+
+	axios.post("https://localhost:8080/post", formData, {headers: headers})
+		.then(response => {
+			if(response){
+				console.log("rrrr", response.data)
+			}
+		})
+		.catch((error)=> {
+			if (error.res) {
+				console.log("errormessage", error)
+				// The request was made and the server responded with a status code
+				// that falls out of the range of 2xx
+				console.log(error.response.data)
+				console.log(error.response.status)
+				console.log(error.response.headers)
+			} else if (error.request) {
 			},
 			formdata.append("file", image)
 		)
@@ -311,13 +393,13 @@ function UploadScreen({onChangeDate, navigation }){
 				// The request was made but no response was received
 				// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
 				// http.ClientRequest in node.js
-					console.log(error.request)
-				} else {
+				console.log(error.request)
+			} else {
 				// Something happened in setting up the request that triggered an Error
-					console.log("Error", error.message)
-				}
-			})*/
-	}
+				console.log("Error", error.message)
+			}
+		}) */
+	
 	return (
 		//<SafeAreaView>
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1}}>
@@ -326,7 +408,7 @@ function UploadScreen({onChangeDate, navigation }){
 					<Box1>
 						<View style={{flex:0, padding:1}}>
 							<Button title="이미지 업로드" color={"lightblue"} onPress={selectImage}></Button>
-							<Image 
+							<Image
 								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
 								source={{uri: response?.assets[0]?.uri}}
 								resizeMode="cover"
@@ -334,19 +416,22 @@ function UploadScreen({onChangeDate, navigation }){
 						</View>
 					</Box1>
 					<View style = {styles.Box2}>
-						<Text style={{flex: 1}}>{"날짜"}</Text>
+						{date ? 
+							<Text style={{flex: 1}}>{date}</Text> :
+							<Text style={{flex: 1}}>날짜</Text>}
+						
 						<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-							<Button title="등록" onPress={onPressDate}/>
+							<Button title="등록" onPress={showDatePicker}/>
 						</TouchableOpacity>
 						<DateTimePickerModal
 							isVisible={visible}
 							testID="dateTimePicker"
-							//value={date}
-							mode={mode}
-							onConfirm={onConfirm}
-							onCancel={onCancel}
+							value={date}
+							mode={"date"}
+							onConfirm={handleConfirm}
+							onCancel={hideDatePicker}
 							is24Hour={true}
-							display= "default"
+							//display= "default"
 							//date={date}
 						/>
 					</View>
@@ -400,7 +485,7 @@ function UploadScreen({onChangeDate, navigation }){
 					</Box6>
 				</ScrollView>
 				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.goBack()} />
+					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null)}} />
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
