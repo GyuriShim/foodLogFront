@@ -1,6 +1,6 @@
 import React,{useState, useEffect, useRef} from "react"
 import { launchImageLibrary } from "react-native-image-picker"
-import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet, Alert, ImageBackground} from "react-native"
+import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet} from "react-native"
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import {useRoute} from "@react-navigation/native"
 import axios from "axios"
@@ -10,7 +10,6 @@ import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
 import ImagePicker from "react-native-image-picker"
-//import Exif from "react-native-exif"
 import { createPostApi } from "../service/post"
 
 const Container = styled.View` 
@@ -111,9 +110,12 @@ function UploadScreen({onChangeDate, navigation }){
 	const [review, setReview] = useState()
 	const [rating, setRating] = useState()
 	const [purpose, setPurpose] = useState()
+	const [place, setPlace] = useState()
 
 	const formdata = new FormData() //지원
 	const formData = new FormData()
+	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
+	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
 	const showDatePicker = () => {
 		setVisible(!visible)
@@ -129,28 +131,6 @@ function UploadScreen({onChangeDate, navigation }){
 		hideDatePicker()
 	}
 
-	/* const onPressDate = () => {
-		setMode("date")
-		setVisible(true)
-
-	}
-
-	const onConfirm = (date) => {
-		setVisible(true)
-		onChangeDate(date)
-		console.log(date)
-	}
-
-	const onCancel = () => {
-		setVisible(false)
-	} 
-
-	const showMode = (currentMode) => {
-		setShow(true)
-		setMode(currentMode)
-	} */
-	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
-	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
 	const createPost = async (review, rating, purpose) => {
 		const newPost = {
@@ -236,11 +216,6 @@ function UploadScreen({onChangeDate, navigation }){
 				}
 			});*/
 
-
-			
-
-			
-		
 	}
 	const CustomRatingBar = () => {
 		return (
@@ -272,27 +247,8 @@ function UploadScreen({onChangeDate, navigation }){
 		)
 	}
 
-	/*const selectImage = async() =>{
-		
-		ImagePicker.openPicker({
-			width: 300,
-			height: 400,
-			cropping: true ,
-			includeExif: true,
-		}).then(image => {
-			console.log(image.modificationDate)
-			console.log(image.exif)
-			setImage(image.path)
-			const date = new Date(image.modificationDate)
-			date.setDate(date.getDate() - 1)
-			let month = `${date.getMonth() + 1}`
-			let day = `${date.getDate()}`
-		})
-		
-	}*/
 	
 	const selectImage = async() => {
-		//var ImagePicker = require("react-native-image-picker")
 		const image = {
 			uri: "",
 			type: "",
@@ -316,28 +272,8 @@ function UploadScreen({onChangeDate, navigation }){
 				}
 				
 				
-				//console.log("response latitude: ", response.latitude)
-				//console.log("response longitude: ", response.longitude)
 			}
-			/* (res) =>{
-				setResponse(res)
-				if(res.didCancel){
-					console.log("User cancelled image picker")
-				}
-				else if(res.errorCode){
-					console.log("ImagePicker Error: ", res.errorCode)
-				}
-				else if(res.assets){ //정상적으로 사진을 반환 받았을 때
-					
-					image.name = res.assets[0].fileName
-					image.type = res.assets[0].type
-					image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
-					var assets0 = res.assets[0].timestamp
-					console.log(res.assets)
-					//const source = {uri: response.uri}
-				}
-				
-			} */
+
 		)
 	}
 	/* const formData = new FormData()
@@ -379,28 +315,8 @@ function UploadScreen({onChangeDate, navigation }){
 				if(response){
 					console.log( response.data)
 				}
-			})
-			.catch((error)=> {
-				if (error.res) {
-					console.log("errormessage", error)
-					// The request was made and the server responded with a status code
-					// that falls out of the range of 2xx
-					console.log(error.response.data)
-					console.log(error.response.status)
-					console.log(error.response.headers)
-				} else if (error.request) {
-				// The request was made but no response was received
-				// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-				// http.ClientRequest in node.js
-				console.log(error.request)
-			} else {
-				// Something happened in setting up the request that triggered an Error
-				console.log("Error", error.message)
-			}
-		}) */
-	
+			})*/	
 	return (
-		//<SafeAreaView>
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1, backgroundColor:"white"}}>
 			<Container >
 				<ScrollView>
@@ -440,6 +356,7 @@ function UploadScreen({onChangeDate, navigation }){
 							multiline = {true}
 							placeholder = "상호명"
 							textAlignVertical="center"
+							value={place}
 						>
 
 						</TextInput>
@@ -493,7 +410,6 @@ function UploadScreen({onChangeDate, navigation }){
 				</View>
 			</Container> 
 		</KeyboardAwareScrollView>
-		//</SafeAreaView>
 	)
 }
 
