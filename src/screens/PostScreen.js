@@ -53,8 +53,8 @@ const styles = StyleSheet.create({
 		height: 50,
 		paddingHorizontal: 16,
 		borderColor: "#C9EEFF",
-		borderTopWidth: 2,
-		borderBottomWidth: 2,
+		borderWidth: 2,
+		borderRadius: 5,
 		alignContent: "center",
 		flexDirection: "row",
 		//justifyContent: "center",
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
 	},
 	avoid:{
 		flex:1,
+		padding: 10,
 	},
 })
 
@@ -192,8 +193,8 @@ function PostScreen({date, navigation}){
 						style = {styles.input}
 						//multiline = {true}
 						placeholder = "댓글을 입력하세요"
-						value={text}
-						onChangeText={setText}
+						value={comment}
+						onChangeText={setComment}
 					//textAlignVertical="center"
 					/>
 					<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
