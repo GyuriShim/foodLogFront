@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
-import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform}from "react-native"
+import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
 import { TextInput } from "react-native-gesture-handler"
 import {Location} from "../assets/icons/Location"
 //import {CustomRatingBar} from "../screens/UploadScreen"
@@ -9,6 +9,8 @@ import Button from "../components/Button"
 import { format, formatDistanceToNow } from "date-fns"
 import {ko} from "date-fns/locale"
 import { getPost } from "../service/post"
+//import {UpdateScreen} from "../screens/UpdateScreen"
+
 
 const Box1 = styled.View`
   flex: 1
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
 	},
 })
 
-function PostScreen(date){
+function PostScreen({date, navigation}){
 	const [text, setText] = useState("")
 	const [defaultRating, setdefaultRating] =useState(5)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
@@ -163,7 +165,10 @@ function PostScreen(date){
 								<Text>{post.member}</Text> 
 							</View>
 						</Pressable>
-						<Text>{/* formatDate(date) */}</Text>
+						<View style={{flexDirection: "row", alignItems: "center"}}>
+							<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen")}}></Button>
+							<Text>{/* formatDate(date) */}</Text>
+						</View>
 					</View>
 					<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
 						source={{ uri: pictures[0] }}
