@@ -10,6 +10,7 @@ import Following from "../screens/Following"
 import SubSearch from "../screens/SubSearch"
 import SubSearchHeader from "../components/SubSearchHeader"
 import AccountScreen from "../screens/AccountScreen"
+import ModifyProfile from "../screens/ModifyProfile"
 
 const Stack = createStackNavigator()
 const MainStack = () => {
@@ -69,13 +70,16 @@ const MainStack = () => {
 			<Stack.Screen
 				name="account"
 				component={AccountScreen}
-				options={{title: "계정 아이디"}}
+				options={{headerShown: false}}
 			/>
 			<Stack.Screen name="upload" component={UploadScreen}
 				//options={{title: "new post", headerBackTitle: "back"}}
 			/>
 			<Stack.Screen name="PostScreen" component={PostScreen}
 				options={{title: "게시물", headerBackTitle: "back"}}/>
+			<Stack.Screen name="Modify" component={ModifyProfile}
+				options={{headerShown: false}}
+			/>
 		</Stack.Navigator>
 	)
 }
