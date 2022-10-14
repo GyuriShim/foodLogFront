@@ -8,6 +8,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
 import {selectImage} from "../screens/UploadScreen"
 import {CustomRatingBar} from "../screens/UploadScreen"
+import { updatePost } from "../service/post"
 
 const Container = styled.View` 
   flex: 10
@@ -48,7 +49,7 @@ const Box6 = styled.View`
 `
 
 
-function UpdateScreen({navigation}){
+function UpdateScreen({navigation, route}){
 	const [response, setResponse] = useState(null)
 	const [date, setDate] = useState("")
 	const [review, setReview] = useState()
@@ -61,8 +62,30 @@ function UpdateScreen({navigation}){
 	const [purpose, setPurpose] = useState()
 	const [loading, setLoading] = useState(false)
 
-    const updatePost = async (review) => {
-        const 
+    const updatePostAxios = async(review) => {
+		const postId = route.params.postId
+
+		await updatePost(43, review)
+			.then(response => {
+				if(response){
+					console.log(response)
+					console.log("update post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			})
+
+	}
 
 	const CustomRatingBar = () => {
 		return (
@@ -150,7 +173,7 @@ function UpdateScreen({navigation}){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="수정" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {/*updatePost*/(review),navigation.navigate("PostScreen")}}/>
+						<Button title="수정" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {updatePostAxios(review), navigation.navigate("PostScreen")}}/>
 					)}
 				</View>
 			</Container>

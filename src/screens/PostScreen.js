@@ -80,6 +80,7 @@ function PostScreen({date, navigation}){
 	const [comment, setComment] = useState([])
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
+	const [postId, setPostId] = useState(0)
 
 	const fetchPost = async () => {
 		try {
@@ -92,6 +93,7 @@ function PostScreen({date, navigation}){
 			setPlace(response.data.place)
 			setComment(response.data.comment)
 			setPictures(response.data.pictures)
+			setPostId(response.data.postId)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -100,7 +102,8 @@ function PostScreen({date, navigation}){
 		setLoading(false)
 	}
 
-	const deletePost = async(postId) => {
+	
+	const deletePostAxios = async(postId) => {
 		/*const headers = {
 			'Authorization': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTU2MTg5MCwiZXhwIjoxNjY1NTcyNjkwfQ.raLdYJ8cp2SaM650u_N6wRem42h0h8p0WCWTc8QGU0U0GpN7Xf6j5GqwXy7_ojhI68U7_Zf0dyGsK_NVY6RxtA"
 		}
@@ -210,8 +213,8 @@ function PostScreen({date, navigation}){
 							</View>
 						</Pressable>
 						<View style={{flexDirection: "row", alignItems: "center"}}>
-							<Button title="삭제" onPress={() => deletePost(40)}/>
-							<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen")}}></Button>
+							<Button title="삭제" onPress={() => deletePostAxios(40)}/>
+							<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
 							<Text>{/* formatDate(date) */}</Text>
 						</View>
 					</View>
