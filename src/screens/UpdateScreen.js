@@ -8,6 +8,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
 import {selectImage} from "../screens/UploadScreen"
 import {CustomRatingBar} from "../screens/UploadScreen"
+import { getPost } from "../service/post"
 
 const Container = styled.View` 
   flex: 10
@@ -60,9 +61,43 @@ function UpdateScreen({navigation}){
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 	const [purpose, setPurpose] = useState()
 	const [loading, setLoading] = useState(false)
+	const [pictures, setPictures] = useState([])
+	const [post, setPost] = useState({})
+	const [error, setError] = useState(null)
+	const [comment, setComment] = useState([])
 
-    const updatePost = async (review) => {
-        const 
+
+
+	const updatePost = async (review) => {
+	}
+	const fetchPost = async () => {
+		try {
+			// 요청이 시작 할 때에는 error 와 users 를 초기화하고
+			setError(null)
+			// loading 상태를 true 로 바꿉니다.
+			setLoading(true)
+			const response = await getPost(37)
+			setPost(response.data)
+			//setPlace(response.data.place)
+			//setComment(response.data.comment)
+			setPictures(response.data.pictures)
+		} catch (e) {
+			setError(e)
+			console.log("catch error", e)
+		}
+		setLoading(false)
+	}
+
+	useEffect(() => {
+		fetchPost()
+	}, [])
+
+	console.log("data : ", post)
+	console.log("pictures" , pictures)
+	// console.log("Picture", post.pictures[0])
+
+	if (loading) return <Text>로딩 중</Text>
+
 
 	const CustomRatingBar = () => {
 		return (
@@ -106,7 +141,8 @@ function UpdateScreen({navigation}){
 						<View style={{flex:0, padding:1}}>
 							<Image
 								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-								source={{uri: response?.assets[0]?.uri}}
+								//source={{uri: response?.assets[0]?.uri}}
+								source={{ uri: pictures[0] }}
 								resizeMode="cover"
 							/>
 						</View>
