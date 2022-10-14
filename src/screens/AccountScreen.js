@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useLayoutEffect, useState} from "react"
 import { View, StyleSheet, Image, Text, ScrollView, Pressable } from "react-native"
 import styled from "styled-components"
 import MapView from "react-native-maps"
@@ -18,8 +18,10 @@ const AccountScreen = ({navigation}) => {
 	const [url, setUrl] = useState()
 	const [follower, setFollower] = useState()
 	const [following, setFolloing] = useState()
-	const [userName, setUserName] = useState()
+	const [userName, setUserName] = useState("asdf")
 	const [selfBio, setSelfBio] = useState()
+
+	
 
 	return(
 		<>
@@ -51,13 +53,14 @@ const AccountScreen = ({navigation}) => {
 								<Text style={{alignSelf: "center"}}>{following}</Text>
 								<Text style={{alignSelf: "center"}}>팔로잉</Text>
 							</Pressable>
-							<Pressable style={{justifyContent: "center"}}>
-								{userName==="asdf"? 
-									<Text>수정</Text>:
+							{userName==="asdf"? 
+								<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("Modify")}>
+									<Text>수정</Text>
+								</Pressable>
+								:<Pressable style={{justifyContent: "center"}}>
 									<Text>구독</Text>
-								}
-								
-							</Pressable>
+								</Pressable>
+							}
 						</View>
 					</View>
 					<View>
