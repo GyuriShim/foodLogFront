@@ -3,13 +3,14 @@ import styled from "styled-components"
 import MapView from "react-native-maps"
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler"
 import { FontIcon } from "../assets/icons/Fontisto"
-import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Alert} from "react-native"
+import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Alert, useWindowDimensions} from "react-native"
 import Geolocation from "react-native-geolocation-service"
 import PropTypes from "prop-types"
 import { markers } from "../model/mapData"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
 import { TagSelect } from "react-native-tag-select"
 import Button from "../components/Button"
+import { AntIcon } from "../assets/icons/AntIcon"
 
 const Container = styled.View`
 	background-color: white
@@ -47,10 +48,10 @@ const requestPermission = async() => {
 } */
 
 const MapScreen = ({navigation}) => {
+	const width = useWindowDimensions().width
 	const initialMapState = {
 		markers,
 	}
-
 	const [state, setState] = useState(initialMapState)
 	const [location, setLocation] = useState()
 	const [subpostVisible, setSubpostVisible] = useState(false)
@@ -292,16 +293,32 @@ const MapScreen = ({navigation}) => {
 						/>
 						
 					</View>
-					
-					
 				</View>
-					
-				
-				
 			</Modal>
-			
-			
-			
+			<Pressable style={{
+				position: "absolute", 
+				left: width/2 - 60, 
+				top: "19%", 
+				width: 120, 
+				height: 30,
+				zIndex: 100, 
+				backgroundColor: "white",
+				borderRadius: 50,
+				shadowRadius: 5,
+				shadowColor: "black",
+				shadowOffset: {
+					width: 0,
+					height: 2
+				},
+				shadowOpacity: 0.25,
+				elevation: 5,
+				flexDirection: "row",
+				justifyContent: "center",
+				alignItems: "center"
+			}}>
+				<AntIcon name="reload1" size={15}/>
+				<Text>결과 새로고침</Text>
+			</Pressable>
 		</Container>
 	)
 }
