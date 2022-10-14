@@ -137,9 +137,9 @@ function UploadScreen({onChangeDate, navigation }){
 	const createPost = async (review, rating, purpose) => {
 		const newPost = {
 			memberId: 40,
-			review: "hellooooo",
-			rating: 4,
-			purpose: "FRIEND",
+			review: review,
+			rating: rating,
+			purpose: purpose,
 			date: "2020-10-10",
 			place: {
 				kakaoId : "1110210115",
@@ -161,11 +161,11 @@ function UploadScreen({onChangeDate, navigation }){
 		
 		formData.append("post", new Blob([JSON.stringify(newPost)], {type: "application/json"}))
 		//formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
-		// formData.append("file", imageFile)
+		formData.append("file", imageFile)
 				
 		const headers = {
 			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
-			"access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MkBnbWFpbC5jb20iLCJpc3MiOiJmb29kIGxvZyIsIm1lbWJlcklkIjoxMSwiaWF0IjoxNjY1NTU0ODI0LCJleHAiOjE2NjU1NjU2MjR9.4W2xLDHE41H0J_7y1VLG6Pm04NHqplAOwPveOadtohBSNGXVKods2wH6ownGPiXA5XIVxvo9YwsaY2zsfk_hUg"
+			"access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTU2MDg3OCwiZXhwIjoxNjY1NTcxNjc4fQ.ak7j0JSbelOE8W0ZddyGO3MhbIpLdXMWG35FbEiJrAPidMMQZ1WG_TDE73tB1ynW-RbxyXPD1HTEmLy9Iq1E-w"
 		}
 
 		console.log(formData)
