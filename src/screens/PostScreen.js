@@ -9,8 +9,7 @@ import Button from "../components/Button"
 import { format, formatDistanceToNow } from "date-fns"
 import {ko} from "date-fns/locale"
 import { getPost } from "../service/post"
-//import {UpdateScreen} from "../screens/UpdateScreen"
-
+import { deletePost } from "../service/post"
 
 const Box1 = styled.View`
   flex: 1
@@ -82,6 +81,7 @@ function PostScreen({date, navigation}){
 	const [comment, setComment] = useState([])
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
+	const [postId, setPostId] = useState(0)
 
 	const fetchPost = async () => {
 		try {
@@ -94,12 +94,59 @@ function PostScreen({date, navigation}){
 			setPlace(response.data.place)
 			setComment(response.data.comment)
 			setPictures(response.data.pictures)
+			setPostId(response.data.postId)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
 		}
 
 		setLoading(false)
+	}
+
+	
+	const deletePostAxios = async(postId) => {
+		/*const headers = {
+			'Authorization': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTU2MTg5MCwiZXhwIjoxNjY1NTcyNjkwfQ.raLdYJ8cp2SaM650u_N6wRem42h0h8p0WCWTc8QGU0U0GpN7Xf6j5GqwXy7_ojhI68U7_Zf0dyGsK_NVY6RxtA"
+		}
+		await axios.delete(`http://food-log-dku.com:8080/api/v1/post/${postId}`, {headers})
+			.then(response => {
+				if(response){
+					console.log(response)
+					console.log("delete post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			})*/
+
+			await deletePost(postId)
+				.then(response => {
+					if(response){
+						console.log(response)
+						console.log("delete post success")
+					}
+				})
+				.catch((error)=> {
+					if (error.res) {
+						console.log("error1", error.response.data)
+						console.log("error2", error.response.status)
+						console.log("error3", error.response.headers)
+					} else if (error.request) {
+						console.log("error4", error.request)
+						console.log("error5", error.message)
+					} else {
+						console.log("error6", error.message)
+					}
+				})
 	}
 
 	useEffect(() => {
@@ -167,7 +214,8 @@ function PostScreen({date, navigation}){
 							</View>
 						</Pressable>
 						<View style={{flexDirection: "row", alignItems: "center"}}>
-							<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen")}}></Button>
+							<Button title="삭제" onPress={() => deletePostAxios(40)}/>
+							<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
 							<Text>{/* formatDate(date) */}</Text>
 						</View>
 					</View>

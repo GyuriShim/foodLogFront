@@ -23,6 +23,16 @@ export function getPost(postId) {
 	})
 }
 
+export function updatePost(postId, review){
+	return instance({
+		url: `/v1/post/${postId}`,
+		method: "put",
+		data: {
+			review: review
+		},
+	})
+}
+
 export function deletePost(postId) {
 	return instance({
 		url: `/v1/post/${postId}`,
