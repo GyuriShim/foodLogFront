@@ -1,6 +1,7 @@
 import React, {useContext} from "react"
 import { ScrollView, Text, View, StyleSheet } from "react-native"
 import EmptySearchResult from "../components/EmptySearchResult"
+import UserSearchResult from "../components/UserSearchResult"
 import SubSearchContext from "../contexts/SubSearchContext"
 
 const SubSearch = ({navigation}) => {
@@ -11,9 +12,7 @@ const SubSearch = ({navigation}) => {
 	}
 
 	return(
-		<View style={styles.block}>
-			<Text>{userKeyword}</Text>
-		</View>
+		<UserSearchResult item={{profileUrl: null, username: userKeyword}} onPress={() => navigation.navigate("account")}/>
 	)
 }
 const styles = StyleSheet.create({
