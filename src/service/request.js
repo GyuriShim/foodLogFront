@@ -6,7 +6,7 @@ const dev = "ec2-3-36-145-130.ap-northeast-2.compute.amazonaws.com"
 const prd = "food-log-dku.com"
 
 const instance = axios.create({
-	baseURL: "http://" + local + ":8080/api",
+	baseURL: "http://" + prd + ":8080/api",
 	timeout: 1000,
 })
 

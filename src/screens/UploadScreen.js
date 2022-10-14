@@ -1,6 +1,6 @@
 import React,{useState, useEffect, useRef} from "react"
 import { launchImageLibrary } from "react-native-image-picker"
-import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet, Alert} from "react-native"
+import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet} from "react-native"
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import {useRoute} from "@react-navigation/native"
 import axios from "axios"
@@ -9,6 +9,7 @@ import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
+import ImagePicker from "react-native-image-picker"
 import { createPostApi } from "../service/post"
 
 const Container = styled.View` 
@@ -19,7 +20,6 @@ const Box1 = styled.View`
   flex: 7
   margin: 3px 10px
   background-color: white
-  border: 2px rgba(190, 235, 255, 0.4)
   align-items: center
 `
 
@@ -91,48 +91,46 @@ const styles = StyleSheet.create({
 		backgroundColor: "white",
 		alignContent: "center",
 		alignItems: "center",
+		paddingLeft: 10,
 	},
 })
 function UploadScreen({onChangeDate, navigation }){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
-	//const [date, setDate] = useState( log ? new Date(log.date) : new Date())
-	const [mode, setMode] = useState("date")
+	const [date, setDate] = useState("")
+	//const [mode, setMode] = useState("date")
 	const [visible, setVisible] = useState(false)
 	const [show, setShow] = useState(false)
 	const [text, setText] = useState("Empty")
 	const placeholder = "목적을 입력해주세요."
 	const [response, setResponse] = useState(null)
+	const [image, setImage] = useState("")
 	
 	const [review, setReview] = useState()
 	const [rating, setRating] = useState()
 	const [purpose, setPurpose] = useState()
+	const [place, setPlace] = useState()
 
 	const formdata = new FormData() //지원
 	const formData = new FormData()
-
-	const onPressDate = () => {
-		setMode("date")
-		setVisible(true)
-	}
-
-	const onConfirm = (selectedDate) => {
-		setVisible(true)
-		onChangeDate(selectedDate)
-		console.log(onChangeDate)
-	}
-
-	const onCancel = () => {
-		setVisible(false)
-	}
-
-	const showMode = (currentMode) => {
-		setShow(true)
-		setMode(currentMode)
-	} 
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
+
+	const showDatePicker = () => {
+		setVisible(!visible)
+	}
+	const hideDatePicker = () => {
+		setVisible(!visible)
+	}
+	const handleConfirm = (date) => {
+		console.log(date)
+		var splitDate = date.toISOString().split("T")
+		console.log(splitDate)
+		setDate(splitDate[0])
+		hideDatePicker()
+	}
+
 
 	const createPost = async (review, rating, purpose) => {
 		const newPost = {
@@ -218,11 +216,6 @@ function UploadScreen({onChangeDate, navigation }){
 				}
 			});*/
 
-
-			
-
-			
-		
 	}
 	const CustomRatingBar = () => {
 		return (
@@ -253,6 +246,7 @@ function UploadScreen({onChangeDate, navigation }){
 			</View>
 		)
 	}
+
 	
 	const selectImage = async() => {
 		const image = {
@@ -265,24 +259,47 @@ function UploadScreen({onChangeDate, navigation }){
 			{
 				mediaType: "photo",
 				includeBase64: Platform.OS === "android",
+				includeExtra: true,
 			},
-			(res) =>{
-				setResponse(res)
+			(res) => {
 				if(res.didCancel){
-					console.log("User cancelled image picker")
+					return
 				}
-				else if(res.errorCode){
-					console.log("ImagePicker Error: ", res.errorCode)
-				}
-				else if(res.assets){ //정상적으로 사진을 반환 받았을 때
-					
-					image.name = res.assets[0].fileName
-					image.type = res.assets[0].type
-					image.uri = Platform.OS === "android" ? res.assets[0].uri : res.assets[0].uri.replace("file://", "")
-					image.timestamp = res.assets[0].timestamp
-					//console.log(image.timestamp)
+				setResponse(res)
+				if(res?.assets[0]?.timestamp !== null){
+					var originDate = res?.assets[0]?.timestamp.split("T")
+					setDate(originDate[0])
 				}
 				
+				
+			}
+
+		)
+	}
+	/* const formData = new FormData()
+	formData.append("multipartFile", image)
+	//alert(res.assets[0].uri)
+	const headers = {
+		"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
+	}
+	console.log(image)
+	console.log(formData)
+
+	axios.post("https://localhost:8080/post", formData, {headers: headers})
+		.then(response => {
+			if(response){
+				console.log("rrrr", response.data)
+			}
+		})
+		.catch((error)=> {
+			if (error.res) {
+				console.log("errormessage", error)
+				// The request was made and the server responded with a status code
+				// that falls out of the range of 2xx
+				console.log(error.response.data)
+				console.log(error.response.status)
+				console.log(error.response.headers)
+			} else if (error.request) {
 			},
 			formdata.append("file", image)
 		)
@@ -298,35 +315,15 @@ function UploadScreen({onChangeDate, navigation }){
 				if(response){
 					console.log( response.data)
 				}
-			})
-			.catch((error)=> {
-				if (error.res) {
-					console.log("errormessage", error)
-					// The request was made and the server responded with a status code
-					// that falls out of the range of 2xx
-					console.log(error.response.data)
-					console.log(error.response.status)
-					console.log(error.response.headers)
-				} else if (error.request) {
-				// The request was made but no response was received
-				// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-				// http.ClientRequest in node.js
-					console.log(error.request)
-				} else {
-				// Something happened in setting up the request that triggered an Error
-					console.log("Error", error.message)
-				}
-			})*/
-	}
+			})*/	
 	return (
-		//<SafeAreaView>
-		<KeyboardAwareScrollView contentContainerStyle={{flex:1}}>
+		<KeyboardAwareScrollView contentContainerStyle={{flex:1, backgroundColor:"white"}}>
 			<Container >
 				<ScrollView>
 					<Box1>
 						<View style={{flex:0, padding:1}}>
 							<Button title="이미지 업로드" color={"lightblue"} onPress={selectImage}></Button>
-							<Image 
+							<Image
 								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
 								source={{uri: response?.assets[0]?.uri}}
 								resizeMode="cover"
@@ -334,19 +331,22 @@ function UploadScreen({onChangeDate, navigation }){
 						</View>
 					</Box1>
 					<View style = {styles.Box2}>
-						<Text style={{flex: 1}}>{"날짜"}</Text>
+						{date ? 
+							<Text style={{flex: 1}}>{date}</Text> :
+							<Text style={{flex: 1}}>날짜</Text>}
+						
 						<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-							<Button title="등록" onPress={onPressDate}/>
+							<Button title="등록" onPress={showDatePicker}/>
 						</TouchableOpacity>
 						<DateTimePickerModal
 							isVisible={visible}
 							testID="dateTimePicker"
-							//value={date}
-							mode={mode}
-							onConfirm={onConfirm}
-							onCancel={onCancel}
+							value={date}
+							mode={"date"}
+							onConfirm={handleConfirm}
+							onCancel={hideDatePicker}
 							is24Hour={true}
-							display= "default"
+							//display= "default"
 							//date={date}
 						/>
 					</View>
@@ -356,6 +356,7 @@ function UploadScreen({onChangeDate, navigation }){
 							multiline = {true}
 							placeholder = "상호명"
 							textAlignVertical="center"
+							value={place}
 						>
 
 						</TextInput>
@@ -400,16 +401,15 @@ function UploadScreen({onChangeDate, navigation }){
 					</Box6>
 				</ScrollView>
 				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => navigation.goBack()} />
+					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null), setdefaultRating(null)}} />
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose),navigation.navigate("PostScreen")}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null)}}/>
 					)}
 				</View>
 			</Container> 
 		</KeyboardAwareScrollView>
-		//</SafeAreaView>
 	)
 }
 
