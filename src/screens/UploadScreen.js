@@ -405,7 +405,7 @@ function UploadScreen({onChangeDate, navigation }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null)}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose, place),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null)}}/>
 					)}
 				</View>
 			</Container> 
