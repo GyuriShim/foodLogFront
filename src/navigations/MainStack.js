@@ -79,7 +79,7 @@ const MainStack = () => {
 				options={{title: "게시물", headerBackTitle: "back"}}
 			/>
 			<Stack.Screen name="UpdateScreen" component={UpdateScreen}
-				//options={{title: "게시글 수정", headerBackTitle: "back"}}
+				options={{title: "게시글 수정", headerBackTitle: "back"}}
 			/>
 		</Stack.Navigator>
 	)
