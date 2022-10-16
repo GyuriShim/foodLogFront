@@ -108,7 +108,7 @@ const Login = ({navigation}) => {
 					color={GoogleSigninButton.Color.Light}
 					onPress={signIn}
 				/>
-				<TouchableOpacity style={{width: 20, height: 20, backgroundColor: "black"}} onPress={clearAll}></TouchableOpacity>
+				{/* <TouchableOpacity style={{width: 20, height: 20, backgroundColor: "black"}} onPress={clearAll}></TouchableOpacity> */}
 			</View>
 		</>
 	)

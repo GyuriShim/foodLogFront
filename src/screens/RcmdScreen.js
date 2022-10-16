@@ -12,14 +12,13 @@ const StyledText = styled.Text`
     font-size: 30px
     margin-bottom: 10px
 `
-const RcmdScreen = () => {
+const RcmdScreen = ({navigation}) => {
 	return(
 		<>
 			<Container>
 			</Container>	
 			<ScrollView style={{paddingHorizontal: 15, backgroundColor: "white"}}>
-				<RcmdPost/>
-				<RcmdPost/>
+				<RcmdPost onPress={() => navigation.navigate("PostScreen")} item={{imageUrl: null, store:"퍼미닛 커피", address:"경기도 성남시", contents:"어쩌구", rating: 5}}/>
 			</ScrollView>
 		</>
 		

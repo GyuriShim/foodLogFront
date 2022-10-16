@@ -27,8 +27,10 @@ const SubScreen = ({navigation}) => {
 				/>
 			</Container>
 			<ScrollView style={{backgroundColor: "white", paddingHorizontal: 15}}>
-				<Post onPress={() => navigation.navigate("account")}/>
-				<Post/>
+				<Post 
+					item={{profileUrl: null, username: "wfggw", date: "2022.10.14", postPhotoUrl: null, store: "퍼미닛 커피", address: "경기도 성남시", contents: "어쩌구 저쩌구", rating: 5}}
+					onProfilePress={() => navigation.navigate("account")} onPostPress={() => navigation.navigate("PostScreen")}/>
+				
 			</ScrollView>
 		</>
 	)

@@ -1,19 +1,18 @@
 import React, {useContext} from "react"
 import { ScrollView, Text, View, StyleSheet } from "react-native"
 import EmptySearchResult from "../components/EmptySearchResult"
-import SearchContext from "../contexts/SearchContext"
+import UserSearchResult from "../components/UserSearchResult"
+import SubSearchContext from "../contexts/SubSearchContext"
 
 const SubSearch = ({navigation}) => {
-	const {keyword} = useContext(SearchContext)
+	const {userKeyword} = useContext(SubSearchContext)
 
-	if(keyword === ""){
+	if(userKeyword === ""){
 		return <EmptySearchResult type="EMPTY_KEYWORD"/>
 	}
 
 	return(
-		<View style={styles.block}>
-			<Text>{keyword}</Text>
-		</View>
+		<UserSearchResult item={{profileUrl: null, username: userKeyword}} onPress={() => navigation.navigate("account")}/>
 	)
 }
 const styles = StyleSheet.create({

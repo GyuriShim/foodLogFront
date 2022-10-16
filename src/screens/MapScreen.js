@@ -3,13 +3,15 @@ import styled from "styled-components"
 import MapView from "react-native-maps"
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler"
 import { FontIcon } from "../assets/icons/Fontisto"
-import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Button, Alert} from "react-native"
+import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Alert, useWindowDimensions} from "react-native"
 import Geolocation from "react-native-geolocation-service"
 import PropTypes from "prop-types"
 import { markers } from "../model/mapData"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
 import { TagSelect } from "react-native-tag-select"
 import { getMap } from "../service/map"
+import Button from "../components/Button"
+import { AntIcon } from "../assets/icons/AntIcon"
 
 const Container = styled.View`
 	background-color: white
@@ -47,6 +49,7 @@ const requestPermission = async() => {
 } */
 
 const MapScreen = ({navigation}) => {
+	const width = useWindowDimensions().width
 	const initialMapState = {
 		markers,
 	}
@@ -81,6 +84,7 @@ const MapScreen = ({navigation}) => {
 	const ratingRef = useRef()
 	const purposeRef = useRef()
 	const categoryRef = useRef()
+	
 	const rating = [
 		{id : "all", label: "전체"},
 		{id : 3, label: "3.0"},
@@ -95,7 +99,7 @@ const MapScreen = ({navigation}) => {
 		{id : "FRIEND", label: "친구"},
 		{id : "FAMILY", label: "가족"},
 		{id : "MEETING", label: "회식"},
-		{id : "ECT", label: "기타"},
+		{id : "ETC", label: "기타"},
 	]
 
 	const category = [
@@ -305,26 +309,55 @@ const MapScreen = ({navigation}) => {
 							itemLabelStyleSelected={styles.labelSelected}
 						/>
 					</View>
+					<View style={{flexDirection: "row", justifyContent: "space-evenly", marginTop: 10}}>
+						<Button
+							title="취소"
+							containerStyle={{width: "40%"}}
+							onPress={() => setFilterVisible(!filterVisible)}
+						/>
+						<Button
+							title="적용"
+							containerStyle={{width: "40%"}}
+							onPress={() => {
+								var rating = ratingRef.current.itemsSelected[0].id
+								if (ratingRef.current.itemsSelected[0].id === "all") {
+									rating = null
+								}
+								const purpose = purposeRef.current.itemsSelected
+								const purposeTest = purpose.map((value) => {return value.id})
+								const category = categoryRef.current.itemsSelected
+								const categoryTest = category.map((value) => {return value.id})
+								Alert.alert("Selected items:", JSON.stringify([rating, purposeTest, categoryTest]))
+							}}
+						/>
+						
+					</View>
 				</View>
-				<Button
-					title="Get selected"
-					onPress={() => {
-						var rating = ratingRef.current.itemsSelected[0]
-						if (ratingRef.current.itemsSelected[0].id === "all") {
-							rating = null
-						}
-						const purpose = purposeRef.current.itemsSelected
-						const purposeTest = purpose.map((value) => {return value.id})
-						const category = categoryRef.current.itemsSelected
-						const categoryTest = category.map((value) => {return value.id})
-						Alert.alert("Selected items:", JSON.stringify([rating.id, purposeTest, categoryTest]))
-					}}
-				/>
-				
 			</Modal>
-			
-			
-			
+			<Pressable style={{
+				position: "absolute", 
+				left: width/2 - 60, 
+				top: "19%", 
+				width: 120, 
+				height: 30,
+				zIndex: 100, 
+				backgroundColor: "white",
+				borderRadius: 50,
+				shadowRadius: 5,
+				shadowColor: "black",
+				shadowOffset: {
+					width: 0,
+					height: 2
+				},
+				shadowOpacity: 0.25,
+				elevation: 5,
+				flexDirection: "row",
+				justifyContent: "center",
+				alignItems: "center"
+			}}>
+				<AntIcon name="reload1" size={15}/>
+				<Text>결과 새로고침</Text>
+			</Pressable>
 		</Container>
 	)
 }

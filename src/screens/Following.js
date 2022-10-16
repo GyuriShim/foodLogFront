@@ -1,10 +1,11 @@
 import React from "react"
 import { ScrollView, Text } from "react-native"
+import UserSearchResult from "../components/UserSearchResult"
 
-const Following = () => {
+const Following = ({navigation}) => {
 	return (
 		<ScrollView>
-			<Text></Text>
+			<UserSearchResult item={{profileUrl: null, username: "wfdwefe"}} onPress={() => navigation.navigate("account")}/>
 		</ScrollView>
 	)
 }

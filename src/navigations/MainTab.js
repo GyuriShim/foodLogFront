@@ -6,6 +6,7 @@ import RcmdScreen from "../screens/RcmdScreen"
 import UploadScreen from "../screens/UploadScreen"
 import SubScreen from "../screens/SubScreen"
 import AccountScreen from "../screens/AccountScreen"
+import RcmdHeader from "../components/RcmdHeader"
 import { AntIcon } from "../assets/icons/AntIcon"
 import { Location } from "../assets/icons/Location"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
@@ -29,9 +30,14 @@ const MainTab = () => {
 				}}
 			>	
 				<Tab.Screen name="지도" component={MapScreen} options={{headerShown:false, tabBarIcon: props => Location({...props, name:"location-outline", size: 24})}}/>
-				<Tab.Screen name="추천" component={RcmdScreen} options={{tabBarIcon: props => AntIcon({...props, name:"like2"})}}/>
+				<Tab.Screen name="추천" component={RcmdScreen} options={{headerTitle: () => <RcmdHeader/> ,tabBarIcon: props => AntIcon({...props, name:"like2"})}}/>
 				<Tab.Screen name="게시물 등록" component={UploadScreen} options={{tabBarIcon: props => AntIcon({...props, name:"pluscircleo"})}}/>
-				<Tab.Screen name="구독" component={SubScreen} options={{tabBarIcon: props => OcticonsIcon({...props, name:"people"})}}/>
+				<Tab.Screen name="구독" 
+					component={SubScreen} 
+					options={{
+						title: "구독자 게시물",
+						headerTitleStyle: {fontSize: 16, fontFamily:"SF-Pro-Text-Semibold"},
+						tabBarIcon: props => OcticonsIcon({...props, name:"people"})}}/>
 				<Tab.Screen name="내 계정" component={AccountScreen} options={{headerShown:false, tabBarIcon: props => OcticonsIcon({...props, name:"person"})}}/>
 			</Tab.Navigator>
 		</>

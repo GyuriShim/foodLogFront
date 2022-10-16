@@ -1,6 +1,7 @@
 import React, {useContext} from "react"
 import { StyleSheet, Text, View } from "react-native"
 import EmptySearchResult from "../components/EmptySearchResult"
+import SearchResult from "../components/SearchResult"
 import SearchContext from "../contexts/SearchContext"
 
 const SearchScreen = ({navigation}) => {
@@ -11,9 +12,7 @@ const SearchScreen = ({navigation}) => {
 	}
 
 	return(
-		<View style={styles.block}>
-			<Text>{keyword}</Text>
-		</View>
+		<SearchResult item={{store: keyword, address: "주소"}}/>
 	)
 }
 
