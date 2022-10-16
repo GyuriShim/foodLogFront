@@ -9,6 +9,7 @@ import PropTypes from "prop-types"
 import { markers } from "../model/mapData"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
 import { TagSelect } from "react-native-tag-select"
+import { getMap } from "../service/map"
 
 const Container = styled.View`
 	background-color: white
@@ -50,11 +51,33 @@ const MapScreen = ({navigation}) => {
 		markers,
 	}
 
+	// const _changeMapsButton = ()
+
 	const [state, setState] = useState(initialMapState)
 	const [location, setLocation] = useState()
 	const [subpostVisible, setSubpostVisible] = useState(false)
 	const [filterVisible, setFilterVisible] = useState(false)
 	const [isFilled, setIsFilled] = useState(false)
+	const [mapRequest, setMapRequest] = useState({})
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState(null)
+	const [bounds, setBounds] = useState({})
+
+	const getBounds = (region) => {
+		let longitudeDelta = region.longitudeDelta
+		let latitudeDelta = region.latitudeDelta
+		let latitude =  region.latitude
+		let longitude = region.longitude
+		setBounds({
+			longitudeDelta: longitudeDelta,
+			latitudeDelta: latitudeDelta,
+			latitude: latitude,
+			longitude: longitude
+		})
+		console.log(bounds)
+	}
+
+
 	const ratingRef = useRef()
 	const purposeRef = useRef()
 	const categoryRef = useRef()
@@ -87,6 +110,21 @@ const MapScreen = ({navigation}) => {
 		{id : "CAFE", label: "카페"},
 		{id : "ECT", label: "기타"},
 	]
+
+	const fetchMap = async () => {
+		try {
+			// 요청이 시작 할 때에는 error 와 users 를 초기화하고
+			setError(null)
+			// loading 상태를 true 로 바꿉니다.
+			setLoading(true)
+			const response = await getMap(mapRequest)
+		} catch (e) {
+			setError(e)
+			console.log("catch error", e)
+		}
+
+		setLoading(false)
+	}
 
 	useEffect(() => {
 		let isComponentMounted = true
@@ -162,6 +200,7 @@ const MapScreen = ({navigation}) => {
 				showsUserLocation={true}
 				showsMyLocationButton={true}
 				customMapStyle={mapStyle}
+				onRegionChangeComplete={region => getBounds(region)}
 			>
 				{state.markers.map((marker, index) => {
 					return (
