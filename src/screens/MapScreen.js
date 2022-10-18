@@ -78,6 +78,7 @@ const MapScreen = ({navigation}) => {
 			longitude: longitude
 		})
 		console.log(bounds)
+		console.log(bounds)
 	}
 
 
@@ -131,6 +132,7 @@ const MapScreen = ({navigation}) => {
 	}
 
 	useEffect(() => {
+		console.log("hi", bounds)
 		let isComponentMounted = true
 		requestPermission().then(result =>{
 			console.log({result})
