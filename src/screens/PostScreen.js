@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
 	},
 	input: {
 		flex : 1,
-		fontSize: 10,
+		fontSize: 16,
 		paddingVertical: 10,
 	},
 	avoid:{
@@ -69,7 +69,9 @@ const styles = StyleSheet.create({
 	},
 })
 
-function PostScreen({navigation}){
+
+
+function PostScreen({navigation, onSubmit}){
 	const [text, setText] = useState("")
 	const [defaultRating, setdefaultRating] =useState(5)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
@@ -78,12 +80,17 @@ function PostScreen({navigation}){
 	const [post, setPost] = useState({})
 	const [place, setPlace] = useState({})
 	const [pictures, setPictures] = useState([])
+	const [purpose, setPurpose] = useState()
 	const [comment, setComment] = useState([])
+	//const onSubmit(comment: string): void
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [postId, setPostId] = useState(0)
 	const [date, setDate] = useState("")
 	const [rating, setRating] = useState()
+	const [review, setReview] = useState()
+
+	//const [message, setMessage] = useState("")
 
 
 
@@ -102,6 +109,7 @@ function PostScreen({navigation}){
 			setPostId(response.data.postId)
 			setDate(response.data.date)
 			setRating(response.data.rating)
+			//setPurpose(response.data.purpose)
 			
 		} catch (e) {
 			setError(e)
@@ -246,15 +254,19 @@ function PostScreen({navigation}){
 			
 				<View style = {styles.block}>
 					{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
-					<TextInput
+					<TextInput 
 						style = {styles.input}
 						//multiline = {true}
 						placeholder = "댓글을 입력하세요"
 						value={comment}
 						onChangeText={setComment}
+						onSubmitEditing={() => {
+							//onSubmit(post.comment)
+							setComment("")
+						}}
 					//textAlignVertical="center"
 					/>
-					<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
+					<TouchableOpacity style = {{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
 						<Button title="등록" onPress={() => {}}/>
 						{/* <View style = {styles.button}>
 						</View> */}

@@ -89,6 +89,7 @@ function UpdateScreen({navigation, route}){
 			setDate(response.data.date)
 			setPlace(response.data.place)
 			setRating(response.data.rating)
+			setPurpose(response.data.purpose)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -213,8 +214,11 @@ function UpdateScreen({navigation, route}){
 					<Box6>
 						<View>
 							{purpose ?
-								<Text style={{flex: 1}}>{purpose}</Text> :
-								<Text style={{flex: 1}}>목적</Text>}
+								<Text style={{flex: 1}}>{post.purpose}
+								</Text> :
+								<Text style={{flex: 1}}>목적
+								</Text>
+							}
 						</View>
 					</Box6>
 				</ScrollView>

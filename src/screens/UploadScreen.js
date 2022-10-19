@@ -229,6 +229,7 @@ function UploadScreen({onChangeDate, navigation }){
 								onPress = {()=>{setdefaultRating(item),
 								setRating(item)
 								console.log(rating)
+								console.log(purpose)
 								}}
 							>
 								<Image
@@ -385,8 +386,8 @@ function UploadScreen({onChangeDate, navigation }){
 									label: placeholder,
 								}}
 								fixAndroidTouchableBug={true}//안드로이드에서 클릭을 여러번해야 picker가 나오는 경우가 있어 추가를 하였습니다. true로 설정하면 이런 에러가 사라집니다.
-								value={text}
-								onValueChange={(value) => {console.log(value), setPurpose(value)}}
+								value={purpose}
+								onValueChange={value =>  setPurpose(value)}
 								useNativeAndroidPickerStyle={false}
 								items={[
 									{ label: "친구", value: "FRIEND" },
