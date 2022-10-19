@@ -105,29 +105,6 @@ function PostScreen({date, navigation}){
 
 	
 	const deletePostAxios = async(postId) => {
-		/*const headers = {
-			'Authorization': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTU2MTg5MCwiZXhwIjoxNjY1NTcyNjkwfQ.raLdYJ8cp2SaM650u_N6wRem42h0h8p0WCWTc8QGU0U0GpN7Xf6j5GqwXy7_ojhI68U7_Zf0dyGsK_NVY6RxtA"
-		}
-		await axios.delete(`http://food-log-dku.com:8080/api/v1/post/${postId}`, {headers})
-			.then(response => {
-				if(response){
-					console.log(response)
-					console.log("delete post success")
-				}
-			})
-			.catch((error)=> {
-				if (error.res) {
-					console.log("error1", error.response.data)
-					console.log("error2", error.response.status)
-					console.log("error3", error.response.headers)
-				} else if (error.request) {
-					console.log("error4", error.request)
-					console.log("error5", error.message)
-				} else {
-					console.log("error6", error.message)
-				}
-			})*/
-
 			await deletePost(postId)
 				.then(response => {
 					if(response){
