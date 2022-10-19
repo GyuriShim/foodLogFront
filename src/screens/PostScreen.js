@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 	},
 })
 
-function PostScreen({navigation}){
+function PostScreen({navigation, route}){
 	const [text, setText] = useState("")
 	const [defaultRating, setdefaultRating] =useState(5)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
@@ -85,8 +85,7 @@ function PostScreen({navigation}){
 	const [date, setDate] = useState("")
 	const [rating, setRating] = useState()
 
-
-
+	//const postId2 = route.params.postId
 
 	const fetchPost = async () => {
 		try {
@@ -102,7 +101,8 @@ function PostScreen({navigation}){
 			setPostId(response.data.postId)
 			setDate(response.data.date)
 			setRating(response.data.rating)
-			
+
+			console.log("PostScreen:", response.data)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -137,8 +137,10 @@ function PostScreen({navigation}){
 
 	useEffect(() => {
 		fetchPost()
-	}, [])
+	}, [route.params])
 
+
+	
 	//console.log("data : ", post)
 	//console.log("pictures" , pictures)
 	// console.log("Picture", post.pictures[0])
