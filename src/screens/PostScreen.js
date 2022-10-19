@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 	},
 })
 
-function PostScreen({date, navigation}){
+function PostScreen({navigation}){
 	const [text, setText] = useState("")
 	const [defaultRating, setdefaultRating] =useState(5)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
@@ -82,6 +82,11 @@ function PostScreen({date, navigation}){
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [postId, setPostId] = useState(0)
+	const [date, setDate] = useState("")
+	const [rating, setRating] = useState()
+
+
+
 
 	const fetchPost = async () => {
 		try {
@@ -95,6 +100,9 @@ function PostScreen({date, navigation}){
 			setComment(response.data.comment)
 			setPictures(response.data.pictures)
 			setPostId(response.data.postId)
+			setDate(response.data.date)
+			setMaxRating(response.data.rating)
+			
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -128,25 +136,25 @@ function PostScreen({date, navigation}){
 				}
 			})*/
 
-			await deletePost(postId)
-				.then(response => {
-					if(response){
-						console.log(response)
-						console.log("delete post success")
-					}
-				})
-				.catch((error)=> {
-					if (error.res) {
-						console.log("error1", error.response.data)
-						console.log("error2", error.response.status)
-						console.log("error3", error.response.headers)
-					} else if (error.request) {
-						console.log("error4", error.request)
-						console.log("error5", error.message)
-					} else {
-						console.log("error6", error.message)
-					}
-				})
+		await deletePost(postId)
+			.then(response => {
+				if(response){
+					console.log(response)
+					console.log("delete post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			})
 	}
 
 	useEffect(() => {
@@ -224,7 +232,9 @@ function PostScreen({date, navigation}){
 					/>
 					<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
 						<Text style={{fontSize: 16}}>{place.name}</Text>
-						<CustomRatingBar/> 
+						<CustomRatingBar
+							
+						/> 
 					</View>
 					<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
 						<Location name="location-outline" size={14}/>

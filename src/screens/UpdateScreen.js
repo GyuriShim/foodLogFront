@@ -54,7 +54,7 @@ function UpdateScreen({navigation, route}){
 	const [response, setResponse] = useState(null)
 	const [date, setDate] = useState("")
 	const [review, setReview] = useState()
-	const [place, setPlace] = useState()
+	const [place, setPlace] = useState({})
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [rating, setRating] = useState()
@@ -67,6 +67,14 @@ function UpdateScreen({navigation, route}){
 	const [error, setError] = useState(null)
 	const [comment, setComment] = useState([])
 
+	const handleConfirm = (date) => {
+		console.log(date)
+		var splitDate = date.toISOString().split("T")
+		console.log(splitDate)
+		setDate(splitDate[0])
+		//hideDatePicker()
+	}
+
 	const fetchPost = async () => {
 		try {
 			// 요청이 시작 할 때에는 error 와 users 를 초기화하고
@@ -78,6 +86,9 @@ function UpdateScreen({navigation, route}){
 			//setPlace(response.data.place)
 			//setComment(response.data.comment)
 			setPictures(response.data.pictures)
+			setDate(response.data.date)
+			setPlace(response.data.place)
+			setRating(response.data.rating)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -91,6 +102,8 @@ function UpdateScreen({navigation, route}){
 
 	console.log("data : ", post)
 	console.log("pictures" , pictures)
+	console.log("date", date)
+	console.log("place",place)
 	// console.log("Picture", post.pictures[0])
 
 	if (loading) return <Text>로딩 중</Text>
@@ -176,23 +189,26 @@ function UpdateScreen({navigation, route}){
 					<Box3>
 						<View style = {{flex: 0, padding: 1}}>
 							{place ?
-								<Text style={{flex: 1}}>{place}</Text> :
+								<Text style={{flex: 1}}>{place.name}</Text> :
 								<Text style={{flex: 1}}>상호명</Text>}
 						</View>
 					</Box3>
 					<Box4>
 						<CustomRatingBar
+							value={rating}
 						/>
 					</Box4>
 					<View style = {styles.Box5}>
-						<TextInput
-							style = {styled.input}
-							multiline = {true}
-							placeholder = "내용을 입력하세요"
-							textAlignVertical="center"
-							value={review}
-							onChangeText={ text => setReview(text)}
-						/>
+						{post.review ?
+							<TextInput style={{flex: 1}}>{post.review}</TextInput> :
+							<TextInput
+								style = {styled.input}
+								multiline = {true}
+								placeholder = "내용을 입력하세요"
+								textAlignVertical="center"
+								value={review}
+								onChangeText={ text => setReview(text)}
+							/>}
 					</View>
 					<Box6>
 						<View>
