@@ -109,7 +109,7 @@ function PostScreen({navigation, onSubmit}){
 			setPostId(response.data.postId)
 			setDate(response.data.date)
 			setRating(response.data.rating)
-			//setPurpose(response.data.purpose)
+			setPurpose(response.data.purpose)
 			
 		} catch (e) {
 			setError(e)
