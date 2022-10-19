@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 	},
 })
 
-function PostScreen({date, navigation}){
+function PostScreen({navigation}){
 	const [text, setText] = useState("")
 	const [defaultRating, setdefaultRating] =useState(5)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
@@ -82,6 +82,11 @@ function PostScreen({date, navigation}){
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [postId, setPostId] = useState(0)
+	const [date, setDate] = useState("")
+	const [rating, setRating] = useState()
+
+
+
 
 	const fetchPost = async () => {
 		try {
@@ -95,6 +100,9 @@ function PostScreen({date, navigation}){
 			setComment(response.data.comment)
 			setPictures(response.data.pictures)
 			setPostId(response.data.postId)
+			setDate(response.data.date)
+			setRating(response.data.rating)
+			
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -124,6 +132,7 @@ function PostScreen({date, navigation}){
 						console.log("error6", error.message)
 					}
 				})
+
 	}
 
 	useEffect(() => {
@@ -201,7 +210,8 @@ function PostScreen({date, navigation}){
 					/>
 					<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
 						<Text style={{fontSize: 16}}>{place.name}</Text>
-						<CustomRatingBar/> 
+						<CustomRatingBar
+						/> 
 					</View>
 					<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
 						<Location name="location-outline" size={14}/>

@@ -81,7 +81,9 @@ const MainStack = () => {
 			<Stack.Screen name="Modify" component={ModifyProfile}
 				options={{headerShown: false}}
 			/>
-			<Stack.Screen name="UpdateScreen" component={UpdateScreen}></Stack.Screen>
+			<Stack.Screen name="UpdateScreen" component={UpdateScreen}
+				options={{title: "게시물수정", headerBackTitle: "back"}}
+			/>
 		</Stack.Navigator>
 	)
 }
