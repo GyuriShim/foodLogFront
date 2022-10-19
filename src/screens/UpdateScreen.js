@@ -101,18 +101,19 @@ function UpdateScreen({navigation, route}){
 		fetchPost()
 	}, [])
 
-	console.log("data : ", post)
-	console.log("pictures" , pictures)
-	console.log("date", date)
-	console.log("place",place)
+	//console.log("data : ", post)
+	//console.log("pictures" , pictures)
+	//console.log("date", date)
+	//console.log("place",place)
+
 	// console.log("Picture", post.pictures[0])
 
 	if (loading) return <Text>로딩 중</Text>
 
-	const updatePostAxios = async(review) => {
-		const postId = route.params.postId
+	const updatePostAxios = async(postId, review) => {
+		//const postId = route.params.postId
 
-		await updatePost(43, review)
+		await updatePost(postId, review)
 			.then(response => {
 				if(response){
 					console.log(response)
@@ -227,7 +228,7 @@ function UpdateScreen({navigation, route}){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="수정" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {updatePostAxios(review), navigation.navigate("PostScreen")}}/>
+						<Button title="수정" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {updatePostAxios(37, review), navigation.navigate("PostScreen")}}/>
 					)}
 				</View>
 			</Container>
