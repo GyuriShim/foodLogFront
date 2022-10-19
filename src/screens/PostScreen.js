@@ -101,7 +101,7 @@ function PostScreen({navigation}){
 			setPictures(response.data.pictures)
 			setPostId(response.data.postId)
 			setDate(response.data.date)
-			setMaxRating(response.data.rating)
+			setRating(response.data.rating)
 			
 		} catch (e) {
 			setError(e)
@@ -233,7 +233,6 @@ function PostScreen({navigation}){
 					<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
 						<Text style={{fontSize: 16}}>{place.name}</Text>
 						<CustomRatingBar
-							
 						/> 
 					</View>
 					<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
