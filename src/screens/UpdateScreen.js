@@ -89,14 +89,14 @@ function UpdateScreen({navigation, route}){
 		fetchPost()
 	}, [])
 
-	console.log("data : ", post)
-	console.log("pictures" , pictures)
+	//console.log("data : ", post)
+	//console.log("pictures" , pictures)
 	// console.log("Picture", post.pictures[0])
 
 	if (loading) return <Text>로딩 중</Text>
 
 	const updatePostAxios = async(postId, review) => {
-		const postId = route.params.postId
+		//const postId = route.params.postId
 
 		await updatePost(postId, review)
 			.then(response => {

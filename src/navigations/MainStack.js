@@ -11,6 +11,7 @@ import SubSearch from "../screens/SubSearch"
 import SubSearchHeader from "../components/SubSearchHeader"
 import AccountScreen from "../screens/AccountScreen"
 import ModifyProfile from "../screens/ModifyProfile"
+import UpdateScreen from "../screens/UpdateScreen"
 
 const Stack = createStackNavigator()
 const MainStack = () => {
@@ -80,6 +81,7 @@ const MainStack = () => {
 			<Stack.Screen name="Modify" component={ModifyProfile}
 				options={{headerShown: false}}
 			/>
+			<Stack.Screen name="UpdateScreen" component={UpdateScreen}></Stack.Screen>
 		</Stack.Navigator>
 	)
 }

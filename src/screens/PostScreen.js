@@ -130,8 +130,8 @@ function PostScreen({date, navigation}){
 		fetchPost()
 	}, [])
 
-	console.log("data : ", post)
-	console.log("pictures" , pictures)
+	//console.log("data : ", post)
+	//console.log("pictures" , pictures)
 	// console.log("Picture", post.pictures[0])
 
 	if (loading) return <Text>로딩 중</Text>
