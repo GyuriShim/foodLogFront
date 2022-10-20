@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import axios from "axios"
-import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
+import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator, SafeAreaView}from "react-native"
 import { TextInput } from "react-native-gesture-handler"
 import {Location} from "../assets/icons/Location"
 //import {CustomRatingBar} from "../screens/UploadScreen"
@@ -10,6 +10,8 @@ import { format, formatDistanceToNow } from "date-fns"
 import {ko} from "date-fns/locale"
 import { getPost } from "../service/post"
 import { deletePost } from "../service/post"
+import { createComment, deleteComment } from "../service/comment"
+import { FlatList } from "react-native"
 
 const Box1 = styled.View`
   flex: 1
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
 	},
 })
 
-function PostScreen({date, navigation}){
+function PostScreen({navigation, route}){
 	const [text, setText] = useState("")
 	const [defaultRating, setdefaultRating] =useState(5)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
@@ -82,6 +84,13 @@ function PostScreen({date, navigation}){
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [postId, setPostId] = useState(0)
+	const [date, setDate] = useState("")
+	const [rating, setRating] = useState()
+	const [commentContent, setCommentContent] = useState()
+
+	const [, updateState] = useState()
+	//const forceUpdate = useCallback(() => updateState({}), [])
+	//const postId2 = route.params.postId
 
 	const fetchPost = async () => {
 		try {
@@ -95,6 +104,10 @@ function PostScreen({date, navigation}){
 			setComment(response.data.comment)
 			setPictures(response.data.pictures)
 			setPostId(response.data.postId)
+			setDate(response.data.date)
+			setRating(response.data.rating)
+
+			console.log("PostScreen:", response.data)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -105,29 +118,6 @@ function PostScreen({date, navigation}){
 
 	
 	const deletePostAxios = async(postId) => {
-		/*const headers = {
-			'Authorization': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTU2MTg5MCwiZXhwIjoxNjY1NTcyNjkwfQ.raLdYJ8cp2SaM650u_N6wRem42h0h8p0WCWTc8QGU0U0GpN7Xf6j5GqwXy7_ojhI68U7_Zf0dyGsK_NVY6RxtA"
-		}
-		await axios.delete(`http://food-log-dku.com:8080/api/v1/post/${postId}`, {headers})
-			.then(response => {
-				if(response){
-					console.log(response)
-					console.log("delete post success")
-				}
-			})
-			.catch((error)=> {
-				if (error.res) {
-					console.log("error1", error.response.data)
-					console.log("error2", error.response.status)
-					console.log("error3", error.response.headers)
-				} else if (error.request) {
-					console.log("error4", error.request)
-					console.log("error5", error.message)
-				} else {
-					console.log("error6", error.message)
-				}
-			})*/
-
 		await deletePost(postId)
 			.then(response => {
 				if(response){
@@ -149,12 +139,47 @@ function PostScreen({date, navigation}){
 			})
 	}
 
+	const createCommentAxios = async(postId, comment) => {
+		await createComment(postId, comment)
+			.then(response => {
+				if(response){
+					console.log(response.data)
+					console.log("create comment success")
+				}
+			})
+			.catch((error)=> {
+				console.log(error)
+			})
+		
+	}
+
+	const renderItem = ({ item }) => {
+		return (
+			<View>
+				<View>
+					<Text>user: {item.username}</Text>
+				</View>
+				<View>
+					<Text>commentId: {item.commentId}</Text>
+				</View>
+				<View>
+					<Text>content: {item.comment}</Text>
+				</View>
+				<View>
+					<Text>created: {item.createdDate}</Text>
+				</View>
+			</View>
+		)
+	}
+
 	useEffect(() => {
 		fetchPost()
-	}, [])
+	}, [route.params])
 
-	console.log("data : ", post)
-	console.log("pictures" , pictures)
+
+	
+	//console.log("data : ", post)
+	//console.log("pictures" , pictures)
 	// console.log("Picture", post.pictures[0])
 
 	if (loading) return <Text>로딩 중</Text>
@@ -200,59 +225,68 @@ function PostScreen({date, navigation}){
 	}
 
 	return(
-
-		<ScrollView>
-			<KeyboardAvoidingView 
-				behavior={Platform.OS === "android" ? "padding" : undefined}
-				style={styles.avoid}>
-				<View style={{width: "100%", /* backgroundColor: "rgba(165, 212, 233, 0.3)", */ marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
-					<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
-						<Pressable>
+		<>
+			<ScrollView>
+				<KeyboardAvoidingView 
+					behavior={Platform.OS === "android" ? "padding" : undefined}
+					style={styles.avoid}>
+					<View style={{width: "100%", /* backgroundColor: "rgba(165, 212, 233, 0.3)", */ marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
+						<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
+							<Pressable>
+								<View style={{flexDirection: "row", alignItems: "center"}}>
+									<Image style={styles.profile}/>
+									<Text>{post.member}</Text> 
+								</View>
+							</Pressable>
 							<View style={{flexDirection: "row", alignItems: "center"}}>
-								<Image style={styles.profile}/>
-								<Text>{post.member}</Text> 
+								<Button title="삭제" onPress={() => deletePostAxios(40)}/>
+								<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
+								<Text>{/* formatDate(date) */}</Text>
 							</View>
-						</Pressable>
-						<View style={{flexDirection: "row", alignItems: "center"}}>
-							<Button title="삭제" onPress={() => deletePostAxios(40)}/>
-							<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
-							<Text>{/* formatDate(date) */}</Text>
 						</View>
+						<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
+							source={{ uri: pictures[0] }}
+						/>
+						<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+							<Text style={{fontSize: 16}}>{place.name}</Text>
+							<CustomRatingBar
+							/> 
+						</View>
+						<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
+							<Location name="location-outline" size={14}/>
+							<Text>{place.address}</Text>
+						</View>
+						<Text>
+							{post.review}
+						</Text>
 					</View>
-					<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
-						source={{ uri: pictures[0] }}
-					/>
-					<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-						<Text style={{fontSize: 16}}>{place.name}</Text>
-						<CustomRatingBar/> 
-					</View>
-					<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
-						<Location name="location-outline" size={14}/>
-						<Text>{place.address}</Text>
-					</View>
-					<Text>
-						{post.review}
-					</Text>
-				</View>
 			
-				<View style = {styles.block}>
-					{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
-					<TextInput
-						style = {styles.input}
-						//multiline = {true}
-						placeholder = "댓글을 입력하세요"
-						value={comment}
-						onChangeText={setComment}
-					//textAlignVertical="center"
-					/>
-					<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-						<Button title="등록" onPress={() => {}}/>
-						{/* <View style = {styles.button}>
+					<View style = {styles.block}>
+						{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
+						<TextInput
+							style = {styles.input}
+							//multiline = {true}
+							placeholder = "댓글을 입력하세요"
+							value={commentContent}
+							onChangeText={text => {setCommentContent(text), console.log(commentContent)}}
+							//textAlignVertical="center"
+						/>
+						<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
+							<Button title="등록" onPress={() => createCommentAxios(37, commentContent)}/>
+							{/* <View style = {styles.button}>
 						</View> */}
-					</TouchableOpacity>
-				</View>
-			</KeyboardAvoidingView>
-		</ScrollView>
+						</TouchableOpacity>
+					</View>
+				</KeyboardAvoidingView>
+			</ScrollView>
+			<View>
+				<FlatList
+					data={comment}
+					renderItem={renderItem}
+				/>
+			</View>
+		</>
+		
 	)
 }
 

@@ -54,8 +54,8 @@ function UpdateScreen({navigation, route}){
 	const [response, setResponse] = useState(null)
 	const [date, setDate] = useState("")
 	const [review, setReview] = useState()
-	const [place, setPlace] = useState()
-	const [defaultRating, setdefaultRating] =useState(2)
+	const [place, setPlace] = useState({})
+	const [defaultRating, setdefaultRating] =useState(0)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [rating, setRating] = useState()
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
@@ -66,6 +66,16 @@ function UpdateScreen({navigation, route}){
 	const [post, setPost] = useState({})
 	const [error, setError] = useState(null)
 	const [comment, setComment] = useState([])
+
+	const postId = route.params
+
+	const handleConfirm = (date) => {
+		console.log(date)
+		var splitDate = date.toISOString().split("T")
+		console.log(splitDate)
+		setDate(splitDate[0])
+		//hideDatePicker()
+	}
 
 	const fetchPost = async () => {
 		try {
@@ -78,6 +88,10 @@ function UpdateScreen({navigation, route}){
 			//setPlace(response.data.place)
 			//setComment(response.data.comment)
 			setPictures(response.data.pictures)
+			setDate(response.data.date)
+			setPlace(response.data.place)
+			setRating(response.data.rating)
+			setReview(response.data.review)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -89,19 +103,24 @@ function UpdateScreen({navigation, route}){
 		fetchPost()
 	}, [])
 
-	console.log("data : ", post)
-	console.log("pictures" , pictures)
+	//console.log("data : ", post)
+	//console.log("pictures" , pictures)
+	//console.log("date", date)
+	//console.log("place",place)
+
 	// console.log("Picture", post.pictures[0])
 
 	if (loading) return <Text>로딩 중</Text>
 
-	const updatePostAxios = async(review) => {
-		const postId = route.params.postId
-
-		await updatePost(43, review)
+	const updatePostAxios = async(postId, review) => {
+		console.log("postId:", postId)
+		
+		setLoading(false)
+		await updatePost(postId, review)
 			.then(response => {
 				if(response){
-					console.log(response)
+					console.log("UpdateScreen:" ,response.data)
+
 					console.log("update post success")
 				}
 			})
@@ -117,7 +136,8 @@ function UpdateScreen({navigation, route}){
 					console.log("error6", error.message)
 				}
 			})
-
+		setLoading(true)
+		navigation.navigate("PostScreen", [review,postId])
 	}
 
 	const CustomRatingBar = () => {
@@ -137,7 +157,7 @@ function UpdateScreen({navigation, route}){
 								<Image
 									style={styles.starImgStyle} 
 									source={
-										item <= defaultRating
+										item <= rating
 											? {uri: starImgFilled}
 											: {uri: starImgCorner}
 									}
@@ -176,22 +196,23 @@ function UpdateScreen({navigation, route}){
 					<Box3>
 						<View style = {{flex: 0, padding: 1}}>
 							{place ?
-								<Text style={{flex: 1}}>{place}</Text> :
+								<Text style={{flex: 1}}>{place.name}</Text> :
 								<Text style={{flex: 1}}>상호명</Text>}
 						</View>
 					</Box3>
 					<Box4>
 						<CustomRatingBar
+							value={rating}
 						/>
 					</Box4>
-					<View style = {styles.Box5}>
+					<View style = {styles.Box5}>	
 						<TextInput
 							style = {styled.input}
 							multiline = {true}
 							placeholder = "내용을 입력하세요"
 							textAlignVertical="center"
-							value={review}
 							onChangeText={ text => setReview(text)}
+							value={review}
 						/>
 					</View>
 					<Box6>
@@ -207,7 +228,7 @@ function UpdateScreen({navigation, route}){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="수정" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {updatePostAxios(review), navigation.navigate("PostScreen")}}/>
+						<Button title="수정" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {updatePostAxios(postId, review)}}/>
 					)}
 				</View>
 			</Container>
