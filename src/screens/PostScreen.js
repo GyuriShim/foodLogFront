@@ -128,25 +128,25 @@ function PostScreen({date, navigation}){
 				}
 			})*/
 
-			await deletePost(postId)
-				.then(response => {
-					if(response){
-						console.log(response)
-						console.log("delete post success")
-					}
-				})
-				.catch((error)=> {
-					if (error.res) {
-						console.log("error1", error.response.data)
-						console.log("error2", error.response.status)
-						console.log("error3", error.response.headers)
-					} else if (error.request) {
-						console.log("error4", error.request)
-						console.log("error5", error.message)
-					} else {
-						console.log("error6", error.message)
-					}
-				})
+		await deletePost(postId)
+			.then(response => {
+				if(response){
+					console.log(response)
+					console.log("delete post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			})
 	}
 
 	useEffect(() => {
