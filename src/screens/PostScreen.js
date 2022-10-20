@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import axios from "axios"
-import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
+import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator, SafeAreaView}from "react-native"
 import { TextInput } from "react-native-gesture-handler"
 import {Location} from "../assets/icons/Location"
 //import {CustomRatingBar} from "../screens/UploadScreen"
@@ -10,6 +10,8 @@ import { format, formatDistanceToNow } from "date-fns"
 import {ko} from "date-fns/locale"
 import { getPost } from "../service/post"
 import { deletePost } from "../service/post"
+import { createComment, deleteComment } from "../service/comment"
+import { FlatList } from "react-native"
 
 const Box1 = styled.View`
   flex: 1
@@ -84,7 +86,10 @@ function PostScreen({navigation, route}){
 	const [postId, setPostId] = useState(0)
 	const [date, setDate] = useState("")
 	const [rating, setRating] = useState()
+	const [commentContent, setCommentContent] = useState()
 
+	const [, updateState] = useState()
+	//const forceUpdate = useCallback(() => updateState({}), [])
 	//const postId2 = route.params.postId
 
 	const fetchPost = async () => {
@@ -113,27 +118,63 @@ function PostScreen({navigation, route}){
 
 	
 	const deletePostAxios = async(postId) => {
-			await deletePost(postId)
-				.then(response => {
-					if(response){
-						console.log(response)
-						console.log("delete post success")
-					}
-				})
-				.catch((error)=> {
-					if (error.res) {
-						console.log("error1", error.response.data)
-						console.log("error2", error.response.status)
-						console.log("error3", error.response.headers)
-					} else if (error.request) {
-						console.log("error4", error.request)
-						console.log("error5", error.message)
-					} else {
-						console.log("error6", error.message)
-					}
-				})
-
+		await deletePost(postId)
+			.then(response => {
+				if(response){
+					console.log(response)
+					console.log("delete post success")
+				}
+			})
+			.catch((error)=> {
+				console.log(error)
+			})
 	}
+
+	const createCommentAxios = async(postId, comment) => {
+		await createComment(postId, comment)
+			.then(response => {
+				if(response){
+					console.log(response.data)
+					console.log("create comment success")
+				}
+			})
+			.catch((error)=> {
+				console.log(error)
+			})
+		
+	}
+
+	const deleteCommentAxios = async(postId, commentId) => {
+		await deleteComment(postId, commentId)
+			.then(response => {
+				if(response){
+					console.log(response.data)
+					console.log("delete comment success")
+				}
+			})
+			.catch((error)=> {
+				console.log(error)
+			})
+	}
+
+	const renderItem = ({ item }) => {
+		return (
+		  <View>
+			<View>
+			  <Text>user: {item.username}</Text>
+			</View>
+			<View>
+			  <Text>commentId: {item.commentId}</Text>
+			</View>
+			<View>
+			  <Text>content: {item.comment}</Text>
+			</View>
+			<View>
+			  <Text>created: {item.createdDate}</Text>
+			</View>
+		  </View>
+		);
+	  };
 
 	useEffect(() => {
 		fetchPost()
@@ -188,7 +229,7 @@ function PostScreen({navigation, route}){
 	}
 
 	return(
-
+		<>
 		<ScrollView>
 			<KeyboardAvoidingView 
 				behavior={Platform.OS === "android" ? "padding" : undefined}
@@ -230,18 +271,26 @@ function PostScreen({navigation, route}){
 						style = {styles.input}
 						//multiline = {true}
 						placeholder = "댓글을 입력하세요"
-						value={comment}
-						onChangeText={setComment}
+						value={commentContent}
+						onChangeText={text => {setCommentContent(text), console.log(commentContent)}}
 					//textAlignVertical="center"
 					/>
 					<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-						<Button title="등록" onPress={() => {}}/>
+						<Button title="등록" onPress={() => createCommentAxios(37, commentContent)}/>
 						{/* <View style = {styles.button}>
 						</View> */}
 					</TouchableOpacity>
 				</View>
 			</KeyboardAvoidingView>
 		</ScrollView>
+		<View>
+			<FlatList
+				data={comment}
+				renderItem={renderItem}
+			/>
+		</View>
+		</>
+		
 	)
 }
 
