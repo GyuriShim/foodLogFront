@@ -58,7 +58,11 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		alignContent: "center",
 		flexDirection: "row",
-		//justifyContent: "center",
+		position: "absolute",
+		bottom: 0,
+		left:10,
+		width: "100%",
+		backgroundColor: "white",
 	},
 	input: {
 		flex : 1,
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 	},
 	avoid:{
-		flex:1,
+		flex: 1,
 		padding: 10,
 	},
 })
@@ -225,67 +229,59 @@ function PostScreen({navigation, route}){
 	}
 
 	return(
-		<>
-			<ScrollView>
-				<KeyboardAvoidingView 
-					behavior={Platform.OS === "android" ? "padding" : undefined}
-					style={styles.avoid}>
-					<View style={{width: "100%", /* backgroundColor: "rgba(165, 212, 233, 0.3)", */ marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
-						<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
-							<Pressable>
-								<View style={{flexDirection: "row", alignItems: "center"}}>
-									<Image style={styles.profile}/>
-									<Text>{post.member}</Text> 
-								</View>
-							</Pressable>
-							<View style={{flexDirection: "row", alignItems: "center"}}>
-								<Button title="삭제" onPress={() => deletePostAxios(40)}/>
-								<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
-								<Text>{/* formatDate(date) */}</Text>
-							</View>
+		<View style={styles.avoid}>
+			<View style={{width: "100%", marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
+				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
+					<Pressable>
+						<View style={{flexDirection: "row", alignItems: "center"}}>
+							<Image style={styles.profile}/>
+							<Text>{post.member}</Text> 
 						</View>
-						<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
-							source={{ uri: pictures[0] }}
-						/>
-						<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-							<Text style={{fontSize: 16}}>{place.name}</Text>
-							<CustomRatingBar
-							/> 
-						</View>
-						<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
-							<Location name="location-outline" size={14}/>
-							<Text>{place.address}</Text>
-						</View>
-						<Text>
-							{post.review}
-						</Text>
+					</Pressable>
+					<View style={{flexDirection: "row", alignItems: "center"}}>
+						<Button title="삭제" onPress={() => deletePostAxios(40)}/>
+						<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
+						<Text>{/* formatDate(date) */}</Text>
 					</View>
-			
-					<View style = {styles.block}>
-						{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
-						<TextInput
-							style = {styles.input}
-							//multiline = {true}
-							placeholder = "댓글을 입력하세요"
-							value={commentContent}
-							onChangeText={text => {setCommentContent(text), console.log(commentContent)}}
-							//textAlignVertical="center"
-						/>
-						<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-							<Button title="등록" onPress={() => createCommentAxios(37, commentContent)}/>
-							{/* <View style = {styles.button}>
-						</View> */}
-						</TouchableOpacity>
-					</View>
-				</KeyboardAvoidingView>
-			</ScrollView>
-			<View>
-				<FlatList
-					data={comment}
-					renderItem={renderItem}
+				</View>
+				<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
+					source={{ uri: pictures[0] }}
 				/>
+				<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+					<Text style={{fontSize: 16}}>{place.name}</Text>
+					<CustomRatingBar
+					/> 
+				</View>
+				<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
+					<Location name="location-outline" size={14}/>
+					<Text>{place.address}</Text>
+				</View>
+				<Text>
+					{post.review}
+				</Text>
 			</View>
-		</>
+
+			<FlatList
+				data={comment}
+				renderItem={renderItem}
+			/>
+			<View style = {styles.block}>
+				{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
+				<TextInput
+					style = {styles.input}
+					//multiline = {true}
+					placeholder = "댓글을 입력하세요"
+					value={commentContent}
+					onChangeText={text => {setCommentContent(text), console.log(commentContent)}}
+					//textAlignVertical="center"
+				/>
+				<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
+					<Button title="등록" onPress={() => createCommentAxios(37, commentContent)}/>
+					{/* <View style = {styles.button}>
+						</View> */}
+				</TouchableOpacity>
+			</View>
+		</View>
 		
 	)
 }
