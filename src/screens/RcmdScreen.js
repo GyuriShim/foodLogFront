@@ -1,7 +1,8 @@
-import React from "react"
+import React, { useContext, useEffect } from "react"
 import { Button, ScrollView } from "react-native"
 import styled from "styled-components"
 import RcmdPost from "../components/RcmdPost"
+import PurposeContext from "../contexts/Purpose"
 
 const Container = styled.View`
     align-items: center
@@ -13,6 +14,12 @@ const StyledText = styled.Text`
     margin-bottom: 10px
 `
 const RcmdScreen = ({navigation}) => {
+	const {value} = useContext(PurposeContext)
+
+	useEffect(() => {
+		console.log(value)
+	},[value])
+
 	return(
 		<>
 			<Container>
