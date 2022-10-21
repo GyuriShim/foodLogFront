@@ -352,8 +352,8 @@ function UploadScreen({onChangeDate, navigation }){
 							//date={date}
 						/>
 					</View>
-					<TouchableOpacity>
-						onPress={SearchResult}
+					<TouchableOpacity
+						onPress={SearchResult}>
 						{/* <TextInput
 							style = {styled.input}
 							multiline = {true}
@@ -361,7 +361,6 @@ function UploadScreen({onChangeDate, navigation }){
 							textAlignVertical="center"
 							value={place}
 						> */}
-
 					</TouchableOpacity>
 					<Box4>
 						<CustomRatingBar
