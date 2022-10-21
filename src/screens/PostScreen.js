@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useState, useContext } from "react"
-import axios from "axios"
-import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator, SafeAreaView}from "react-native"
-import { TextInput } from "react-native-gesture-handler"
+import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
+import { FlatList, TextInput } from "react-native-gesture-handler"
 import {Location} from "../assets/icons/Location"
-//import {CustomRatingBar} from "../screens/UploadScreen"
 import styled from "styled-components"
 import Button from "../components/Button"
 import { format, formatDistanceToNow } from "date-fns"
@@ -11,10 +9,8 @@ import {ko} from "date-fns/locale"
 import { getPost } from "../service/post"
 import { deletePost } from "../service/post"
 import { createComment, deleteComment } from "../service/comment"
-import { FlatList } from "react-native"
 import { getItemFromAsync } from "../utils/StorageFun"
 import UserIdContext from "../contexts/UserId"
-
 
 const Box1 = styled.View`
   flex: 1
@@ -69,7 +65,7 @@ const styles = StyleSheet.create({
 	},
 	input: {
 		flex : 1,
-		fontSize: 10,
+		fontSize: 16,
 		paddingVertical: 10,
 	},
 	avoid:{
@@ -95,7 +91,9 @@ function PostScreen({navigation, route}){
 	const [post, setPost] = useState({})
 	const [place, setPlace] = useState({})
 	const [pictures, setPictures] = useState([])
+	const [purpose, setPurpose] = useState()
 	const [comment, setComment] = useState([])
+	//const onSubmit(comment: string): void
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [postId, setPostId] = useState(0)
@@ -106,7 +104,6 @@ function PostScreen({navigation, route}){
 	const [isChanged, setIsChanged] = useState(false)
 	const {userId} = useContext(UserIdContext)
 
-	
 	const fetchPost = async () => {
 		try {
 			// 요청이 시작 할 때에는 error 와 users 를 초기화하고
@@ -123,8 +120,7 @@ function PostScreen({navigation, route}){
 			setDate(response.data.date)
 			setRating(response.data.rating)
 			setWriterId(response.data.memberId)
-			console.log("PostScreen:", response.data)
-			console.log("사용자 id:" , userId)
+			setPurpose(response.data.purpose)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -297,7 +293,6 @@ function PostScreen({navigation, route}){
 				</TouchableOpacity>
 			</View>
 		</View>
-		
 	)
 }
 
