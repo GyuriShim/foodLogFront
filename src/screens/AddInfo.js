@@ -44,37 +44,38 @@ const AddInfo = ({navigation}) => {
 
 	const selfBioRef = useRef()
 
-	const join = async(formData) => {
+	const join = (formData) => {
 		try {			
-			await fetch("http://10.0.2.2:8080/api/v1/join", {
-				method: "POST",
-				cache: "no-cache",
-				headers: {
-					"Content-Type": "multipart/form-data"
-				},
-				body: formData
-			}).then((response) => response.json()).then((data) => {
-				console.log(data)
-			})
-			// await axios.post("http://10.0.2.2:8080/api/v1/join", formData, {
+			// fetch("http://food-log-dku:8080/api/v1/join", {
+			// 	method: "POST",
+			// 	cache: "no-cache",
 			// 	headers: {
-			// 		accept: "application/json",
-			// 		"Content-Type": "multipart/form-data",
+			// 		Accept: "application/json",
+			// 		"Content-Type": "multipart/form-data"
 			// 	},
-			// 	transformRequest: formData => formData
-			// })
-			// 	.then((res) => {
-			// 		console.log("222222222", res)
-			// 		if (res.status === 200) {
-			// 			console.log(res.data)
-			// 		} else {
-			// 			console.log(res)
-			// 		}
-			// 	})
-			// 	.catch((error) => {
-			// 		console.log("addInfo error", error)
-			// 	})
-			// console.log("hello", response)
+			// 	body: formData
+			// }).then((response) => response.json()).then((data) => {
+			// 	console.log(data)
+			// }).catch((error)=>console.log("fetch error", error))
+			axios.post("http://10.0.2.2:8080/api/v1/join", formData, {
+				headers: {
+					accept: "application/json",
+					"Content-Type": "multipart/form-data",
+				},
+				transformRequest: formData => formData
+			})
+				.then((res) => {
+					console.log("222222222", res)
+					if (res.status === 200) {
+						console.log(res.data)
+					} else {
+						console.log(res)
+					}
+				})
+				.catch((error) => {
+					console.log("addInfo error", error)
+				})
+			console.log("hello", response)
 
 		} catch (error) {
 			console.log("error", error)
@@ -96,7 +97,7 @@ const AddInfo = ({navigation}) => {
 			formData.append(
 				"memberJoinDto", new Blob([JSON.stringify(data)], { type: "application/json" })
 			)
-			console.log(data)
+			console.log("hello", formData._parts)
 			join(formData)
 		} catch (error) {
 			console.log("join button error", error)
