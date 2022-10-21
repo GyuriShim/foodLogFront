@@ -273,7 +273,6 @@ function PostScreen({navigation, route}){
 						placeholder = "댓글을 입력하세요"
 						value={commentContent}
 						onChangeText={text => {setCommentContent(text), console.log(commentContent)}}
-					//textAlignVertical="center"
 					/>
 					<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
 						<Button title="등록" onPress={() => createCommentAxios(37, commentContent)}/>
