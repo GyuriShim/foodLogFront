@@ -74,6 +74,14 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 10,
 	},
+	commentProfile: {
+		width: 40,
+		height: 40,
+		borderRadius: 50,
+		backgroundColor: "black",
+		alignItems: "center",
+		marginRight: 10
+	}
 })
 
 function PostScreen({navigation, route}){
@@ -177,15 +185,18 @@ function PostScreen({navigation, route}){
 
 	const renderItem = ({ item }) => {
 		return (
-			<View>
-				<View>
-					<Text>user: {item.username}</Text>
+			<View style={{flexDirection: "row", width: "100%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
+				<View style={{flexDirection: "row", alignItems: "center"}}>
+					<Image style={styles.commentProfile} source={{uri: null}}/>
+					<View style={{flexDirection: "column"}}>
+						<Text>user: {item.username}</Text>
+						<Text>{item.comment}</Text>
+						<Text>created: {item.createdDate}</Text>
+					</View>
 				</View>
+				
+				
 				<View>
-					<Text>{item.comment}</Text>
-				</View>
-				<View>
-					<Text>created: {item.createdDate}</Text>
 					<Button title="삭제" onPress={() => deleteCommentAxios(37, item.commentId)}/>
 				</View>
 				
