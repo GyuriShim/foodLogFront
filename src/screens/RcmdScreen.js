@@ -32,6 +32,7 @@ const RcmdScreen = ({navigation}) => {
 			})
 	}
 
+
 	useEffect(() => {
 		recommendAxios(value)
 	},[value])
@@ -42,12 +43,11 @@ const RcmdScreen = ({navigation}) => {
 			</Container>	
 			<ScrollView style={{paddingHorizontal: 15, backgroundColor: "white"}}>
 				{content.map((content, key) =>{
-					key = content.postId
 					return (
 						<View>
 							<RcmdPost onPress={() => 
 							navigation.navigate("PostScreen")} 
-							item={{imageUrl: content.picture, store:"퍼미닛 커피", address:"경기도 성남시", contents:content.review, rating: content.rating}}
+							item={{imageUrl: content.picture, store:content.name, address:content.address, contents:content.review, rating: content.rating}}
 							/>
 						</View>	
 					)
