@@ -13,6 +13,7 @@ import { deletePost } from "../service/post"
 import { createComment, deleteComment } from "../service/comment"
 import { FlatList } from "react-native"
 
+
 const Box1 = styled.View`
   flex: 1
   border-radius: 10px
@@ -91,7 +92,7 @@ function PostScreen({navigation, route}){
 	const [date, setDate] = useState("")
 	const [rating, setRating] = useState()
 	const [commentContent, setCommentContent] = useState()
-
+	const [isChanged, setIsChanged] = useState(false)
 	const [, updateState] = useState()
 	//const forceUpdate = useCallback(() => updateState({}), [])
 	//const postId2 = route.params.postId
@@ -149,6 +150,7 @@ function PostScreen({navigation, route}){
 				if(response){
 					console.log(response.data)
 					console.log("create comment success")
+					setIsChanged(!isChanged)
 				}
 			})
 			.catch((error)=> {
@@ -157,6 +159,22 @@ function PostScreen({navigation, route}){
 		
 	}
 
+	const deleteCommentAxios = async(postId, commentId) => {
+		await deleteComment(postId, commentId)
+			.then(response => {
+				if(response){
+					console.log(response.data)
+					console.log("delete comment success")
+					setIsChanged(!isChanged)
+				}
+			})
+			.catch((error)=> {
+				console.log(error)
+			})
+		
+	}
+	
+
 	const renderItem = ({ item }) => {
 		return (
 			<View>
@@ -164,21 +182,20 @@ function PostScreen({navigation, route}){
 					<Text>user: {item.username}</Text>
 				</View>
 				<View>
-					<Text>commentId: {item.commentId}</Text>
-				</View>
-				<View>
-					<Text>content: {item.comment}</Text>
+					<Text>{item.comment}</Text>
 				</View>
 				<View>
 					<Text>created: {item.createdDate}</Text>
+					<Button title="삭제" onPress={() => deleteCommentAxios(37, item.commentId)}/>
 				</View>
+				
 			</View>
 		)
 	}
 
 	useEffect(() => {
 		fetchPost()
-	}, [route.params])
+	}, [route.params, isChanged])
 
 
 	
@@ -271,8 +288,7 @@ function PostScreen({navigation, route}){
 					style = {styles.input}
 					//multiline = {true}
 					placeholder = "댓글을 입력하세요"
-					value={commentContent}
-					onChangeText={text => {setCommentContent(text), console.log(commentContent)}}
+					onChangeText={text => setCommentContent(text)}
 					//textAlignVertical="center"
 				/>
 				<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
