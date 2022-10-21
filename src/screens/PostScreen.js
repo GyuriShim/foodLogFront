@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
 import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
-import { TextInput } from "react-native-gesture-handler"
+import { FlatList, TextInput } from "react-native-gesture-handler"
 import {Location} from "../assets/icons/Location"
 //import {CustomRatingBar} from "../screens/UploadScreen"
 import styled from "styled-components"
@@ -10,6 +10,8 @@ import { format, formatDistanceToNow } from "date-fns"
 import {ko} from "date-fns/locale"
 import { getPost } from "../service/post"
 import { deletePost } from "../service/post"
+import { PositionError } from "react-native-geolocation-service"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 const Box1 = styled.View`
   flex: 1
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
 
 
 
-function PostScreen({navigation, onSubmit}){
+function PostScreen({navigation}){
 	const [text, setText] = useState("")
 	const [defaultRating, setdefaultRating] =useState(5)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
@@ -91,8 +93,6 @@ function PostScreen({navigation, onSubmit}){
 	const [review, setReview] = useState()
 
 	//const [message, setMessage] = useState("")
-
-
 
 
 	const fetchPost = async () => {
@@ -121,25 +121,25 @@ function PostScreen({navigation, onSubmit}){
 
 	
 	const deletePostAxios = async(postId) => {
-			await deletePost(postId)
-				.then(response => {
-					if(response){
-						console.log(response)
-						console.log("delete post success")
-					}
-				})
-				.catch((error)=> {
-					if (error.res) {
-						console.log("error1", error.response.data)
-						console.log("error2", error.response.status)
-						console.log("error3", error.response.headers)
-					} else if (error.request) {
-						console.log("error4", error.request)
-						console.log("error5", error.message)
-					} else {
-						console.log("error6", error.message)
-					}
-				})
+		await deletePost(postId)
+			.then(response => {
+				if(response){
+					console.log(response)
+					console.log("delete post success")
+				}
+			})
+			.catch((error)=> {
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
+			})
 
 	}
 
@@ -194,64 +194,74 @@ function PostScreen({navigation, onSubmit}){
 	}
 
 	return(
-
-		<ScrollView>
-			<KeyboardAvoidingView 
-				behavior={Platform.OS === "android" ? "padding" : undefined}
-				style={styles.avoid}>
-				<View style={{width: "100%", /* backgroundColor: "rgba(165, 212, 233, 0.3)", */ marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
-					<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
-						<Pressable>
-							<View style={{flexDirection: "row", alignItems: "center"}}>
-								<Image style={styles.profile}/>
-								<Text>{post.member}</Text> 
-							</View>
-						</Pressable>
+		<KeyboardAvoidingView 
+			behavior={Platform.OS === "android" ? "padding" : undefined}
+			style={styles.avoid}>
+			<View style={{width: "100%", /* backgroundColor: "rgba(165, 212, 233, 0.3)", */ marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
+				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
+					<Pressable>
 						<View style={{flexDirection: "row", alignItems: "center"}}>
-							<Button title="삭제" onPress={() => deletePostAxios(40)}/>
-							<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
-							<Text>{/* formatDate(date) */}</Text>
+							<Image style={styles.profile}/>
+							<Text>{post.member}</Text> 
 						</View>
+					</Pressable>
+					<View style={{flexDirection: "row", alignItems: "center"}}>
+						<Button title="삭제" onPress={() => deletePostAxios(40)}/>
+						<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
+						<Text>{/* formatDate(date) */}</Text>
 					</View>
-					<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
-						source={{ uri: pictures[0] }}
-					/>
-					<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-						<Text style={{fontSize: 16}}>{place.name}</Text>
-						<CustomRatingBar
-						/> 
-					</View>
-					<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
-						<Location name="location-outline" size={14}/>
-						<Text>{place.address}</Text>
-					</View>
-					<Text>
-						{post.review}
-					</Text>
 				</View>
-			
-				<View style = {styles.block}>
-					{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
-					<TextInput 
-						style = {styles.input}
-						//multiline = {true}
-						placeholder = "댓글을 입력하세요"
-						value={comment}
-						onChangeText={setComment}
-						onSubmitEditing={() => {
-							//onSubmit(post.comment)
-							setComment("")
-						}}
+				<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
+					source={{ uri: pictures[0] }}
+				/>
+				<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+					<Text style={{fontSize: 16}}>{place.name}</Text>
+					<CustomRatingBar
+					/> 
+				</View>
+				<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
+					<Location name="location-outline" size={14}/>
+					<Text>{place.address}</Text>
+				</View>
+				<Text>
+					{post.review}
+				</Text>
+			</View>
+			<View style = {styles.block}>
+				<Text>{comment}</Text>
+			</View>
+			<View style = {styles.block}>
+				{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
+				<TextInput 
+					//commentInput}
+					style = {styles.input}
+					autoFocus
+					returnKeyType = "send"
+					//multiline = {true}
+					value={comment}
+					placeholder = "댓글을 입력하세요"
+					onChangeText={setComment}
+					onSubmitEditing={() => {
+						onSubmit(comment)
+						setComment("")
+						console.log(comment)
+					}}
 					//textAlignVertical="center"
-					/>
-					<TouchableOpacity style = {{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-						<Button title="등록" onPress={() => {}}/>
-						{/* <View style = {styles.button}>
+				/>
+				<TouchableOpacity style = {{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
+					<Button title="등록" onPress={() => {}}/>
+					{/* <View style = {styles.button}>
 						</View> */}
-					</TouchableOpacity>
-				</View>
-			</KeyboardAvoidingView>
-		</ScrollView>
+				</TouchableOpacity>
+			</View>
+			<FlatList
+				data={comment}
+				renderItem={onSubmit}
+				keyExtractor={(comment) => post.comment}
+				style={{margin: 10}}
+				numColumns={10}
+			/>
+		</KeyboardAvoidingView>
 	)
 }
 

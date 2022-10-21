@@ -11,6 +11,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
 import ImagePicker from "react-native-image-picker"
 import { createPostApi } from "../service/post"
+import SearchResult from "../components/SearchResult"
 
 const Container = styled.View` 
   flex: 1
@@ -351,17 +352,17 @@ function UploadScreen({onChangeDate, navigation }){
 							//date={date}
 						/>
 					</View>
-					<Box3>
-						<TextInput
+					<TouchableOpacity>
+						onPress={SearchResult}
+						{/* <TextInput
 							style = {styled.input}
 							multiline = {true}
 							placeholder = "상호명"
 							textAlignVertical="center"
 							value={place}
-						>
+						> */}
 
-						</TextInput>
-					</Box3>
+					</TouchableOpacity>
 					<Box4>
 						<CustomRatingBar
 						/>
