@@ -12,6 +12,7 @@ import { getPost } from "../service/post"
 import { deletePost } from "../service/post"
 import { createComment, deleteComment } from "../service/comment"
 import { FlatList } from "react-native"
+import { getItemFromAsync } from "../utils/StorageFun"
 
 
 const Box1 = styled.View`
@@ -168,18 +169,20 @@ function PostScreen({navigation, route}){
 	
 
 	const renderItem = ({ item }) => {
+		//const user = await getItemFromAsync('user')
+		//console.log(user)
+
 		return (
-			<View style={{flexDirection: "row", width: "100%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
+			<View style={{flexDirection: "row", padding: 7, width: "100%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
 				<View style={{flexDirection: "row", alignItems: "center"}}>
-					<Image style={styles.commentProfile} source={{uri: null}}/>
+					<Image style={styles.commentProfile} source={{uri: item.memberProfileImage}}/>
 					<View style={{flexDirection: "column"}}>
-						<Text>user: {item.username}</Text>
+						<Text style={{fontWeight: "bold"}}>{item.username}</Text>
 						<Text>{item.comment}</Text>
-						<Text>created: {item.createdDate}</Text>
+						<Text style={{fontSize: 10}}>{item.createdDate}</Text>
 					</View>
 				</View>
-				
-				
+
 				<View>
 					<Button title="삭제" onPress={() => deleteCommentAxios(37, item.commentId)}/>
 				</View>
