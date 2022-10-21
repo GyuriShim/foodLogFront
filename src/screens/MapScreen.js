@@ -48,23 +48,46 @@ const requestPermission = async() => {
 	}
 } */
 
-const MapScreen = ({navigation}) => {
+
+
+
+
+
+const MapScreen = ({ navigation }) => {
+
 	const width = useWindowDimensions().width
-	const initialMapState = {
-		markers,
-	}
+
+	// useEffect(() => {
+	// 	console.log
+	// 	const markers = data.map((map) => {
+	// 		console.log(map)
+	// 		return {
+	// 			coordinate: {
+	// 				latitude: map.latitude,
+	// 				longitude: map.longitude
+	// 			},
+	// 			title: "고든램지 버거",
+	// 			address: "서울특별시 송파구 올림픽로 300 롯데월드몰 B1 고든램지 버거",
+	// 			// image: Images[0].image,
+	// 			rating: 4,
+	// 		}
+	// 	})
+	// 	setState(markers)
+	// }, [data])
+	
+
+	
 
 	// const _changeMapsButton = ()
 
-	const [state, setState] = useState(initialMapState)
+	const [state, setState] = useState([])
 	const [location, setLocation] = useState()
 	const [subpostVisible, setSubpostVisible] = useState(false)
 	const [filterVisible, setFilterVisible] = useState(false)
-	const [isFilled, setIsFilled] = useState(false)
-	const [mapRequest, setMapRequest] = useState({})
+	const [bounds, setBounds] = useState({})
+	const [markers, setMarkers] = useState([])
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
-	const [bounds, setBounds] = useState({})
 
 	const getBounds = (region) => {
 		let longitudeDelta = region.longitudeDelta
@@ -78,9 +101,7 @@ const MapScreen = ({navigation}) => {
 			longitude: longitude
 		})
 		console.log(bounds)
-		console.log(bounds)
 	}
-
 
 	const ratingRef = useRef()
 	const purposeRef = useRef()
@@ -116,34 +137,61 @@ const MapScreen = ({navigation}) => {
 		{id : "ECT", label: "기타"},
 	]
 
-	const fetchMap = async () => {
-		try {
-			// 요청이 시작 할 때에는 error 와 users 를 초기화하고
-			setError(null)
-			// loading 상태를 true 로 바꿉니다.
-			setLoading(true)
-			const response = await getMap(mapRequest)
-		} catch (e) {
-			setError(e)
-			console.log("catch error", e)
-		}
-
-		setLoading(false)
-	}
+	let placeId = 0
 
 	useEffect(() => {
-		console.log("hi", bounds)
+		const fetPlacePost = async () => {
+			try {
+				setError(null)
+				setLoading(true)
+			} catch (error) {
+				console.log("error" , error)
+			}
+		}
+	}, [placeId])
+
+	useEffect(() => {
+		const fetchMap = async () => {
+			console.log("???", location)
+		
+			try {
+				setError(null)
+				setLoading(true)
+				console.log("this is location", location)
+				const mapRequest = {
+					latitude: location.latitude,
+					longitude: location.longitude,
+					latitudeDelta: 0.1,
+					longitudeDelta: 0.1,
+					purposeList: [],
+					categoryList: [],
+					rating: null
+				}
+				console.log("mapRequest", mapRequest)
+				const response = await getMap(mapRequest)
+				console.log("me!!!!!!!!!!!!!", response.data)
+				setMarkers(response.data)
+			} catch (e) {
+				setError(e)
+				console.log("catch error", e)
+			}
+		
+			setLoading(false)
+		}
+		fetchMap()
+	}, [location])
+
+	useEffect(() => {
 		let isComponentMounted = true
 		requestPermission().then(result =>{
-			console.log({result})
 			if (result === "granted"){
 				Geolocation.getCurrentPosition(
 					position => {
 						setLocation(position.coords)
 						if (isComponentMounted){
+						
 							setLocation(position.coords)
 						}
-						
 					},
 					error => {
 						console.log(error.code, error.message)
@@ -158,10 +206,12 @@ const MapScreen = ({navigation}) => {
 		})
 		return () => {
 			isComponentMounted = false
-		}
-	},[])
+		}	
+	}, [])
+	
 
-	if(!location){
+
+	if (!location) {
 		return (
 			<View>
 				<Text>Splash Screen</Text>
@@ -208,9 +258,21 @@ const MapScreen = ({navigation}) => {
 				customMapStyle={mapStyle}
 				onRegionChangeComplete={region => getBounds(region)}
 			>
-				{state.markers.map((marker, index) => {
+				{markers.map((marker, index) => {
+					console.log("markerrrrr", marker)
+					const coordinate = {
+						latitude: marker.latitude,
+						longitude: marker.longitude
+					}
+					if (marker.category == "카페") {
+						const image = "../assets/images/marker.png"
+					}
+					console.log("corrrrrr", coordinate)
+					// return (
+					// 	<Text key={index}>{marker.latitude}</Text>)
+
 					return (
-						<MapView.Marker key={index} coordinate={marker.coordinate} onPress={() => setSubpostVisible(!subpostVisible)}>
+						<MapView.Marker key={index} coordinate={coordinate} onPress={() => { placeId = marker.placeId, setSubpostVisible(!subpostVisible) }}>
 							<Animated.View style={[styles.markerWrap]}>
 								<Animated.Image
 									source={require("../assets/images/marker.png")}
@@ -257,7 +319,7 @@ const MapScreen = ({navigation}) => {
 						scrollEventThrottle={1}
 						showsHorizontalScrollIndicator={true}
 					>
-						{state.markers.map((marker, index) => (
+						{markers.map((marker, index) => (
 							<View style={styles.miniPost} key={index}>
 								<Image
 									source={marker.image}
