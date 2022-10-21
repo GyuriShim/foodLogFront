@@ -5,6 +5,7 @@ import UserContext from "../contexts/User"
 import { clearAll, getItemFromAsync, setItemToAsync } from "../utils/StorageFun"
 import PropTypes from "prop-types"
 import { login } from "../service/login"
+import UserIdContext from "../contexts/UserId"
 
 GoogleSignin.configure({
 	webClientId : "177696185773-g2433eafo6etl3t3qhbrm7e77sd8i8d4.apps.googleusercontent.com",
@@ -16,6 +17,8 @@ GoogleSignin.configure({
 const Login = ({navigation}) => {
 	const [loaded, setLoaded] = useState(false)
 	const {dispatch} = useContext(UserContext)
+	const {userId, setUserId} = useContext(UserIdContext)
+
 	const googleLogin = (email) => {
 		console.log(email)
 		login(email)
@@ -28,6 +31,7 @@ const Login = ({navigation}) => {
 						"email" : email,
 					}
 					setItemToAsync("user", JSON.stringify(user))
+					setUserId(res.data.id)
 					if (res.data.member == false) {
 						navigation.navigate("AddInfo")
 					} else {

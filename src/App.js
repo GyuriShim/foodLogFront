@@ -7,6 +7,7 @@ import { ProgressProvider } from "./contexts/Progress"
 import { SubSearchContextProvider } from "./contexts/SubSearchContext"
 import { SearchContextProvider } from "./contexts/SearchContext"
 import { PurposeContextProvider } from "./contexts/Purpose"
+import { UserIdContextProvider } from "./contexts/UserId"
 
 
 const App = () => {
@@ -22,16 +23,18 @@ const App = () => {
 
 	return (ready? <Loading /> :(
 		<UserProvider>
-			<PurposeContextProvider>
-				<SubSearchContextProvider>
-					<SearchContextProvider>
-						<ProgressProvider>
-							<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
-							<Navigation />
-						</ProgressProvider>
-					</SearchContextProvider>
-				</SubSearchContextProvider>
-			</PurposeContextProvider>
+			<UserIdContextProvider>
+				<PurposeContextProvider>
+					<SubSearchContextProvider>
+						<SearchContextProvider>
+							<ProgressProvider>
+								<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
+								<Navigation />
+							</ProgressProvider>
+						</SearchContextProvider>
+					</SubSearchContextProvider>
+				</PurposeContextProvider>
+			</UserIdContextProvider>
 		</UserProvider>
 	)
 	)

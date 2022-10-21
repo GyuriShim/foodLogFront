@@ -102,7 +102,7 @@ const AddInfo = ({navigation}) => {
 		} catch (error) {
 			console.log("join button error", error)
 		}
-		
+		dispatch(true)
 	}
 
 	const _handleDoubleCheckPress = async () => {
