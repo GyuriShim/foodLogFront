@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState, useContext } from "react"
 import axios from "axios"
 import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator, SafeAreaView}from "react-native"
 import { TextInput } from "react-native-gesture-handler"
@@ -13,6 +13,7 @@ import { deletePost } from "../service/post"
 import { createComment, deleteComment } from "../service/comment"
 import { FlatList } from "react-native"
 import { getItemFromAsync } from "../utils/StorageFun"
+import UserIdContext from "../contexts/UserId"
 
 
 const Box1 = styled.View`
@@ -98,10 +99,13 @@ function PostScreen({navigation, route}){
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [postId, setPostId] = useState(0)
+	const [writerId, setWriterId] = useState(0)
 	const [date, setDate] = useState("")
 	const [rating, setRating] = useState()
 	const [commentContent, setCommentContent] = useState()
 	const [isChanged, setIsChanged] = useState(false)
+	const {userId} = useContext(UserIdContext)
+
 	
 	const fetchPost = async () => {
 		try {
@@ -109,6 +113,7 @@ function PostScreen({navigation, route}){
 			setError(null)
 			// loading 상태를 true 로 바꿉니다.
 			setLoading(true)
+			const userInfo = JSON.parse(await getItemFromAsync("user"))
 			const response = await getPost(37)
 			setPost(response.data)
 			setPlace(response.data.place)
@@ -117,8 +122,9 @@ function PostScreen({navigation, route}){
 			setPostId(response.data.postId)
 			setDate(response.data.date)
 			setRating(response.data.rating)
-
+			setWriterId(response.data.memberId)
 			console.log("PostScreen:", response.data)
+			console.log("사용자 id:" , userId)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -184,7 +190,7 @@ function PostScreen({navigation, route}){
 				</View>
 
 				<View>
-					<Button title="삭제" onPress={() => deleteCommentAxios(37, item.commentId)}/>
+					{userId===item.memberId &&<Button title="삭제" onPress={() => deleteCommentAxios(37, item.commentId)}/>}
 				</View>
 				
 			</View>
@@ -249,8 +255,8 @@ function PostScreen({navigation, route}){
 						</View>
 					</Pressable>
 					<View style={{flexDirection: "row", alignItems: "center"}}>
-						<Button title="삭제" onPress={() => deletePostAxios(40)}/>
-						<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
+						{userId ===  writerId&& <Button title="삭제" onPress={() => deletePostAxios(40)}/>}
+						{userId ===  writerId&&<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>}
 						<Text>{/* formatDate(date) */}</Text>
 					</View>
 				</View>
