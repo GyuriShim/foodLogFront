@@ -58,7 +58,11 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		alignContent: "center",
 		flexDirection: "row",
-		//justifyContent: "center",
+		position: "absolute",
+		bottom: 0,
+		left:10,
+		width: "100%",
+		backgroundColor: "white",
 	},
 	input: {
 		flex : 1,
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 	},
 	avoid:{
-		flex:1,
+		flex: 1,
 		padding: 10,
 	},
 })
@@ -126,7 +130,16 @@ function PostScreen({navigation, route}){
 				}
 			})
 			.catch((error)=> {
-				console.log(error)
+				if (error.res) {
+					console.log("error1", error.response.data)
+					console.log("error2", error.response.status)
+					console.log("error3", error.response.headers)
+				} else if (error.request) {
+					console.log("error4", error.request)
+					console.log("error5", error.message)
+				} else {
+					console.log("error6", error.message)
+				}
 			})
 	}
 
@@ -144,37 +157,24 @@ function PostScreen({navigation, route}){
 		
 	}
 
-	const deleteCommentAxios = async(postId, commentId) => {
-		await deleteComment(postId, commentId)
-			.then(response => {
-				if(response){
-					console.log(response.data)
-					console.log("delete comment success")
-				}
-			})
-			.catch((error)=> {
-				console.log(error)
-			})
-	}
-
 	const renderItem = ({ item }) => {
 		return (
-		  <View>
 			<View>
-			  <Text>user: {item.username}</Text>
+				<View>
+					<Text>user: {item.username}</Text>
+				</View>
+				<View>
+					<Text>commentId: {item.commentId}</Text>
+				</View>
+				<View>
+					<Text>content: {item.comment}</Text>
+				</View>
+				<View>
+					<Text>created: {item.createdDate}</Text>
+				</View>
 			</View>
-			<View>
-			  <Text>commentId: {item.commentId}</Text>
-			</View>
-			<View>
-			  <Text>content: {item.comment}</Text>
-			</View>
-			<View>
-			  <Text>created: {item.createdDate}</Text>
-			</View>
-		  </View>
-		);
-	  };
+		)
+	}
 
 	useEffect(() => {
 		fetchPost()
@@ -229,66 +229,59 @@ function PostScreen({navigation, route}){
 	}
 
 	return(
-		<>
-		<ScrollView>
-			<KeyboardAvoidingView 
-				behavior={Platform.OS === "android" ? "padding" : undefined}
-				style={styles.avoid}>
-				<View style={{width: "100%", /* backgroundColor: "rgba(165, 212, 233, 0.3)", */ marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
-					<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
-						<Pressable>
-							<View style={{flexDirection: "row", alignItems: "center"}}>
-								<Image style={styles.profile}/>
-								<Text>{post.member}</Text> 
-							</View>
-						</Pressable>
+		<View style={styles.avoid}>
+			<View style={{width: "100%", marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
+				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
+					<Pressable>
 						<View style={{flexDirection: "row", alignItems: "center"}}>
-							<Button title="삭제" onPress={() => deletePostAxios(40)}/>
-							<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
-							<Text>{/* formatDate(date) */}</Text>
+							<Image style={styles.profile}/>
+							<Text>{post.member}</Text> 
 						</View>
+					</Pressable>
+					<View style={{flexDirection: "row", alignItems: "center"}}>
+						<Button title="삭제" onPress={() => deletePostAxios(40)}/>
+						<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>
+						<Text>{/* formatDate(date) */}</Text>
 					</View>
-					<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
-						source={{ uri: pictures[0] }}
-					/>
-					<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-						<Text style={{fontSize: 16}}>{place.name}</Text>
-						<CustomRatingBar
-						/> 
-					</View>
-					<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
-						<Location name="location-outline" size={14}/>
-						<Text>{place.address}</Text>
-					</View>
-					<Text>
-						{post.review}
-					</Text>
 				</View>
-			
-				<View style = {styles.block}>
-					{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
-					<TextInput
-						style = {styles.input}
-						//multiline = {true}
-						placeholder = "댓글을 입력하세요"
-						value={commentContent}
-						onChangeText={text => {setCommentContent(text), console.log(commentContent)}}
-					/>
-					<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-						<Button title="등록" onPress={() => createCommentAxios(37, commentContent)}/>
-						{/* <View style = {styles.button}>
-						</View> */}
-					</TouchableOpacity>
+				<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
+					source={{ uri: pictures[0] }}
+				/>
+				<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+					<Text style={{fontSize: 16}}>{place.name}</Text>
+					<CustomRatingBar
+					/> 
 				</View>
-			</KeyboardAvoidingView>
-		</ScrollView>
-		<View>
+				<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
+					<Location name="location-outline" size={14}/>
+					<Text>{place.address}</Text>
+				</View>
+				<Text>
+					{post.review}
+				</Text>
+			</View>
+
 			<FlatList
 				data={comment}
 				renderItem={renderItem}
 			/>
+			<View style = {styles.block}>
+				{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
+				<TextInput
+					style = {styles.input}
+					//multiline = {true}
+					placeholder = "댓글을 입력하세요"
+					value={commentContent}
+					onChangeText={text => {setCommentContent(text), console.log(commentContent)}}
+					//textAlignVertical="center"
+				/>
+				<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
+					<Button title="등록" onPress={() => createCommentAxios(37, commentContent)}/>
+					{/* <View style = {styles.button}>
+						</View> */}
+				</TouchableOpacity>
+			</View>
 		</View>
-		</>
 		
 	)
 }

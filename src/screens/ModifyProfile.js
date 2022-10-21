@@ -13,6 +13,7 @@ import UserContext from "../contexts/User.js"
 import { getItemFromAsync } from "../utils/StorageFun.js"
 import moment from "moment"
 import { join, checkUsername } from "../service/login"
+import { getMember } from "../service/member.js"
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -35,14 +36,36 @@ const ModifyProfile = ({navigation}) => {
 	const [birthErrorMessage, setBirthErrorMessage] = useState("")
 	const [gender, setGender] = useState("M")
 	const [birthday, setBirthday] = useState("1999-11-27")
-	const [response, setResponse] = useState(null)
+	const [url, setUrl] = useState()
 	const [disabled, setDisabled] = useState(true)
+	const [loading, setLoading] = useState(false)
 	const { dispatch } = useContext(UserContext)
 	
 	// eslint-disable-next-line no-undef
 	const formData = new FormData()
 
 	const selfBioRef = useRef()
+
+	const fetchProfile = async () => {
+		try{
+			setLoading(true)
+			const userInfo = JSON.parse(await getItemFromAsync("user"))
+			const response = await getMember(userInfo.id)
+			console.log(response.data)
+			setUsername(response.data.username)
+			setSelfBio(response.data.selfBio)
+			setUrl(response.data.profilePicture)
+			setBirthday(String(response.data.birthday[0])+"-"+String(response.data.birthday[1])+"-"+String(response.data.birthday[2]))
+			setGender(response.data.gender)
+		} catch(e){
+			console.log("catch error", e)
+		}
+		setLoading(false)
+	}
+
+	useEffect(() => {
+		fetchProfile()
+	}, [])
 
 	const join = async(formData) => {
 		try {			
@@ -143,7 +166,7 @@ const ModifyProfile = ({navigation}) => {
 					name: res?.assets[0]?.fileName,
 				}
 				// formData.append("profileImage", file)
-				// setResponse(profilePic)
+				setUrl(res?.assets[0]?.uri)
 			}
 		)
 	}
@@ -191,6 +214,8 @@ const ModifyProfile = ({navigation}) => {
 		)
 	}, [username, birthday, idErrorMessage, birthErrorMessage, doubleCheck])
 
+	if (loading) return <Text>로딩 중</Text>
+
 	return (
 		<KeyboardAwareScrollView
 			style={{flex: 1, backgroundColor: "#ffffff"}}
@@ -207,7 +232,7 @@ const ModifyProfile = ({navigation}) => {
 				<TouchableOpacity onPress={onSelectImage}>
 					<Image 
 						style={styles.profile}
-						source={{uri: response?.assets[0]?.uri}} />
+						source={{uri: url}} />
 				</TouchableOpacity>
 				<Input
 					height= {40}
