@@ -171,9 +171,6 @@ function PostScreen({navigation, route}){
 	
 
 	const renderItem = ({ item }) => {
-		//const user = await getItemFromAsync('user')
-		//console.log(user)
-
 		return (
 			<View style={{flexDirection: "row", padding: 7, width: "100%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
 				<View style={{flexDirection: "row", alignItems: "center"}}>
