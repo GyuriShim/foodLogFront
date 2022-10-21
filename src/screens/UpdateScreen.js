@@ -125,16 +125,7 @@ function UpdateScreen({navigation, route}){
 				}
 			})
 			.catch((error)=> {
-				if (error.res) {
-					console.log("error1", error.response.data)
-					console.log("error2", error.response.status)
-					console.log("error3", error.response.headers)
-				} else if (error.request) {
-					console.log("error4", error.request)
-					console.log("error5", error.message)
-				} else {
-					console.log("error6", error.message)
-				}
+				console.log(error)	
 			})
 		setLoading(true)
 		navigation.navigate("PostScreen", [review,postId])

@@ -93,10 +93,7 @@ function PostScreen({navigation, route}){
 	const [rating, setRating] = useState()
 	const [commentContent, setCommentContent] = useState()
 	const [isChanged, setIsChanged] = useState(false)
-	const [, updateState] = useState()
-	//const forceUpdate = useCallback(() => updateState({}), [])
-	//const postId2 = route.params.postId
-
+	
 	const fetchPost = async () => {
 		try {
 			// 요청이 시작 할 때에는 error 와 users 를 초기화하고
@@ -117,10 +114,8 @@ function PostScreen({navigation, route}){
 			setError(e)
 			console.log("catch error", e)
 		}
-
 		setLoading(false)
 	}
-
 	
 	const deletePostAxios = async(postId) => {
 		await deletePost(postId)
@@ -131,16 +126,7 @@ function PostScreen({navigation, route}){
 				}
 			})
 			.catch((error)=> {
-				if (error.res) {
-					console.log("error1", error.response.data)
-					console.log("error2", error.response.status)
-					console.log("error3", error.response.headers)
-				} else if (error.request) {
-					console.log("error4", error.request)
-					console.log("error5", error.message)
-				} else {
-					console.log("error6", error.message)
-				}
+				console.log(error)
 			})
 	}
 
@@ -156,7 +142,6 @@ function PostScreen({navigation, route}){
 			.catch((error)=> {
 				console.log(error)
 			})
-		
 	}
 
 	const deleteCommentAxios = async(postId, commentId) => {
@@ -171,7 +156,6 @@ function PostScreen({navigation, route}){
 			.catch((error)=> {
 				console.log(error)
 			})
-		
 	}
 	
 
@@ -197,11 +181,6 @@ function PostScreen({navigation, route}){
 		fetchPost()
 	}, [route.params, isChanged])
 
-
-	
-	//console.log("data : ", post)
-	//console.log("pictures" , pictures)
-	// console.log("Picture", post.pictures[0])
 
 	if (loading) return <Text>로딩 중</Text>
 
