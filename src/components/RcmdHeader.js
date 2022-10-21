@@ -1,23 +1,23 @@
-import React, {useContext, useState} from "react"
+import React, {useContext, useEffect, useState} from "react"
 import {
 	StyleSheet, 
 	useWindowDimensions,
 	View,
 } from "react-native"
 import { Picker } from "@react-native-picker/picker"
+import PurposeContext from "../contexts/Purpose"
 
 const RcmdHeader = () => {
 	const width = useWindowDimensions().width
-
-	const [selectedValue, setSelectedValue] = useState("null")
+	const {value, setValue} = useContext(PurposeContext)
 
 	return (
 		<>
 			<View style={[styles.block]}>
 				<Picker
-					selectedValue={selectedValue}
+					selectedValue={value}
 					style={{height: 50, width: width-30, borderWidth: 0}}
-					onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+					onValueChange={(itemValue, itemIndex) => setValue(itemValue)}
 					mode={"dropdown"}
 				>
 					<Picker.Item label="전체" value="null" fontFamily="SF-Pro-Text-Semibold"/>
