@@ -12,6 +12,8 @@ import SubSearchHeader from "../components/SubSearchHeader"
 import AccountScreen from "../screens/AccountScreen"
 import ModifyProfile from "../screens/ModifyProfile"
 import UpdateScreen from "../screens/UpdateScreen"
+import KeySearch from "../screens/KeySearch"
+import KeySearchHeader from "../components/KeySearchHeader"
 
 const Stack = createStackNavigator()
 const MainStack = () => {
@@ -83,6 +85,18 @@ const MainStack = () => {
 			/>
 			<Stack.Screen name="UpdateScreen" component={UpdateScreen}
 				options={{title: "게시물수정", headerBackTitle: "back"}}
+			/>
+			<Stack.Screen name="KeySearch" component={KeySearch} 
+				options={{
+					title: "상호명 검색" ,
+					headerTitle: () => <KeySearchHeader/>,
+					headerStyle: {
+						height:100, 
+						backgroundColor: "rgba(190, 235, 255, 0.4)", 
+						borderBottomColor: "#ccc", 
+						borderBottomWidth:2
+					},
+				}}
 			/>
 		</Stack.Navigator>
 	)

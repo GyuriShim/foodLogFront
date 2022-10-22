@@ -1,7 +1,7 @@
 import React,{useState, useEffect, useRef} from "react"
 import { launchImageLibrary } from "react-native-image-picker"
 import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet} from "react-native"
-import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
+//import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import {useRoute} from "@react-navigation/native"
 import axios from "axios"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
@@ -11,7 +11,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
 import ImagePicker from "react-native-image-picker"
 import { createPostApi } from "../service/post"
-import SearchResult from "../components/SearchResult"
+import KeySearch from "../screens/KeySearch"
 
 const Container = styled.View` 
   flex: 1
@@ -26,6 +26,7 @@ const Box1 = styled.View`
 
 const Box3 = styled.View`
   flex: 1
+  padding : 20px
   border-radius: 7px
   margin: 3px 10px
   background-color: white
@@ -111,7 +112,7 @@ function UploadScreen({onChangeDate, navigation }){
 	const [review, setReview] = useState()
 	const [rating, setRating] = useState()
 	const [purpose, setPurpose] = useState()
-	const [place, setPlace] = useState()
+	//const [place, setPlace] = useState()
 
 	const formdata = new FormData() //지원
 	const formData = new FormData()
@@ -133,7 +134,7 @@ function UploadScreen({onChangeDate, navigation }){
 	}
 
 
-	const createPost = async (review, rating, purpose) => {
+	const createPost = async (review, rating, purpose, place) => {
 		const newPost = {
 			memberId: 40,
 			review: review,
@@ -352,8 +353,8 @@ function UploadScreen({onChangeDate, navigation }){
 							//date={date}
 						/>
 					</View>
-					<TouchableOpacity>
-						onPress={SearchResult}
+					<View style = {styles.Box2}>
+						<Button title="상호명" onPress={() => navigation.navigate("KeySearch")}/>
 						{/* <TextInput
 							style = {styled.input}
 							multiline = {true}
@@ -361,8 +362,7 @@ function UploadScreen({onChangeDate, navigation }){
 							textAlignVertical="center"
 							value={place}
 						> */}
-
-					</TouchableOpacity>
+					</View>
 					<Box4>
 						<CustomRatingBar
 						/>
