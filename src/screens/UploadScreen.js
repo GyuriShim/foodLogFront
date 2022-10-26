@@ -11,7 +11,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 import RNPickerSelect from "react-native-picker-select"
 import ImagePicker from "react-native-image-picker"
 import { createPostApi } from "../service/post"
-import KeySearch from "../screens/KeySearch"
+import KeySearchScreen from "../screens/KeySearchScreen"
 
 const Container = styled.View` 
   flex: 1
@@ -337,7 +337,6 @@ function UploadScreen({onChangeDate, navigation }){
 						{date ? 
 							<Text style={{flex: 1}}>{date}</Text> :
 							<Text style={{flex: 1}}>날짜</Text>}
-						
 						<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
 							<Button title="등록" onPress={showDatePicker}/>
 						</TouchableOpacity>
@@ -354,7 +353,7 @@ function UploadScreen({onChangeDate, navigation }){
 						/>
 					</View>
 					<View style = {styles.Box2}>
-						<Button title="상호명" onPress={() => navigation.navigate("KeySearch")}/>
+						<Button style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}title="상호명" onPress={() => navigation.navigate("KeySearchScreen")}/>
 						{/* <TextInput
 							style = {styled.input}
 							multiline = {true}
