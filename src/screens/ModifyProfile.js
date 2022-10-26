@@ -40,6 +40,7 @@ const ModifyProfile = ({navigation}) => {
 	const [disabled, setDisabled] = useState(true)
 	const [loading, setLoading] = useState(false)
 	const { dispatch } = useContext(UserContext)
+	var originUsername
 	
 	// eslint-disable-next-line no-undef
 	const formData = new FormData()
@@ -57,6 +58,7 @@ const ModifyProfile = ({navigation}) => {
 			setUrl(response.data.profilePicture)
 			setBirthday(String(response.data.birthday[0])+"-"+String(response.data.birthday[1])+"-"+String(response.data.birthday[2]))
 			setGender(response.data.gender)
+			originUsername = response.data.username
 		} catch(e){
 			console.log("catch error", e)
 		}
@@ -187,7 +189,7 @@ const ModifyProfile = ({navigation}) => {
 
 	//username이 변경될때마다 중복확인값 false로 변경
 	useEffect(() => {
-		if (username === "sdfljw123") {
+		if (username === originUsername) {
 			setDoubleCheck(true)
 		} else {
 			setDoubleCheck(false)
