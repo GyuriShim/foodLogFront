@@ -12,6 +12,7 @@ import Geolocation from "react-native-geolocation-service"
 import Icon from "react-native-vector-icons/MaterialIcons"
 //import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import { TouchableOpacity } from "react-native-gesture-handler"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 
 
@@ -21,7 +22,7 @@ const Container = styled.View`
   background-color: white //배경
 `
 const Box5= styled.View`
-  flex: 1
+  flex: 0
   border-radius: 7px
   margin: 5px 10px
   background-color: white
@@ -42,6 +43,35 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		paddingLeft: 5,
 	},
+	Box5:{
+		flex:0,
+		margin: 10,
+		borderRadius: 7,
+		borderWidth: 2,
+		backgroundcolor: "white",
+		borderColor: "#a4d3ea",
+		flexDirection: "row",
+		backgroundColor: "white",
+		alignContent: "center",
+		alignItems: "center",
+		paddingLeft: 5,
+	},
+	iconContainer : {
+		backgroundColor : "#e7e7e7",
+		padding : 7,
+		borderRadius : 10,
+		marginRight : 15,
+	},
+	locationText : {
+        
+	},
+	row : {
+		flexDirection : "row",
+		alignItems : "center",
+		paddingVertical : 15,
+		borderBottomWidth : 1,
+		borderColor : "#a4d3ea",
+	},
 })
 const requestPermission = async() => {
 	try {
@@ -55,11 +85,16 @@ const requestPermission = async() => {
 	}
 }
 
-function KeySearchScreen (data) {
+function KeySearchScreen () {
 	const [coordinate, setCoordinate] = useState({latitude: 37.5666805, longitude: 126.9784147})
 	const [res, setRes]= useState(null)
-	const [place, setPlace] = useState("")
-	const [input, setInput] = useState("")
+	const [placeObj, setPlaceObj] = useState({})
+	const [input, setInput] = useState(inputText)
+	const [data, setData] = useState("")
+	const [place, setPlace] = useState()
+	const [inputText, setInputText] = useState("")
+
+	
 
 	useEffect(() => {
 		let isComponentMounted = true
@@ -91,6 +126,7 @@ function KeySearchScreen (data) {
 						maximumAge: 10000
 					}
 				)
+				//setData({data})
 			}
 		})
 		return () => {
@@ -107,80 +143,97 @@ function KeySearchScreen (data) {
 	}
 	const placeSearch = async() => {
 		try{
-			//const data = {query : input}
 			await axios({
+				url : `https://dapi.kakao.com/v2/local/search/keyword.json?query=${inputText}&size=10&&x=${coordinate.longitude}&y=${coordinate.latitude}&input_coord=WGS84`,
 				method : "GET",
-				url: `https://dapi.kakao.com/v2/local/search/keyword.json?page=1&size=10&query=백소정&x=${coordinate.longitude}&y=${coordinate.latitude}&input_coord=WGS84`,//json형태
-				headers : {
-					"Authorization": "KakaoAK a5511114012c0013be3072d88f677c4c"}
-			}
-			).then((res) => 
-			{
-				console.log(res.data.documents[0])
-				//place = res.get(url, headers = headers).json()["documents"]
+				//data: {query: "해피덮"},
+				headers : ({
+					"Authorization": "KakaoAK a5511114012c0013be3072d88f677c4c",
+				}),
+				
+			}).then((res) =>{
+				const place = res.data.documents[1]
+				setPlaceObj({
+					name: place.place_name
+				})
 				//res.json())
-				//.then(json => {
-				// 받은 json으로 기능 구현
-				setPlace(res.data.documents[0])
-				const placeName = setPlace.place_name
-				console.log(placeName)
+				//.then((resData) => {
+				//const data = res.query.documents[0]
+				//console.log(res.query.documents[0])
+				
 			})
-		}catch (error) {
-			console.log(error)
-		}
+			//console.log(place.place_name)
+			console.log(placeObj)
+		} catch (error) {
+			console.log(error.message)
+		} 
 	}
-	const onChange = (res) => {
+				
+	//place = res.get(url, headers = headers).json()["documents"]
+	//res.json())
+	// 받은 json으로 기능 구현
+	//setPlace(res.data.documents[0])
+	//const placeName = setPlace.place_name
+	//console.log(placeName)
+	
+	
+	/* const onChange = (res) => {
 		setInput(res.placeName)
 	}
 	const handleSubmit = (res) => {
 		res.preventDefault()
 		setPlace(input)
 		setInput("")
-	}
-	const renderItem = ({item}) => {
+	} */
+	const renderItem = () => {
+		//console.log(input)
 		return (
 			<View style={{flexDirection: "row", padding: 7, width: "100%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
 				<View style={{flexDirection: "row", alignItems: "center"}}>
 					<View style={{flexDirection: "column"}}>
-						<Text style={{fontWeight: "bold"}}>{item.placeName}</Text>
+						<Text style={{fontWeight: "bold"}}
+							source = {placeObj.name}></Text>
 					</View>
 				</View>				
 			</View>
 		)
-	}
+	} 
+
+	
 	
 
 	return(
-		<KeyboardAwareScrollView contentContainerStyle={{flex:1, backgroundColor:"white"}}>
-			<Container >
-				<View style = {styles.Box2}>
-					<TextInput
-						style = {{flex:1}}
-						multiline = {false}
-						placeholder = "상호명을입력하세요"
-						textAlignVertical="center"
-						onChangeText={text => setInput(placeSearch(data))}
-						value={data}
-					> 
-					</TextInput>
-					<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-						<Icon name="search" size={30} onPress={()=>{placeSearch(data)}}/>
-					</TouchableOpacity>
-				</View>
-				<Box5>
-					<View>
-						<FlatList>
-							data={renderItem}
-						</FlatList>
-					</View>
-					{/* <FlatList>
-					data={placeName}
-					renderItem={renderItem}
-					</FlatList> */}
-				</Box5>
-			</Container>
-		</KeyboardAwareScrollView>
+		<View contentContainerStyle={{flex:1,backgroundColor:"white"}}> 
+			<View style = {styles.Box2}>
+				<TextInput
+					returnKeyType="search"
+					style = {{flex:1}}
+					multiline = {false}
+					placeholder = "상호명을입력하세요"
+					textAlignVertical="center"
+					value={inputText}
+					onChangeText={setInputText}
+					autoFocus
+				> 
+				</TextInput>
+				<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+					<Icon name="search" size={30} onPress={()=>{placeSearch(res)}}/>
+				</TouchableOpacity>
+			</View>
+			<View style = {styles.Box5}>
+				{/* <Text>{placeObj.name}</Text> */}
+				<FlatList
+					data = {placeObj.name}
+					renderItem = {({item}) => 
+						<View style = {styles.row}>
+							<Text style = {styles.locationText}>{placeObj.name}</Text>
+						</View>
+					}
+				/>
+			</View>
+		</View>
 	)
+
     
 }
 export default KeySearchScreen
