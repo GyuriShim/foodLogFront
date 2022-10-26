@@ -57,9 +57,6 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		alignContent: "center",
 		flexDirection: "row",
-		position: "absolute",
-		bottom: 0,
-		left:10,
 		width: "100%",
 		backgroundColor: "white",
 	},
@@ -81,6 +78,7 @@ const styles = StyleSheet.create({
 		marginRight: 10
 	}
 })
+
 
 function PostScreen({navigation, route}){
 	const [text, setText] = useState("")
@@ -154,7 +152,6 @@ function PostScreen({navigation, route}){
 				console.log(error)
 			})
 	}
-
 	const deleteCommentAxios = async(postId, commentId) => {
 		await deleteComment(postId, commentId)
 			.then(response => {
@@ -168,30 +165,29 @@ function PostScreen({navigation, route}){
 				console.log(error)
 			})
 	}
-	
-
-	const renderItem = ({ item }) => {
-		//const user = await getItemFromAsync('user')
-		//console.log(user)
-
-		return (
+	function Comment(comment, username, createdDate, memberProfileImage, commentId, memberId) {
+		const {userId} = useContext(UserIdContext)
+		return(
 			<View style={{flexDirection: "row", padding: 7, width: "100%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
 				<View style={{flexDirection: "row", alignItems: "center"}}>
-					<Image style={styles.commentProfile} source={{uri: item.memberProfileImage}}/>
+					<Pressable onPress={() => navigation.navigate("account", userId)}>
+						<Image style={styles.commentProfile} source={{uri: "https://foodlogstorage.s3.ap-northeast-2.amazonaws.com/62373507-575e-424d-8965-67a845d8a93a.png"}}/>
+					</Pressable>
 					<View style={{flexDirection: "column"}}>
-						<Text style={{fontWeight: "bold"}}>{item.username}</Text>
-						<Text>{item.comment}</Text>
-						<Text style={{fontSize: 10}}>{item.createdDate}</Text>
+						<Pressable onPress={() => navigation.navigate("account", userId)}>
+							<Text style={{fontWeight: "bold"}}>{username}</Text>
+						</Pressable>
+						<Text>{comment}</Text>
+						<Text style={{fontSize: 10}}>{createdDate}</Text>
 					</View>
 				</View>
-
 				<View>
-					{userId===item.memberId &&<Button title="삭제" onPress={() => deleteCommentAxios(37, item.commentId)}/>}
-				</View>
-				
+					{userId===memberId &&<Button title="삭제" onPress={() => deleteCommentAxios(37, commentId)}/>}
+				</View>		
 			</View>
 		)
 	}
+	
 
 	useEffect(() => {
 		fetchPost()
@@ -241,7 +237,7 @@ function PostScreen({navigation, route}){
 	}
 
 	return(
-		<View style={styles.avoid}>
+		<ScrollView style={styles.avoid}>
 			<View style={{width: "100%", marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
 				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
 					<Pressable>
@@ -272,11 +268,6 @@ function PostScreen({navigation, route}){
 					{post.review}
 				</Text>
 			</View>
-
-			<FlatList
-				data={comment}
-				renderItem={renderItem}
-			/>
 			<View style = {styles.block}>
 				{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
 				<TextInput
@@ -292,7 +283,23 @@ function PostScreen({navigation, route}){
 						</View> */}
 				</TouchableOpacity>
 			</View>
-		</View>
+			<View>
+				{comment.map((comment, key) =>{
+						return (
+							<View>
+								{
+									Comment(comment.comment,
+										comment.username,
+										comment.createdDate,
+										comment.memberProfileImage,
+										comment.commentId,
+										comment.memberId)
+								}
+							</View>	
+						)
+					})}
+			</View>
+		</ScrollView>
 	)
 }
 
