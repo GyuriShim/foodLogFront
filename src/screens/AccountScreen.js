@@ -5,7 +5,8 @@ import MapView from "react-native-maps"
 import PropTypes from "prop-types"
 import { getItemFromAsync } from "../utils/StorageFun"
 import { getMember } from "../service/member"
-import { follower,following } from "../service/subscribe"
+import { follower,following, Subscribe, Unsubscribe } from "../service/subscribe"
+import { useIsFocused } from "@react-navigation/native"
 
 const Container = styled.View`
 	align-items: center
@@ -25,6 +26,9 @@ const AccountScreen = ({navigation, route}) => {
 	const [loading, setLoading] = useState(false)
 	const [myId, setMyId] = useState()
 	const [memberId, setMemberId] = useState()
+	const [isFollowing, setIsFollowing] = useState(false)
+	const [refreshing, setRefeshing] = useState(false)
+	const isFocused = useIsFocused()
 
 	const fetchProfile = async () => {
 		try{
@@ -32,10 +36,10 @@ const AccountScreen = ({navigation, route}) => {
 			var response
 			var followerRes
 			var followingRes
+			console.log("route",route)
 			const userInfo = JSON.parse(await getItemFromAsync("user"))
 			setMyId(userInfo.id)
 			console.log("user",userInfo)
-			console.log("route",route)
 			if (route?.params) {
 				response = await getMember(route?.params)
 				followerRes = await follower(route?.params)
@@ -46,11 +50,13 @@ const AccountScreen = ({navigation, route}) => {
 				followingRes = await following(userInfo.id)
 			}
 			//const response = await getMember(route !== null? route?.params : userInfo.id)
+			console.log(response.data)
 			console.log(followerRes.data, followingRes.data)
 			setMemberId(response.data.memberId)
 			setUserName(response.data.username)
 			setSelfBio(response.data.selfBio)
 			setUrl(response.data.profilePicture)
+			setIsFollowing(response.data.following)
 			setUserFolloing(followingRes.data.totalElements)
 			setUserFollower(followerRes.data.totalElements)
 		} catch(e){
@@ -61,7 +67,40 @@ const AccountScreen = ({navigation, route}) => {
 
 	useEffect(() => {
 		fetchProfile()
-	}, [])
+	}, [isFocused])
+
+	useLayoutEffect(() => {
+		navigation.setOptions({headerTitle: userName})
+		fetchProfile()
+	},[userName, refreshing])
+
+	const subscribeAxios = async(memberId) => {
+		await Subscribe(memberId)
+			.then(response => {
+				if(response){
+					console.log(response.data)
+					console.log("subscribe")
+					setRefeshing(!refreshing)
+				}
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
+
+	const unsubscribeAxios = async(memberId) => {
+		await Unsubscribe(memberId)
+			.then(response => {
+				if(response){
+					console.log(response.data)
+					console.log("unsubscribe")
+					setRefeshing(!refreshing)
+				}
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
 
 	if (loading) return <Text>로딩 중</Text>
 
@@ -87,21 +126,27 @@ const AccountScreen = ({navigation, route}) => {
 								justifyContent:"space-evenly",
 							}}
 						>
-							<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("follower")}>
+							<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("follower",  memberId)}>
 								<Text style={{alignSelf: "center"}}>{userFollower}</Text>
 								<Text style={{alignSelf: "center"}}>팔로워</Text>
 							</Pressable>
-							<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("following")}>
+							<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("following",  memberId)}>
 								<Text style={{alignSelf: "center"}}>{userFollowing}</Text>
 								<Text style={{alignSelf: "center"}}>팔로잉</Text>
 							</Pressable>
 							{myId===memberId? 
-								<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("Modify")}>
+								(<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("Modify")}>
 									<Text>수정</Text>
-								</Pressable>
-								:<Pressable style={{justifyContent: "center"}}>
-									<Text>구독</Text>
-								</Pressable>
+								</Pressable>)
+								:(isFollowing===false?
+									(<Pressable style={{justifyContent: "center"}} onPress={() => subscribeAxios(memberId)}>
+										<Text>구독</Text>
+									</Pressable>):
+									(<Pressable style={{justifyContent: "center"}} onPress={() => unsubscribeAxios(memberId)}>
+										<Text>구독중</Text>
+									</Pressable>
+									)
+								)
 							}
 						</View>
 					</View>

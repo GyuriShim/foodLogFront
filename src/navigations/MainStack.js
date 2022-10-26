@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { createStackNavigator } from "@react-navigation/stack"
 import MainTab from "./MainTab"
 import UploadScreen from "../screens/UploadScreen"
@@ -13,9 +13,16 @@ import AccountScreen from "../screens/AccountScreen"
 import ModifyProfile from "../screens/ModifyProfile"
 import UpdateScreen from "../screens/UpdateScreen"
 import KeySearchScreen from "../screens/KeySearchScreen"
+import { Pressable } from "react-native"
+import SubSearchContext from "../contexts/SubSearchContext"
+import { AntIcon } from "../assets/icons/AntIcon"
+import SearchContext from "../contexts/SearchContext"
 
 const Stack = createStackNavigator()
+
 const MainStack = () => {
+	const {onChangeSearchText} = useContext(SubSearchContext)
+	const {onChangeText} = useContext(SearchContext)
 	return (
 		<Stack.Navigator
 			screenOptions={{
@@ -26,7 +33,7 @@ const MainStack = () => {
 			<Stack.Screen 
 				name="search" 
 				component={SearchScreen} 
-				options={{
+				options={({navigation}) =>({
 					title: "검색",
 					headerTitle: () => <SearchHeader />,
 					headerStyle: {
@@ -35,7 +42,12 @@ const MainStack = () => {
 						borderBottomColor: "#ccc", 
 						borderBottomWidth:2
 					},
-				}}/>
+					headerLeft: (props) => (
+						<Pressable {...props} onPress={()=>{onChangeText(""),navigation.goBack()}} style={{marginHorizontal: 12}}>
+							<AntIcon name="arrowleft" size={24} color="black"/>
+						</Pressable>
+					)
+				})}/>
 			<Stack.Screen 
 				name="follower" 
 				component={Follower}
@@ -59,20 +71,26 @@ const MainStack = () => {
 			<Stack.Screen
 				name="subSearch"
 				component={SubSearch}
-				options={{
+				options={({navigation}) =>({
 					headerTitle: () => <SubSearchHeader/>,
 					headerStyle: {
 						height: 55,
 						borderBottomWidth: 1,
 						borderBottomColor: "#ccc",
 					},
-					
-				}}
+					headerLeft: (props) => (
+						<Pressable {...props} onPress={()=>{onChangeSearchText(""),navigation.goBack()}} style={{marginLeft: 10}}>
+							<AntIcon name="arrowleft" size={24} color="black"/>
+						</Pressable>
+					)
+				})}
 			/>
 			<Stack.Screen
 				name="account"
 				component={AccountScreen}
-				options={{headerShown: false}}
+				options={{
+					headerTitle: "",
+				}}
 			/>
 			<Stack.Screen name="upload" component={UploadScreen}
 				//options={{title: "new post", headerBackTitle: "back"}}

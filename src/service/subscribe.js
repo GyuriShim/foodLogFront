@@ -15,3 +15,25 @@ export function following(id) {
 		method: "get"
 	})
 }
+
+//구독
+export function Subscribe(id) {
+	return instance({
+		url: "/v1/subscribe",
+		method: "post",
+		data: {
+			subscribeId: id
+		}
+	})
+}
+
+//구독취소
+export function Unsubscribe(id) {
+	return instance({
+		url: "/v1/subscribe",
+		method: "delete",
+		data: {
+			subscribeId: id
+		}
+	})
+}

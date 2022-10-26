@@ -1,12 +1,33 @@
-import React from "react"
-import { ScrollView, Text } from "react-native"
+import React, { useEffect, useState } from "react"
+import { FlatList, ScrollView, Text } from "react-native"
 import UserSearchResult from "../components/UserSearchResult"
+import { following } from "../service/subscribe"
 
-const Following = ({navigation}) => {
+const Following = ({navigation, route}) => {
+	const [followingList, setFollowingList] = useState([])
+	const [loading, setLoading] = useState(false)
+
+	const fetchFollowing = async () => {
+		try {
+			setLoading(true)
+			const response = await following(route?.params)
+			console.log(response.data)
+			setFollowingList(response.data.content)
+		} catch (error) {
+			console.log("catch error", error)
+		}
+		setLoading(false)
+	}
+
+	useEffect(() => {
+		fetchFollowing()
+	},[])
+
 	return (
-		<ScrollView>
-			<UserSearchResult item={{profileUrl: null, username: "wfdwefe"}} onPress={() => navigation.navigate("account")}/>
-		</ScrollView>
+		<FlatList
+			data={followingList}
+			renderItem={({item}) => (<UserSearchResult item={item} onPress={() => navigation.navigate("account", item.memberId)}/>)}
+		/>
 	)
 }
 

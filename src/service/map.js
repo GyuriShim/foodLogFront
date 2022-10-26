@@ -1,6 +1,6 @@
 import instance from "./request"
 
-//post 생성
+// map 생성 - filter 포함
 export function getMap(mapRequest) {
 	return instance({
 		url: "/v1/map",
@@ -14,5 +14,13 @@ export function getMap(mapRequest) {
 			categoryList: mapRequest.categoryList,
 			rating: mapRequest.rating
 		},
+	})
+}
+
+// place Post
+export function getPlacePost(placePostId) {
+	return instance({
+		url: `/v1/place-post/${placePostId}`,
+		method: "get",
 	})
 }
