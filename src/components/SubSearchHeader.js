@@ -15,6 +15,7 @@ import SubSearchContext from "../contexts/SubSearchContext"
 const SubSearchHeader = () => {
 	const {width} = useWindowDimensions()
 	const {userKeyword, onChangeSearchText} = useContext(SubSearchContext)
+	const [username, setUsername] = useState("")
 
 	return (
 		<>
@@ -24,12 +25,13 @@ const SubSearchHeader = () => {
 						returnKeyType="search"
 						style={styles.input} 
 						placeholder = "사용자 검색"
-						value={userKeyword}
-						onChangeText={onChangeSearchText} 
+						value={username}
+						onChangeText={text =>setUsername(text)} 
+						onSubmitEditing={() => onChangeSearchText(username)}
 						autoFocus/>
 					<Pressable
 						style={({pressed}) => [styles.button, pressed && {opacity: 0.5}]}
-						onPress={() => onChangeSearchText("")}
+						onPress={() => {onChangeSearchText(""), setUsername("")}}
 					>
 						<OcticonsIcon name="x" size={25} color="black"/>
 					</Pressable>
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
 		height: 44
 	},
 	button: {
-		marginRight:60,
+		marginRight:42,
 		marginTop: 10
 	},
 	btnText: {

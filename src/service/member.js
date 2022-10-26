@@ -7,3 +7,15 @@ export function getMember(id) {
 		method: "get"
 	})
 }
+
+export function getMemerList(username, page, size) {
+	return instance({
+		url: "/v1/member/list",
+		method: "get",
+		params: {
+			username: username,
+			page: page,
+			size: size
+		}
+	})
+}
