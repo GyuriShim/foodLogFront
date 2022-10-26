@@ -6,10 +6,9 @@ import { FontIcon } from "../assets/icons/Fontisto"
 import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Alert, useWindowDimensions} from "react-native"
 import Geolocation from "react-native-geolocation-service"
 import PropTypes from "prop-types"
-import { markers } from "../model/mapData"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
 import { TagSelect } from "react-native-tag-select"
-import { getMap } from "../service/map"
+import { getMap, getPlacePost } from "../service/map"
 import Button from "../components/Button"
 import { AntIcon } from "../assets/icons/AntIcon"
 
@@ -52,62 +51,43 @@ const requestPermission = async() => {
 
 
 
-
 const MapScreen = ({ navigation }) => {
 
 	const width = useWindowDimensions().width
-
-	// useEffect(() => {
-	// 	console.log
-	// 	const markers = data.map((map) => {
-	// 		console.log(map)
-	// 		return {
-	// 			coordinate: {
-	// 				latitude: map.latitude,
-	// 				longitude: map.longitude
-	// 			},
-	// 			title: "고든램지 버거",
-	// 			address: "서울특별시 송파구 올림픽로 300 롯데월드몰 B1 고든램지 버거",
-	// 			// image: Images[0].image,
-	// 			rating: 4,
-	// 		}
-	// 	})
-	// 	setState(markers)
-	// }, [data])
-	
-
-	
-
-	// const _changeMapsButton = ()
 
 	const [state, setState] = useState([])
 	const [location, setLocation] = useState()
 	const [subpostVisible, setSubpostVisible] = useState(false)
 	const [filterVisible, setFilterVisible] = useState(false)
-	const [bounds, setBounds] = useState({})
+	const [mapBounds, setMapBounds] = useState({})
 	const [markers, setMarkers] = useState([])
+	const [placePostId, setPlacePostId] = useState(0)
+	const [placePost, setPlacePost] = useState({ contents: [], place: { address: "", name: "" } })
+	const [rating, setRating] = useState(0.0)
+	const [purpose, setPurpose] = useState([])
+	const [category, setCategory] = useState([])
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 
-	const getBounds = (region) => {
+	const getMapBounds = (region) => {
 		let longitudeDelta = region.longitudeDelta
 		let latitudeDelta = region.latitudeDelta
 		let latitude =  region.latitude
 		let longitude = region.longitude
-		setBounds({
+		setMapBounds({
 			longitudeDelta: longitudeDelta,
 			latitudeDelta: latitudeDelta,
 			latitude: latitude,
 			longitude: longitude
 		})
-		console.log(bounds)
+		console.log(mapBounds)
 	}
 
 	const ratingRef = useRef()
 	const purposeRef = useRef()
 	const categoryRef = useRef()
 	
-	const rating = [
+	const ratingList = [
 		{id : "all", label: "전체"},
 		{id : 3, label: "3.0"},
 		{id : 3.5, label: "3.5"},
@@ -115,7 +95,7 @@ const MapScreen = ({ navigation }) => {
 		{id : 4.5, label: "4.5"}
 	]
 
-	const purpose = [
+	const purposeList = [
 		{id : "SOLO", label: "혼밥"},
 		{id : "COUPLE", label: "데이트"},
 		{id : "FRIEND", label: "친구"},
@@ -124,7 +104,7 @@ const MapScreen = ({ navigation }) => {
 		{id : "ETC", label: "기타"},
 	]
 
-	const category = [
+	const categoryList = [
 		{id : "WESTERN", label: "양식"},
 		{id : "CHINESE", label: "중식"},
 		{id : "JAPANESE", label: "일식"},
@@ -137,48 +117,55 @@ const MapScreen = ({ navigation }) => {
 		{id : "ECT", label: "기타"},
 	]
 
-	let placeId = 0
+	console.log(rating, purpose, category)
+
+	const markerClicked = async () => {
+		console.log(mapBounds)
+		await fetchMap(mapBounds)
+	}
+
 
 	useEffect(() => {
-		const fetPlacePost = async () => {
+		const fetchPlacePost = async () => {
 			try {
 				setError(null)
 				setLoading(true)
-			} catch (error) {
-				console.log("error" , error)
-			}
-		}
-	}, [placeId])
-
-	useEffect(() => {
-		const fetchMap = async () => {
-			console.log("???", location)
-		
-			try {
-				setError(null)
-				setLoading(true)
-				console.log("this is location", location)
-				const mapRequest = {
-					latitude: location.latitude,
-					longitude: location.longitude,
-					latitudeDelta: 0.1,
-					longitudeDelta: 0.1,
-					purposeList: [],
-					categoryList: [],
-					rating: null
+				if (placePostId != 0) {
+					const response = await getPlacePost(placePostId)
+					setPlacePost(response.data)
 				}
-				console.log("mapRequest", mapRequest)
-				const response = await getMap(mapRequest)
-				console.log("me!!!!!!!!!!!!!", response.data)
-				setMarkers(response.data)
-			} catch (e) {
-				setError(e)
-				console.log("catch error", e)
+			} catch (error) {
+				console.log("placePost error" , error)
 			}
-		
-			setLoading(false)
 		}
-		fetchMap()
+		fetchPlacePost()
+	}, [placePostId])
+
+	const fetchMap = async (loc) => {		
+		try {
+			setError(null)
+			setLoading(true)
+			const mapRequest = {
+				latitude: loc.latitude,
+				longitude: loc.longitude,
+				latitudeDelta: 0.1,
+				longitudeDelta: 0.1,
+				purposeList: [],
+				categoryList: [],
+				rating: null
+			}
+			const response = await getMap(mapRequest)
+			setMarkers(response.data)
+		} catch (e) {
+			setError(e)
+			console.log("catch error", e)
+		}
+	
+		setLoading(false)
+	}
+
+	useEffect(() => {
+		fetchMap(location)
 	}, [location])
 
 	useEffect(() => {
@@ -256,10 +243,9 @@ const MapScreen = ({ navigation }) => {
 				showsUserLocation={true}
 				showsMyLocationButton={true}
 				customMapStyle={mapStyle}
-				onRegionChangeComplete={region => getBounds(region)}
+				onRegionChangeComplete={region => getMapBounds(region)}
 			>
 				{markers.map((marker, index) => {
-					console.log("markerrrrr", marker)
 					const coordinate = {
 						latitude: marker.latitude,
 						longitude: marker.longitude
@@ -267,12 +253,8 @@ const MapScreen = ({ navigation }) => {
 					if (marker.category == "카페") {
 						const image = "../assets/images/marker.png"
 					}
-					console.log("corrrrrr", coordinate)
-					// return (
-					// 	<Text key={index}>{marker.latitude}</Text>)
-
 					return (
-						<MapView.Marker key={index} coordinate={coordinate} onPress={() => { placeId = marker.placeId, setSubpostVisible(!subpostVisible) }}>
+						<MapView.Marker key={index} coordinate={coordinate} onPress={() => { setPlacePostId(marker.placePostId), setSubpostVisible(!subpostVisible) }}>
 							<Animated.View style={[styles.markerWrap]}>
 								<Animated.Image
 									source={require("../assets/images/marker.png")}
@@ -300,7 +282,7 @@ const MapScreen = ({ navigation }) => {
 						paddingTop: 17,
 						paddingRight: 16,
 					}}>
-						<Text numberOfLines={1} style={styles.storeName}>햄버거</Text>
+						<Text numberOfLines={1} style={styles.storeName}>{placePost.place.name}</Text>
 						<Pressable
 							onPress={() => setSubpostVisible(!subpostVisible)}
 						>
@@ -311,7 +293,7 @@ const MapScreen = ({ navigation }) => {
 				
 					<View style={{flexDirection: "row", alignItems:"center"}}>
 						<OcticonsIcon name="location" size={12} color="black"/>
-						<Text numberOfLines={1} style={styles.storeAddress}>경기도</Text>
+						<Text numberOfLines={1} style={styles.storeAddress}>{placePost.place.address}</Text>
 					</View>
 				
 					<Animated.ScrollView
@@ -319,16 +301,16 @@ const MapScreen = ({ navigation }) => {
 						scrollEventThrottle={1}
 						showsHorizontalScrollIndicator={true}
 					>
-						{markers.map((marker, index) => (
-							<View style={styles.miniPost} key={index}>
+						{placePost.contents.map((post, index) => {
+							return (<View style={styles.miniPost} key={index}>
 								<Image
-									source={marker.image}
+									source={{ uri: post.picture }}
 									style={styles.postImage}
 									resizeMode="cover"
 								/>
-								<Text numberOfLines={3} style={styles.review}>{marker.address}</Text>
-							</View>
-						))}
+								<Text numberOfLines={3} style={styles.review}>{post.review}</Text>
+							</View>)
+						})}
 					</Animated.ScrollView>
 				</View>
 			</Modal>
@@ -344,7 +326,7 @@ const MapScreen = ({ navigation }) => {
 					<Text style={styles.title}>최소 평점</Text>
 					<View style={{paddingHorizontal: 20}}>
 						<TagSelect
-							data={rating}
+							data={ratingList}
 							max={1}
 							ref={ratingRef}
 							itemStyle={styles.item}
@@ -356,7 +338,7 @@ const MapScreen = ({ navigation }) => {
 					<Text style={styles.title}>목적</Text>
 					<View style={{paddingHorizontal: 20}}>
 						<TagSelect
-							data={purpose}
+							data={purposeList}
 							ref={purposeRef}
 							itemStyle={styles.item}
 							itemStyleSelected={styles.itemSelected}
@@ -366,7 +348,7 @@ const MapScreen = ({ navigation }) => {
 					<Text style={styles.title}>음식 종류</Text>
 					<View style={{paddingHorizontal: 20}}>
 						<TagSelect
-							data={category}
+							data={categoryList}
 							ref={categoryRef}
 							itemStyle={styles.item}
 							itemStyleSelected={styles.itemSelected}
@@ -383,44 +365,47 @@ const MapScreen = ({ navigation }) => {
 							title="적용"
 							containerStyle={{width: "40%"}}
 							onPress={() => {
-								var rating = ratingRef.current.itemsSelected[0].id
-								if (ratingRef.current.itemsSelected[0].id === "all") {
-									rating = null
+								console.log("ddd",ratingRef.current.itemsSelected[0])
+								var ratingData = ratingRef.current.itemsSelected[0]
+								if (ratingData === undefined || ratingData.id === "all") {
+									setRating(null)
+								} else {
+									setRating(ratingData.id)
 								}
-								const purpose = purposeRef.current.itemsSelected
-								const purposeTest = purpose.map((value) => {return value.id})
-								const category = categoryRef.current.itemsSelected
-								const categoryTest = category.map((value) => {return value.id})
-								Alert.alert("Selected items:", JSON.stringify([rating, purposeTest, categoryTest]))
+								setPurpose(purposeRef.current.itemsSelected.map((value) => {return value.id}))
+								setCategory(categoryRef.current.itemsSelected.map((value) => {return value.id}))
+								console.log("selected", rating, purpose, category)
 							}}
 						/>
 						
 					</View>
 				</View>
 			</Modal>
-			<Pressable style={{
-				position: "absolute", 
-				left: width/2 - 60, 
-				top: "19%", 
-				width: 120, 
-				height: 30,
-				zIndex: 100, 
-				backgroundColor: "white",
-				borderRadius: 50,
-				shadowRadius: 5,
-				shadowColor: "black",
-				shadowOffset: {
-					width: 0,
-					height: 2
-				},
-				shadowOpacity: 0.25,
-				elevation: 5,
-				flexDirection: "row",
-				justifyContent: "center",
-				alignItems: "center"
-			}}>
+			<Pressable
+				onPress={()=>{console.log("clicked 결과 미리보기"+ratingRef)}}
+				style={{
+					position: "absolute", 
+					left: width/2 - 60, 
+					top: "19%", 
+					width: 120, 
+					height: 30,
+					zIndex: 100, 
+					backgroundColor: "white",
+					borderRadius: 50,
+					shadowRadius: 5,
+					shadowColor: "black",
+					shadowOffset: {
+						width: 0,
+						height: 2
+					},
+					shadowOpacity: 0.25,
+					elevation: 5,
+					flexDirection: "row",
+					justifyContent: "center",
+					alignItems: "center",
+				}}>
 				<AntIcon name="reload1" size={15}/>
-				<Text>결과 새로고침</Text>
+				<Text> 결과 새로고침</Text>
 			</Pressable>
 		</Container>
 	)
