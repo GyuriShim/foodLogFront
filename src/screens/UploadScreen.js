@@ -354,15 +354,7 @@ function UploadScreen({onChangeDate, navigation }){
 					</View>
 					<View style = {styles.Box2}>
 						<Button style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}title="상호명" onPress={() => navigation.navigate("KeySearchScreen")}/>
-						<TouchableOpacity
-							onPress={SearchResult}>
-							{/* <TextInput
-							style = {styled.input}
-							multiline = {true}
-							placeholder = "상호명"
-							textAlignVertical="center"
-							value={place}
-						> */}
+						<TouchableOpacity>
 						</TouchableOpacity>
 					</View>
 					<Box4>

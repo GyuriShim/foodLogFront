@@ -60,13 +60,6 @@ function KeySearchScreen (data) {
 	const [res, setRes]= useState(null)
 	const [place, setPlace] = useState("")
 	const [input, setInput] = useState("")
-	//const [keyword, setKeyword] = useState("")
-	//const {keyword} = useContext(SearchContext)
-
-	/*if(keyword === ""){
-		return <EmptySearchResult type="EMPTY_KEYWORD"/>
-	} */
-	//const [locationObj, setLocationObj] = useState({})
 
 	useEffect(() => {
 		let isComponentMounted = true
@@ -117,7 +110,7 @@ function KeySearchScreen (data) {
 			//const data = {query : input}
 			await axios({
 				method : "GET",
-				url: `https://dapi.kakao.com/v2/local/search/keyword.json?query=백소정&x=${coordinate.longitude}&y=${coordinate.latitude}&input_coord=WGS84`,//json형태
+				url: `https://dapi.kakao.com/v2/local/search/keyword.json?page=1&size=10&query=백소정&x=${coordinate.longitude}&y=${coordinate.latitude}&input_coord=WGS84`,//json형태
 				headers : {
 					"Authorization": "KakaoAK a5511114012c0013be3072d88f677c4c"}
 			}
@@ -129,7 +122,7 @@ function KeySearchScreen (data) {
 				//.then(json => {
 				// 받은 json으로 기능 구현
 				setPlace(res.data.documents[0])
-				const placeName = placeData.place_name
+				const placeName = setPlace.place_name
 				console.log(placeName)
 			})
 		}catch (error) {
@@ -174,10 +167,11 @@ function KeySearchScreen (data) {
 						<Icon name="search" size={30} onPress={()=>{placeSearch(data)}}/>
 					</TouchableOpacity>
 				</View>
-				<Button title="jajao" onPress={() => {}}/>
 				<Box5>
 					<View>
-						<Text>{placeName}</Text>
+						<FlatList>
+							data={renderItem}
+						</FlatList>
 					</View>
 					{/* <FlatList>
 					data={placeName}
