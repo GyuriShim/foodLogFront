@@ -11,6 +11,8 @@ import SubSearch from "../screens/SubSearch"
 import SubSearchHeader from "../components/SubSearchHeader"
 import AccountScreen from "../screens/AccountScreen"
 import ModifyProfile from "../screens/ModifyProfile"
+import UpdateScreen from "../screens/UpdateScreen"
+import KeySearchScreen from "../screens/KeySearchScreen"
 import { Pressable } from "react-native"
 import SubSearchContext from "../contexts/SubSearchContext"
 import { AntIcon } from "../assets/icons/AntIcon"
@@ -98,6 +100,19 @@ const MainStack = () => {
 			<Stack.Screen name="Modify" component={ModifyProfile}
 				options={{headerShown: false}}
 			/>
+			<Stack.Screen name="UpdateScreen" component={UpdateScreen}
+				options={{title: "게시물수정", headerBackTitle: "back"}}
+			/>
+			<Stack.Screen name="KeySearchScreen" component={KeySearchScreen} 
+				options={{
+					title: "상호명 검색" ,
+					headerBackTitle: "back"}}
+			/>
+			{/* headerStyle: {
+						height:100, 
+						backgroundColor: "rgba(190, 235, 255, 0.4)", 
+						borderBottomColor: "#ccc", 
+						borderBottomWidth:2 */}
 		</Stack.Navigator>
 	)
 }
