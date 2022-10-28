@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 		marginTop: 3,
 	},
 	starImgStyle : {
-		padding: 15,
+		padding: 10,
 		width: 10,
 		height: 10,
 		resizeMode: "cover"
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
 	},
 	avoid:{
 		flex: 1,
-		padding: 10,
+		padding: 10
 	},
 	commentProfile: {
 		width: 40,
@@ -120,6 +120,7 @@ function PostScreen({navigation, route}){
 			setRating(response.data.rating)
 			setWriterId(response.data.memberId)
 			setPurpose(response.data.purpose)
+			console.log(response.data.postId)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -167,15 +168,14 @@ function PostScreen({navigation, route}){
 			})
 	}
 	function Comment(comment, username, createdDate, memberProfileImage, commentId, memberId) {
-		const {userId} = useContext(UserIdContext)
 		return(
-			<View style={{flexDirection: "row", padding: 7, width: "100%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
+			<View style={{flexDirection: "row", padding: 7, width: "98%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
 				<View style={{flexDirection: "row", alignItems: "center"}}>
-					<Pressable onPress={() => navigation.navigate("account", userId)}>
-						<Image style={styles.commentProfile} source={{uri: "https://foodlogstorage.s3.ap-northeast-2.amazonaws.com/62373507-575e-424d-8965-67a845d8a93a.png"}}/>
+					<Pressable onPress={() => navigation.navigate("account", memberId)}>
+						<Image style={styles.commentProfile} source={{uri:memberProfileImage}}/>
 					</Pressable>
 					<View style={{flexDirection: "column"}}>
-						<Pressable onPress={() => navigation.navigate("account", userId)}>
+						<Pressable onPress={() => navigation.navigate("account", memberId)}>
 							<Text style={{fontWeight: "bold"}}>{username}</Text>
 						</Pressable>
 						<Text>{comment}</Text>
@@ -183,7 +183,7 @@ function PostScreen({navigation, route}){
 					</View>
 				</View>
 				<View>
-					{userId===memberId &&<Button title="삭제" onPress={() => deleteCommentAxios(37, commentId)}/>}
+					{userId===memberId &&<Button title="삭제" onPress={() => deleteCommentAxios(postId, commentId)}/>}
 				</View>		
 			</View>
 		)
@@ -241,14 +241,14 @@ function PostScreen({navigation, route}){
 		<ScrollView style={styles.avoid}>
 			<View style={{width: "100%", marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
 				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
-					<Pressable>
+					<Pressable onPress={() => navigation.navigate("account", writerId)}>
 						<View style={{flexDirection: "row", alignItems: "center"}}>
 							<Image style={styles.profile}/>
 							<Text>{post.member}</Text> 
 						</View>
 					</Pressable>
 					<View style={{flexDirection: "row", alignItems: "center"}}>
-						{userId ===  writerId&& <Button title="삭제" onPress={() => deletePostAxios(40)}/>}
+						{userId ===  writerId&& <Button title="삭제" onPress={() => deletePostAxios(postId)}/>}
 						{userId ===  writerId&&<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>}
 						<Text>{/* formatDate(date) */}</Text>
 					</View>
@@ -279,26 +279,26 @@ function PostScreen({navigation, route}){
 					//textAlignVertical="center"
 				/>
 				<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-					<Button title="등록" onPress={() => createCommentAxios(37, commentContent)}/>
+					<Button title="등록" onPress={() => createCommentAxios(postId, commentContent)}/>
 					{/* <View style = {styles.button}>
 						</View> */}
 				</TouchableOpacity>
 			</View>
 			<View>
 				{comment.map((comment, key) =>{
-						return (
-							<View>
-								{
-									Comment(comment.comment,
-										comment.username,
-										comment.createdDate,
-										comment.memberProfileImage,
-										comment.commentId,
-										comment.memberId)
-								}
-							</View>	
-						)
-					})}
+					return (
+						<View>
+							{
+								Comment(comment.comment,
+									comment.username,
+									comment.createdDate,
+									comment.memberProfileImage,
+									comment.commentId,
+									comment.memberId)
+							}
+						</View>	
+					)
+				})}
 			</View>
 		</ScrollView>
 	)

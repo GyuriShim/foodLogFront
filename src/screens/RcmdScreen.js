@@ -34,7 +34,12 @@ const RcmdScreen = ({navigation}) => {
 
 
 	useEffect(() => {
-		recommendAxios(value)
+		console.log(value)
+		if (value===null) {
+			recommendAxios()
+		} else {
+			recommendAxios(value)
+		}
 	},[value])
 
 	return(
@@ -45,9 +50,8 @@ const RcmdScreen = ({navigation}) => {
 				{content.map((content, key) =>{
 					return (
 						<View>
-							<RcmdPost onPress={() => 
-							navigation.navigate("PostScreen")} 
-							item={{imageUrl: content.picture, store:content.name, address:content.address, contents:content.review, rating: content.rating}}
+							<RcmdPost onPress={() => navigation.navigate("PostScreen", content.postId)} 
+								item={{imageUrl: content.picture, store:content.name, address:content.address, contents:content.review, rating: content.rating}}
 							/>
 						</View>	
 					)
