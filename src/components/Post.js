@@ -2,7 +2,7 @@ import React, {useState} from "react"
 import { Pressable, View, Image, StyleSheet, Text } from "react-native"
 import { Location } from "../assets/icons/Location"
 
-const Post = ({item:{profileUrl, username, date, postPhotoUrl,store, address, contents, rating},onProfilePress, onPostPress}) => {
+const Post = ({item:{memberPicture, member, date, pictures, place, review, rating},onProfilePress, onPostPress}) => {
 	const defaultRating = rating
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
@@ -39,25 +39,25 @@ const Post = ({item:{profileUrl, username, date, postPhotoUrl,store, address, co
 			<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
 				<Pressable onPress={() => onProfilePress()}>
 					<View style={{flexDirection: "row", alignItems: "center"}}>
-						<Image style={styles.profile} source={{uri: profileUrl}}/>
-						<Text>{username}</Text> 
+						<Image style={styles.profile} source={{uri: memberPicture}}/>
+						<Text>{member}</Text> 
 					</View>
 				</Pressable>
 				<Text>{date}</Text>
 			</View>
 			<Pressable onPress={() => onPostPress()}>
-				<Image style={{width: "100%", height: 350, backgroundColor: "white", marginBottom: 5}} source={{uri: postPhotoUrl}}/>
+				<Image style={{width: "100%", height: 350, backgroundColor: "white", marginBottom: 5}} source={{uri: pictures[0]}}/>
 				<View style={{flexDirection: "row", alignItems: "center", justifyContent:"space-between"}}>
-					<Text style={{fontSize: 16}}>{store}</Text>
+					<Text style={{fontSize: 16}}>{place.name}</Text>
 					<CustomRatingBar/>
 				</View>
 				
 				<View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
 					<Location name="location-outline" size={14}/>
-					<Text>{address}</Text>
+					<Text>{place.address}</Text>
 				</View>
 				<Text numberOfLines={3}>
-					{contents}
+					{review}
 				</Text>
 			</Pressable>
 		</View>
