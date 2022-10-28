@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect} from "react"
 import { ScrollView, TextInput, StyleSheet, Text, View , PermissionsAndroid, Platform, Button, FlatList} from "react-native"
 import axios from "axios"
-//import UploadScreen from "../screens/UploadScreen"
+import UploadScreen from "../screens/UploadScreen"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import styled from "styled-components"
 //import EmptySearchResult from "../components/EmptySearchResult"
@@ -195,7 +195,7 @@ function KeySearchScreen () {
 				<View style={{flexDirection: "row", alignItems: "center"}}>
 					<View style={{flexDirection: "column"}}>
 						<Text style={{fontWeight: "bold"}}
-							source = {placeObj}></Text>
+							source = {place}></Text>
 					</View>
 				</View>				
 			</View>
@@ -229,9 +229,10 @@ function KeySearchScreen () {
 					data = {place}
 					renderItem = {({item}) => 
 						<View style = {styles.row}>
-							<Text style = {styles.locationText}>{item.place_name}</Text>
-							<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-								<Icon name="place" size={30} onPress={()=>{placeSearch(res)}}/>
+							<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
+								onPress = {()=>{setPlace(item)}}>
+								<Text>{item.place_name}</Text>
+								{/* <Text>{item.address_name}</Text> */}
 							</TouchableOpacity>
 						</View>
 					}
