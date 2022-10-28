@@ -42,3 +42,10 @@ export function deletePost(postId) {
 		},
 	})
 }
+
+export function subscriberPost() {
+	return instance({
+		url: "/v1/post/subscriber",
+		method: "get",
+	})
+}
