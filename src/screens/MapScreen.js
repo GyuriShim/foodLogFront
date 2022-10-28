@@ -11,6 +11,7 @@ import { TagSelect } from "react-native-tag-select"
 import { getMap, getPlacePost } from "../service/map"
 import Button from "../components/Button"
 import { AntIcon } from "../assets/icons/AntIcon"
+import TagSelectExtension from "../components/TagSelectExtension"
 
 const Container = styled.View`
 	background-color: white
@@ -55,11 +56,11 @@ const MapScreen = ({ navigation }) => {
 
 	const width = useWindowDimensions().width
 
-	const [state, setState] = useState([])
+	const [state, setState] = useState({})
 	const [location, setLocation] = useState()
+	const [isLocation, setIsLocation] = useState(false)
 	const [subpostVisible, setSubpostVisible] = useState(false)
 	const [filterVisible, setFilterVisible] = useState(false)
-	const [mapBounds, setMapBounds] = useState({})
 	const [markers, setMarkers] = useState([])
 	const [placePostId, setPlacePostId] = useState(0)
 	const [placePost, setPlacePost] = useState({ contents: [], place: { address: "", name: "" } })
@@ -69,18 +70,18 @@ const MapScreen = ({ navigation }) => {
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 
-	const getMapBounds = (region) => {
+	const getMapLocation = (region) => {
 		let longitudeDelta = region.longitudeDelta
 		let latitudeDelta = region.latitudeDelta
 		let latitude =  region.latitude
 		let longitude = region.longitude
-		setMapBounds({
+		setLocation({
 			longitudeDelta: longitudeDelta,
 			latitudeDelta: latitudeDelta,
 			latitude: latitude,
 			longitude: longitude
 		})
-		console.log(mapBounds)
+		console.log("update location", location)
 	}
 
 	const ratingRef = useRef()
@@ -119,11 +120,9 @@ const MapScreen = ({ navigation }) => {
 
 	console.log(rating, purpose, category)
 
-	const markerClicked = async () => {
-		console.log(mapBounds)
-		await fetchMap(mapBounds)
+	const getPlaces = async () => {
+		setIsLocation(!isLocation)
 	}
-
 
 	useEffect(() => {
 		const fetchPlacePost = async () => {
@@ -141,20 +140,22 @@ const MapScreen = ({ navigation }) => {
 		fetchPlacePost()
 	}, [placePostId])
 
-	const fetchMap = async (loc) => {		
+	const fetchMap = async () => {		
 		try {
 			setError(null)
 			setLoading(true)
 			const mapRequest = {
-				latitude: loc.latitude,
-				longitude: loc.longitude,
-				latitudeDelta: 0.1,
-				longitudeDelta: 0.1,
-				purposeList: [],
-				categoryList: [],
-				rating: null
+				latitude: location.latitude,
+				longitude: location.longitude,
+				latitudeDelta: location.latitudeDelta,
+				longitudeDelta: location.longitudeDelta,
+				purposeList: purpose,
+				categoryList: category,
+				rating: rating
 			}
+			// console.log("purpose!!!!!!!!", purposeRef.current.itemsSelected.map((value) => {return value.id}))
 			const response = await getMap(mapRequest)
+			console.log("response", response.data)
 			setMarkers(response.data)
 		} catch (e) {
 			setError(e)
@@ -165,8 +166,8 @@ const MapScreen = ({ navigation }) => {
 	}
 
 	useEffect(() => {
-		fetchMap(location)
-	}, [location])
+		fetchMap()
+	}, [isLocation])
 
 	useEffect(() => {
 		let isComponentMounted = true
@@ -174,10 +175,15 @@ const MapScreen = ({ navigation }) => {
 			if (result === "granted"){
 				Geolocation.getCurrentPosition(
 					position => {
-						setLocation(position.coords)
+						// setLocation(position.coords)
 						if (isComponentMounted){
-						
-							setLocation(position.coords)
+							setLocation({
+								latitude: position.coords.latitude,
+								longitude: position.coords.longitude,
+								latitudeDelta: 0.1,
+								longitudeDelta: 0.1
+							})
+							setIsLocation(!isLocation)
 						}
 					},
 					error => {
@@ -195,8 +201,12 @@ const MapScreen = ({ navigation }) => {
 			isComponentMounted = false
 		}	
 	}, [])
-	
 
+	const hello = () => {
+		ratingRef.current.itemsSelected == []
+		console.log(ratingRef.current.itemsSelected)
+	}
+	console.log("rating", rating)
 
 	if (!location) {
 		return (
@@ -233,7 +243,8 @@ const MapScreen = ({ navigation }) => {
 				<Text style={{fontSize: 14,color:"rgb(47, 93, 154)", fontFamily:"Arial", fontWeight: "700"}}>Filter</Text>
 			</TouchableOpacity>
 			<MapView
-				style={{height: "85%", width: "100%", borderRadius: 90}}
+				style={{ height: "85%", width: "100%", borderRadius: 90 }}
+				// region={console.log("this is region", region)}
 				initialRegion={{
 					latitude: location.latitude,
 					longitude: location.longitude,
@@ -243,7 +254,7 @@ const MapScreen = ({ navigation }) => {
 				showsUserLocation={true}
 				showsMyLocationButton={true}
 				customMapStyle={mapStyle}
-				onRegionChangeComplete={region => getMapBounds(region)}
+				onRegionChangeComplete={region => getMapLocation(region)}
 			>
 				{markers.map((marker, index) => {
 					const coordinate = {
@@ -324,15 +335,28 @@ const MapScreen = ({ navigation }) => {
 				<Pressable style={{flex:1, backgroundColor:"transparent",}} onPress={()=>setFilterVisible(!filterVisible)}/>
 				<View style={styles.filter}>
 					<Text style={styles.title}>최소 평점</Text>
-					<View style={{paddingHorizontal: 20}}>
-						<TagSelect
-							data={ratingList}
+					<View style={{ paddingHorizontal: 20 }}>
+						
+						{/* <TagSelectExtension
+							value={rating}
+							theme="default"
 							max={1}
 							ref={ratingRef}
+							onItemPress={(item) => {
+								setRating(item)
+							}}
+							data={ratingList}
+						/> */}
+						<TagSelect
+							value={[{id : "all", label: "전체"}]}
+							data={ratingList}
+							max={2}
+							ref={ratingRef}
+							onItemPress = {() => {}}
 							itemStyle={styles.item}
 							itemStyleSelected={styles.itemSelected}
 							itemLabelStyleSelected={styles.labelSelected}
-							onMaxError={() => {Alert.alert("평점은 하나만 선택가능합니다.")}}
+							onMaxError={() => {console.log("error")}}
 						/>
 					</View>
 					<Text style={styles.title}>목적</Text>
@@ -365,16 +389,18 @@ const MapScreen = ({ navigation }) => {
 							title="적용"
 							containerStyle={{width: "40%"}}
 							onPress={() => {
-								console.log("ddd",ratingRef.current.itemsSelected[0])
 								var ratingData = ratingRef.current.itemsSelected[0]
 								if (ratingData === undefined || ratingData.id === "all") {
 									setRating(null)
 								} else {
 									setRating(ratingData.id)
 								}
+								// console.log("!!!!!!", purposeRef.current.itemsSelected)
 								setPurpose(purposeRef.current.itemsSelected.map((value) => {return value.id}))
 								setCategory(categoryRef.current.itemsSelected.map((value) => {return value.id}))
 								console.log("selected", rating, purpose, category)
+								getPlaces()
+								setFilterVisible(!filterVisible)
 							}}
 						/>
 						
@@ -382,7 +408,7 @@ const MapScreen = ({ navigation }) => {
 				</View>
 			</Modal>
 			<Pressable
-				onPress={()=>{console.log("clicked 결과 미리보기"+ratingRef)}}
+				onPress={()=>{getPlaces()}}
 				style={{
 					position: "absolute", 
 					left: width/2 - 60, 
