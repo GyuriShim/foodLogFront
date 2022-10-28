@@ -8,7 +8,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
-import RNPickerSelect from "react-native-picker-select"
+import { Picker } from "@react-native-picker/picker"
+//import RNPickerSelect from "react-native-picker-select"
 import ImagePicker from "react-native-image-picker"
 import { createPostApi } from "../service/post"
 import KeySearchScreen from "../screens/KeySearchScreen"
@@ -375,26 +376,35 @@ function UploadScreen({onChangeDate, navigation }){
 						
 					</Box5>
 					<Box6>
-						<View>
+						<View > 
 							<Text>목적</Text>
-							<RNPickerSelect
+							{/* <SelectPicker */}
+							<Picker
+								mode={"dropdown"}
 								textInputProps={{ underlineColorAndroid: "transparent"}}
 								placeholder={{
 									label: placeholder,
 								}}
 								fixAndroidTouchableBug={true}//안드로이드에서 클릭을 여러번해야 picker가 나오는 경우가 있어 추가를 하였습니다. true로 설정하면 이런 에러가 사라집니다.
-								value={purpose}
+								selectedValue={purpose}
 								onValueChange={value =>  setPurpose(value)}
 								useNativeAndroidPickerStyle={false}
-								items={[
+								/* items={[
 									{ label: "친구", value: "FRIEND" },
 									{ label: "혼밥", value: "SOLO" },
 									{ label: "가족", value: "FAMILY" },
 									{ label: "회식", value: "MEETING" },
 									{ label: "데이트", value: "COUPLE" },
 									{ label: "기타", value: "ETC" },
-								]}
-							/> 
+								]} */
+							>
+								<Picker.Item label="혼밥" value="SOLO" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="데이트" value="COUPLE" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="친구" value="FRIEND" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="가족" value="FAMILY" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="회식" value="MEETING" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="기타" value="ETC" fontFamily="SF-Pro-Text-Semibold"/>
+							</Picker>
 						</View>
 					</Box6>
 				</ScrollView>
