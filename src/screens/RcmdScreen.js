@@ -1,8 +1,9 @@
-import React, { useContext, useEffect } from "react"
-import { Button, ScrollView } from "react-native"
+import React, { useContext, useEffect, useState } from "react"
+import { Button, ScrollView, View, Text } from "react-native"
 import styled from "styled-components"
 import RcmdPost from "../components/RcmdPost"
 import PurposeContext from "../contexts/Purpose"
+import { recommend } from "../service/recommend"
 
 const Container = styled.View`
     align-items: center
@@ -15,9 +16,25 @@ const StyledText = styled.Text`
 `
 const RcmdScreen = ({navigation}) => {
 	const {value} = useContext(PurposeContext)
+	const [content, setContent] = useState([])
+
+	const recommendAxios = async(foodPurpose) => {
+		await recommend(foodPurpose)
+			.then(response => {
+				if(response){
+					console.log(response.data)
+					console.log("recommend post success")
+					setContent(response.data.content)
+				}
+			})
+			.catch((error)=> {
+				console.log(error)
+			})
+	}
+
 
 	useEffect(() => {
-		console.log(value)
+		recommendAxios(value)
 	},[value])
 
 	return(
@@ -25,7 +42,16 @@ const RcmdScreen = ({navigation}) => {
 			<Container>
 			</Container>	
 			<ScrollView style={{paddingHorizontal: 15, backgroundColor: "white"}}>
-				<RcmdPost onPress={() => navigation.navigate("PostScreen")} item={{imageUrl: null, store:"퍼미닛 커피", address:"경기도 성남시", contents:"어쩌구", rating: 5}}/>
+				{content.map((content, key) =>{
+					return (
+						<View>
+							<RcmdPost onPress={() => 
+							navigation.navigate("PostScreen")} 
+							item={{imageUrl: content.picture, store:content.name, address:content.address, contents:content.review, rating: content.rating}}
+							/>
+						</View>	
+					)
+				})}
 			</ScrollView>
 		</>
 		
