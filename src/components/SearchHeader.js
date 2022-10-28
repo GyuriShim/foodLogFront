@@ -10,15 +10,17 @@ import {
 	StatusBar
 } from "react-native"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
+import SearchCategoryContext from "../contexts/SearchCategoryContext"
 import SearchContext from "../contexts/SearchContext"
 
 const SearchHeader = () => {
 	const {width} = useWindowDimensions()
 	const {keyword, onChangeText} = useContext(SearchContext)
-	const [working, setWorking] = useState(0)
-	const menu = () => {setWorking(0), onChangeText("")}
-	const region = () => {setWorking(1), onChangeText("")}
-	const store = () => {setWorking(2), onChangeText("")}
+	const {category, setCategory} = useContext(SearchCategoryContext)
+	const [search, setSearch] = useState("")
+	const menu = () => {setCategory(0), onChangeText(""), setSearch("")}
+	const region = () => {setCategory(1), onChangeText(""), setSearch("")}
+	const store = () => {setCategory(2), onChangeText(""), setSearch("")}
 
 	return (
 		<>
@@ -28,7 +30,7 @@ const SearchHeader = () => {
 					<TouchableOpacity onPress={menu}>
 						<Text style={{
 							...styles.btnText, 
-							color: working===0 ? "rgb(47, 93, 154)" : "rgba(47, 93, 154, 0.4)"
+							color: category===0 ? "rgb(47, 93, 154)" : "rgba(47, 93, 154, 0.4)"
 						}}>
 							메뉴
 						</Text>
@@ -37,7 +39,7 @@ const SearchHeader = () => {
 					<TouchableOpacity onPress={region}>
 						<Text style={{
 							...styles.btnText, 
-							color: working===1 ? "rgb(47, 93, 154)" : "rgba(47, 93, 154, 0.4)"
+							color: category===1 ? "rgb(47, 93, 154)" : "rgba(47, 93, 154, 0.4)"
 						}}>
 							지역
 						</Text>
@@ -45,7 +47,7 @@ const SearchHeader = () => {
 					<TouchableOpacity onPress={store}>
 						<Text style={{
 							...styles.btnText, 
-							color: working===2 ? "rgb(47, 93, 154)" : "rgba(47, 93, 154, 0.4)"
+							color: category===2 ? "rgb(47, 93, 154)" : "rgba(47, 93, 154, 0.4)"
 						}}>
 							가게
 						</Text>
@@ -55,13 +57,14 @@ const SearchHeader = () => {
 					<TextInput 
 						returnKeyType="search"
 						style={styles.input} 
-						placeholder = {working===0 ? "메뉴를 검색하세요" : (working===1 ? "지역를 검색하세요":"가게를 검색하세요")}
-						value={keyword}
-						onChangeText={onChangeText} 
+						placeholder = {category===0 ? "메뉴를 검색하세요" : (category===1 ? "지역를 검색하세요":"가게를 검색하세요")}
+						value={search}
+						onChangeText={text => setSearch(text)}
+						onSubmitEditing={() => onChangeText(search)}
 						autoFocus/>
 					<Pressable
 						style={({pressed}) => [styles.button, pressed && {opacity: 0.5}]}
-						onPress={() => onChangeText("")}
+						onPress={() => {onChangeText(""), setSearch("")}}
                 
 					>
 						<OcticonsIcon name="x" size={25} color="black"/>

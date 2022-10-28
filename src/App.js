@@ -8,6 +8,7 @@ import { SubSearchContextProvider } from "./contexts/SubSearchContext"
 import { SearchContextProvider } from "./contexts/SearchContext"
 import { PurposeContextProvider } from "./contexts/Purpose"
 import { UserIdContextProvider } from "./contexts/UserId"
+import { SearchCategoryContextProvider } from "./contexts/SearchCategoryContext"
 
 
 const App = () => {
@@ -27,10 +28,12 @@ const App = () => {
 				<PurposeContextProvider>
 					<SubSearchContextProvider>
 						<SearchContextProvider>
-							<ProgressProvider>
-								<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
-								<Navigation />
-							</ProgressProvider>
+							<SearchCategoryContextProvider>
+								<ProgressProvider>
+									<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
+									<Navigation />
+								</ProgressProvider>
+							</SearchCategoryContextProvider>
 						</SearchContextProvider>
 					</SubSearchContextProvider>
 				</PurposeContextProvider>
