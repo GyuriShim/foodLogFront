@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
 		borderRadius: 7,
 		borderWidth: 2,
 		backgroundcolor: "white",
-		borderColor: "#a4d3ea",
+		borderColor: "white",
 		flexDirection: "row",
 		backgroundColor: "white",
 		alignContent: "center",
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
 		marginRight : 15,
 	},
 	locationText : {
+		flex:1,
         
 	},
 	row : {
@@ -90,7 +91,7 @@ function KeySearchScreen () {
 	const [res, setRes]= useState(null)
 	const [placeObj, setPlaceObj] = useState({})
 	const [input, setInput] = useState(inputText)
-	const [data, setData] = useState("")
+	const [data, setData] = useState()
 	const [place, setPlace] = useState()
 	const [inputText, setInputText] = useState("")
 
@@ -150,9 +151,11 @@ function KeySearchScreen () {
 				headers : ({
 					"Authorization": "KakaoAK a5511114012c0013be3072d88f677c4c",
 				}),
+			}).then((response) =>
+			{
 				
-			}).then((res) =>{
-				const place = res.data.documents[1]
+				console.log(response.data.documents)
+				setPlace(response.data.documents)
 				setPlaceObj({
 					name: place.place_name
 				})
@@ -163,7 +166,7 @@ function KeySearchScreen () {
 				
 			})
 			//console.log(place.place_name)
-			console.log(placeObj)
+			console.log(place)
 		} catch (error) {
 			console.log(error.message)
 		} 
@@ -192,7 +195,7 @@ function KeySearchScreen () {
 				<View style={{flexDirection: "row", alignItems: "center"}}>
 					<View style={{flexDirection: "column"}}>
 						<Text style={{fontWeight: "bold"}}
-							source = {placeObj.name}></Text>
+							source = {placeObj}></Text>
 					</View>
 				</View>				
 			</View>
@@ -223,10 +226,13 @@ function KeySearchScreen () {
 			<View style = {styles.Box5}>
 				{/* <Text>{placeObj.name}</Text> */}
 				<FlatList
-					data = {placeObj.name}
+					data = {place}
 					renderItem = {({item}) => 
 						<View style = {styles.row}>
-							<Text style = {styles.locationText}>{placeObj.name}</Text>
+							<Text style = {styles.locationText}>{item.place_name}</Text>
+							<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+								<Icon name="place" size={30} onPress={()=>{placeSearch(res)}}/>
+							</TouchableOpacity>
 						</View>
 					}
 				/>
