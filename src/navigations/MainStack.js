@@ -92,8 +92,8 @@ const MainStack = () => {
 					headerTitle: "",
 				}}
 			/>
-			<Stack.Screen name="upload" component={UploadScreen}
-				//options={{title: "new post", headerBackTitle: "back"}}
+			<Stack.Screen name="UploadScreen" component={UploadScreen}
+				options={{title: "게시물 작성", headerBackTitle: "back"}}
 			/>
 			<Stack.Screen name="PostScreen" component={PostScreen}
 				options={{title: "게시물", headerBackTitle: "back"}}/>
