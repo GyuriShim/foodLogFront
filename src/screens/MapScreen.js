@@ -152,7 +152,7 @@ const MapScreen = ({ navigation }) => {
 				longitudeDelta: location.longitudeDelta,
 				purposeList: purpose.map((value) => getValue(value)),
 				categoryList: category.map((value) => getValue(value)),
-				rating: rating!="all"? rating : null
+				rating: isNaN(rating)? null : rating
 			}
 			const response = await getMap(mapRequest)
 			console.log("response", response.data)
