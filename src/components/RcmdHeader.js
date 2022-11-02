@@ -20,7 +20,7 @@ const RcmdHeader = () => {
 					onValueChange={(itemValue, itemIndex) => setValue(itemValue)}
 					mode={"dropdown"}
 				>
-					<Picker.Item label="전체" value="null" fontFamily="SF-Pro-Text-Semibold"/>
+					<Picker.Item label="전체" value={null} fontFamily="SF-Pro-Text-Semibold"/>
 					<Picker.Item label="혼밥하기 좋은 곳" value="SOLO" fontFamily="SF-Pro-Text-Semibold"/>
 					<Picker.Item label="데이트하기 좋은 곳" value="COUPLE" fontFamily="SF-Pro-Text-Semibold"/>
 					<Picker.Item label="친구랑 가기 좋은 곳" value="FRIEND" fontFamily="SF-Pro-Text-Semibold"/>
