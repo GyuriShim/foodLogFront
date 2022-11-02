@@ -56,7 +56,7 @@ const Post = ({item:{memberPicture, member, date, pictures, place, review, ratin
 					<Location name="location-outline" size={14}/>
 					<Text>{place.address}</Text>
 				</View>
-				<Text numberOfLines={3}>
+				<Text numberOfLines={3} ellipsizeMode="tail">
 					{review}
 				</Text>
 			</Pressable>
