@@ -116,6 +116,30 @@ const AccountScreen = ({navigation, route}) => {
 			})
 	}
 
+	const getMarkerImage = (foodCategory) => {
+		switch (foodCategory) {
+		case ("한식"):
+			return require("../assets/images/KOREAN.png")
+		case ("중식"):
+			return require("../assets/images/CHINESE.png")
+		case ("양식"):
+			return require("../assets/images/WESTERN.png")
+		case ("일식"):
+			return require("../assets/images/JAPANESE.png")
+		case ("아시아음식"):
+			return require("../assets/images/ASIAN.png")
+		case ("치킨"):
+			return require("../assets/images/CHICKEN.png")
+		case ("카페"):
+			return require("../assets/images/CAFE.png")
+		case ("분식"):
+			return require("../assets/images/SNACK.png")
+		case ("간식"):
+			return require("../assets/images/DESSERT.png")
+		}
+		return require("../assets/images/ETC.png")
+	}
+
 	if (loading) return <Text>로딩 중</Text>
 
 	return(
@@ -194,7 +218,7 @@ const AccountScreen = ({navigation, route}) => {
 							<MapView.Marker key={index} coordinate={coordinate} onPress={() => { }}>
 								<View style={[styles.markerWrap]}>
 									<Image
-										source={require("../assets/images/marker.png")}
+										source={getMarkerImage(marker.category)}
 										style={[styles.marker,]}
 										resizeMode="cover"
 									/>
