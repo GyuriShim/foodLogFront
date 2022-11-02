@@ -7,6 +7,7 @@ import { getItemFromAsync } from "../utils/StorageFun"
 import { getMember } from "../service/member"
 import { follower,following, Subscribe, Unsubscribe } from "../service/subscribe"
 import { useIsFocused } from "@react-navigation/native"
+import { getPlacesByMember } from "../service/place"
 
 const Container = styled.View`
 	align-items: center
@@ -19,6 +20,7 @@ const Container = styled.View`
 
 const AccountScreen = ({navigation, route}) => {
 	const [url, setUrl] = useState()
+	const [markers, setMarkers] = useState([])
 	const [userFollower, setUserFollower] = useState()
 	const [userFollowing, setUserFolloing] = useState()
 	const [userName, setUserName] = useState()
@@ -39,7 +41,6 @@ const AccountScreen = ({navigation, route}) => {
 			console.log("route",route)
 			const userInfo = JSON.parse(await getItemFromAsync("user"))
 			setMyId(userInfo.id)
-			console.log("user",userInfo)
 			if (route?.params) {
 				response = await getMember(route?.params)
 				followerRes = await follower(route?.params)
@@ -50,8 +51,6 @@ const AccountScreen = ({navigation, route}) => {
 				followingRes = await following(userInfo.id)
 			}
 			//const response = await getMember(route !== null? route?.params : userInfo.id)
-			console.log(response.data)
-			console.log(followerRes.data, followingRes.data)
 			setMemberId(response.data.memberId)
 			setUserName(response.data.username)
 			setSelfBio(response.data.selfBio)
@@ -66,6 +65,23 @@ const AccountScreen = ({navigation, route}) => {
 	}
 
 	useEffect(() => {
+		const fetchMap = async () => {      
+			try {
+				setLoading(true)
+				const response = await getPlacesByMember(memberId)
+				console.log("response", response.data)
+				setMarkers(response.data)
+			} catch (e) {
+				console.log("catch error", e)
+			}
+			setLoading(false)
+		}
+		fetchMap()
+	}, [memberId])
+
+	console.log("markers : ", markers)
+
+	useEffect(() => {
 		fetchProfile()
 	}, [isFocused])
 
@@ -78,7 +94,6 @@ const AccountScreen = ({navigation, route}) => {
 		await Subscribe(memberId)
 			.then(response => {
 				if(response){
-					console.log(response.data)
 					console.log("subscribe")
 					setRefeshing(!refreshing)
 				}
@@ -92,7 +107,6 @@ const AccountScreen = ({navigation, route}) => {
 		await Unsubscribe(memberId)
 			.then(response => {
 				if(response){
-					console.log(response.data)
 					console.log("unsubscribe")
 					setRefeshing(!refreshing)
 				}
@@ -168,6 +182,26 @@ const AccountScreen = ({navigation, route}) => {
 					}}
 					customMapStyle={mapStyle}
 				>
+					{markers.map((marker, index) => {
+						const coordinate = {
+							latitude: marker.latitude,
+							longitude: marker.longitude
+						}
+						if (marker.category == "카페") {
+							const image = "../assets/images/marker.png"
+						}
+						return (
+							<MapView.Marker key={index} coordinate={coordinate} onPress={() => { }}>
+								<View style={[styles.markerWrap]}>
+									<Image
+										source={require("../assets/images/marker.png")}
+										style={[styles.marker,]}
+										resizeMode="cover"
+									/>
+								</View>
+							</MapView.Marker>
+						)
+					})}
 				</MapView>
 			</Container>
 		</>
@@ -183,6 +217,16 @@ AccountScreen.propTypes = {
 export default AccountScreen
 
 const styles = StyleSheet.create({
+	markerWrap: {
+		alignItems: "center",
+		justifyContent: "center",
+		width: 50,
+		height: 50
+	},
+	marker: {
+		width: 29,
+		height: 38,
+	},
 	profile: {
 		width: 81,
 		height: 81,

@@ -49,3 +49,14 @@ export function subscriberPost() {
 		method: "get",
 	})
 }
+
+export function getPostsByMemberAndPlace(memberId,placeId) {
+	return instance({
+		url: "/v1/post",
+		params: {
+			memberId: memberId,
+			placeId: placeId
+		},
+		method: "get",
+	})
+}

@@ -22,7 +22,7 @@ export function searchPlaceByName(keyword) {
 	})
 }
 
-//상호명 검색
+//메뉴 검색
 export function searchPlaceByMenu(keyword) {
 	return instance({
 		url: "/v1/place/search/menu",
@@ -30,5 +30,12 @@ export function searchPlaceByMenu(keyword) {
 		params: {
 			query: keyword
 		}
+	})
+}
+
+export function getPlacesByMember(memberId) {
+	return instance({
+		url: `/v1/places/${memberId}`,
+		method: "get",
 	})
 }

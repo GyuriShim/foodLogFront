@@ -1,5 +1,5 @@
-import React, {useContext, useState, useEffect} from "react"
-import { ScrollView, TextInput, StyleSheet, Text, View , PermissionsAndroid, Platform, Button, FlatList} from "react-native"
+import React, {useContext, useState, useEffect, useRef} from "react"
+import { ScrollView, TextInput, StyleSheet, Text, View , PermissionsAndroid, Platform, Button, FlatList,ActivityIndicator} from "react-native"
 import axios from "axios"
 import UploadScreen from "../screens/UploadScreen"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
@@ -22,14 +22,16 @@ const Container = styled.View`
   background-color: white //배경
 `
 const Box5= styled.View`
-  flex: 0
+  flex: 1
   border-radius: 7px
   margin: 5px 10px
   background-color: white
   border: 2px rgba(164, 212, 234, 0.8)
 ` 
 const styles = StyleSheet.create({
-	block: {},
+	block: {
+		flex:1
+	},
 	Box2:{
 		flex:0,
 		margin: 10,
@@ -52,11 +54,12 @@ const styles = StyleSheet.create({
 		borderColor: "white",
 		flexDirection: "row",
 		backgroundColor: "white",
-		alignContent: "center",
+		justifyContent: "space-between",
 		alignItems: "center",
 		paddingLeft: 5,
 	},
 	iconContainer : {
+		flex:0,
 		backgroundColor : "#e7e7e7",
 		padding : 7,
 		borderRadius : 10,
@@ -67,8 +70,10 @@ const styles = StyleSheet.create({
         
 	},
 	row : {
+		flex: 1,
 		flexDirection : "row",
 		alignItems : "center",
+		justifyContent: "space-between",
 		paddingVertical : 15,
 		borderBottomWidth : 1,
 		borderColor : "#a4d3ea",
@@ -86,12 +91,12 @@ const requestPermission = async() => {
 	}
 }
 
-function KeySearchScreen () {
+function KeySearchScreen ({navigation}) {
 	const [coordinate, setCoordinate] = useState({latitude: 37.5666805, longitude: 126.9784147})
 	const [res, setRes]= useState(null)
 	const [placeObj, setPlaceObj] = useState({})
 	const [input, setInput] = useState(inputText)
-	const [data, setData] = useState()
+	//const [data, setData] = useState()
 	const [place, setPlace] = useState()
 	const [inputText, setInputText] = useState("")
 
@@ -215,7 +220,9 @@ function KeySearchScreen () {
 					placeholder = "상호명을입력하세요"
 					textAlignVertical="center"
 					value={inputText}
-					onChangeText={setInputText}
+					onChangeText= {setInputText}
+					//this.setPlace({setInputText})}
+					//onChangeText={(value) => this.setPlace()
 					autoFocus
 				> 
 				</TextInput>
@@ -229,11 +236,18 @@ function KeySearchScreen () {
 					data = {place}
 					renderItem = {({item}) => 
 						<View style = {styles.row}>
-							<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
-								onPress = {()=>{setPlace(item)}}>
-								<Text>{item.place_name}</Text>
-								{/* <Text>{item.address_name}</Text> */}
+							<TouchableOpacity style = {{flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
+								onPress = {()=> {navigation.navigate("UploadScreen",item), console.log(item)}}>
+
+								<Text>{item.place_name}{"\n"}
+									{item.address_name}
+								</Text>
 							</TouchableOpacity>
+							
+							<TouchableOpacity style = {{flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+								<Text>{item.category_group_name}</Text>
+							</TouchableOpacity>
+							
 						</View>
 					}
 				/>

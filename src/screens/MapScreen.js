@@ -11,12 +11,13 @@ import { TagSelect } from "react-native-tag-select"
 import { getMap, getPlacePost } from "../service/map"
 import Button from "../components/Button"
 import { AntIcon } from "../assets/icons/AntIcon"
-import TagSelectExtension from "../components/TagSelectExtension"
+import TagSelectExtension from "react-native-tag-select/src/TagSelectExtension"
+
 
 const Container = styled.View`
-	background-color: white
-	flex: 1
-	padding: 15px
+    background-color: white
+    flex: 1
+    padding: 15px
 `
 
 const requestPermission = async() => {
@@ -32,20 +33,20 @@ const requestPermission = async() => {
 }
 
 /* const searchData = async(text) => {
-	try{
-		const res = await axios({
-			url:,
-			method: "POST",
-			data: {
-				searchKeyword: text
-			}
-		})
-		const resJson = await res.json()
-		const newResJson = resJson
-		setData(newResJson)
-	} catch(e){
-		console.log("axios 실패")
-	}
+    try{
+        const res = await axios({
+            url:,
+            method: "POST",
+            data: {
+                searchKeyword: text
+            }
+        })
+        const resJson = await res.json()
+        const newResJson = resJson
+        setData(newResJson)
+    } catch(e){
+        console.log("axios 실패")
+    }
 } */
 
 
@@ -64,7 +65,7 @@ const MapScreen = ({ navigation }) => {
 	const [markers, setMarkers] = useState([])
 	const [placePostId, setPlacePostId] = useState(0)
 	const [placePost, setPlacePost] = useState({ contents: [], place: { address: "", name: "" } })
-	const [rating, setRating] = useState(0.0)
+	const [rating, setRating] = useState({id : "all", label: "전체"})
 	const [purpose, setPurpose] = useState([])
 	const [category, setCategory] = useState([])
 	const [loading, setLoading] = useState(false)
@@ -87,7 +88,7 @@ const MapScreen = ({ navigation }) => {
 	const ratingRef = useRef()
 	const purposeRef = useRef()
 	const categoryRef = useRef()
-	
+    
 	const ratingList = [
 		{id : "all", label: "전체"},
 		{id : 3, label: "3.0"},
@@ -118,7 +119,7 @@ const MapScreen = ({ navigation }) => {
 		{id : "ECT", label: "기타"},
 	]
 
-	console.log(rating, purpose, category)
+	console.log("this is rating, purpose, category" , rating, purpose, category)
 
 	const getPlaces = async () => {
 		setIsLocation(!isLocation)
@@ -140,7 +141,7 @@ const MapScreen = ({ navigation }) => {
 		fetchPlacePost()
 	}, [placePostId])
 
-	const fetchMap = async () => {		
+	const fetchMap = async () => {      
 		try {
 			setError(null)
 			setLoading(true)
@@ -149,11 +150,10 @@ const MapScreen = ({ navigation }) => {
 				longitude: location.longitude,
 				latitudeDelta: location.latitudeDelta,
 				longitudeDelta: location.longitudeDelta,
-				purposeList: purpose,
-				categoryList: category,
-				rating: rating
+				purposeList: purpose.map((value) => getValue(value)),
+				categoryList: category.map((value) => getValue(value)),
+				rating: isNaN(rating)? null : rating
 			}
-			// console.log("purpose!!!!!!!!", purposeRef.current.itemsSelected.map((value) => {return value.id}))
 			const response = await getMap(mapRequest)
 			console.log("response", response.data)
 			setMarkers(response.data)
@@ -161,7 +161,7 @@ const MapScreen = ({ navigation }) => {
 			setError(e)
 			console.log("catch error", e)
 		}
-	
+    
 		setLoading(false)
 	}
 
@@ -199,14 +199,15 @@ const MapScreen = ({ navigation }) => {
 		})
 		return () => {
 			isComponentMounted = false
-		}	
+		}   
 	}, [])
 
-	const hello = () => {
-		ratingRef.current.itemsSelected == []
-		console.log(ratingRef.current.itemsSelected)
+	const getValue = (value) => {
+		if (value != "") {
+			return value.id
+		}
+		return null
 	}
-	console.log("rating", rating)
 
 	if (!location) {
 		return (
@@ -244,7 +245,6 @@ const MapScreen = ({ navigation }) => {
 			</TouchableOpacity>
 			<MapView
 				style={{ height: "85%", width: "100%", borderRadius: 90 }}
-				// region={console.log("this is region", region)}
 				initialRegion={{
 					latitude: location.latitude,
 					longitude: location.longitude,
@@ -299,14 +299,14 @@ const MapScreen = ({ navigation }) => {
 						>
 							<OcticonsIcon name="x" size={20} color="black"/>
 						</Pressable>
-					
+                    
 					</View>
-				
+                
 					<View style={{flexDirection: "row", alignItems:"center"}}>
 						<OcticonsIcon name="location" size={12} color="black"/>
 						<Text numberOfLines={1} style={styles.storeAddress}>{placePost.place.address}</Text>
 					</View>
-				
+                
 					<Animated.ScrollView
 						horizontal
 						scrollEventThrottle={1}
@@ -336,32 +336,34 @@ const MapScreen = ({ navigation }) => {
 				<View style={styles.filter}>
 					<Text style={styles.title}>최소 평점</Text>
 					<View style={{ paddingHorizontal: 20 }}>
-						
-						{/* <TagSelectExtension
-							value={rating}
-							theme="default"
-							max={1}
+                        
+						<TagSelectExtension
+							value={[rating]}
 							ref={ratingRef}
 							onItemPress={(item) => {
-								setRating(item)
+								setState(state.item = item)
 							}}
 							data={ratingList}
-						/> */}
-						<TagSelect
-							value={[{id : "all", label: "전체"}]}
-							data={ratingList}
-							max={2}
-							ref={ratingRef}
-							onItemPress = {() => {}}
 							itemStyle={styles.item}
 							itemStyleSelected={styles.itemSelected}
 							itemLabelStyleSelected={styles.labelSelected}
-							onMaxError={() => {console.log("error")}}
 						/>
+						{/* <TagSelect
+                            value={[{id : "all", label: "전체"}]}
+                            data={ratingList}
+                            max={2}
+                            ref={ratingRef}
+                            onItemPress = {() => {}}
+                            itemStyle={styles.item}
+                            itemStyleSelected={styles.itemSelected}
+                            itemLabelStyleSelected={styles.labelSelected}
+                            onMaxError={() => {console.log("error")}}
+                        /> */}
 					</View>
 					<Text style={styles.title}>목적</Text>
 					<View style={{paddingHorizontal: 20}}>
 						<TagSelect
+							value={purpose}
 							data={purposeList}
 							ref={purposeRef}
 							itemStyle={styles.item}
@@ -372,6 +374,7 @@ const MapScreen = ({ navigation }) => {
 					<Text style={styles.title}>음식 종류</Text>
 					<View style={{paddingHorizontal: 20}}>
 						<TagSelect
+							value={category}
 							data={categoryList}
 							ref={categoryRef}
 							itemStyle={styles.item}
@@ -389,21 +392,19 @@ const MapScreen = ({ navigation }) => {
 							title="적용"
 							containerStyle={{width: "40%"}}
 							onPress={() => {
-								var ratingData = ratingRef.current.itemsSelected[0]
-								if (ratingData === undefined || ratingData.id === "all") {
-									setRating(null)
-								} else {
-									setRating(ratingData.id)
+								const selectedRating = ratingRef.current.itemsSelected[0].id
+								if (selectedRating != undefined) {
+									setRating(selectedRating)
 								}
-								// console.log("!!!!!!", purposeRef.current.itemsSelected)
-								setPurpose(purposeRef.current.itemsSelected.map((value) => {return value.id}))
-								setCategory(categoryRef.current.itemsSelected.map((value) => {return value.id}))
-								console.log("selected", rating, purpose, category)
+								const selectedPurpose = purposeRef.current.itemsSelected.filter(value => value != "")
+								setPurpose(selectedPurpose)
+								const selectedCategory = categoryRef.current.itemsSelected.filter(value => value != "")
+								setCategory(selectedCategory)
 								getPlaces()
 								setFilterVisible(!filterVisible)
 							}}
 						/>
-						
+                        
 					</View>
 				</View>
 			</Modal>
@@ -492,7 +493,7 @@ const styles = StyleSheet.create({
 	postImage: {
 		width: 110,
 		height: 110,
-		
+        
 	},
 	storeName: {
 		fontSize: 15,
@@ -538,3 +539,4 @@ const styles = StyleSheet.create({
 	}
 
 })
+
