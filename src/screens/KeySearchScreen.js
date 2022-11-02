@@ -222,6 +222,7 @@ function KeySearchScreen ({navigation}) {
 					value={inputText}
 					onChangeText= {setInputText}
 					//this.setPlace({setInputText})}
+					//onChangeText={(value) => this.setPlace()
 					autoFocus
 				> 
 				</TextInput>
@@ -236,7 +237,7 @@ function KeySearchScreen ({navigation}) {
 					renderItem = {({item}) => 
 						<View style = {styles.row}>
 							<TouchableOpacity style = {{flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-								onPress = {()=> {navigation.navigate("UploadScreen"),setPlace(item)}}>
+								onPress = {()=> {navigation.navigate("UploadScreen",item), console.log(item)}}>
 
 								<Text>{item.place_name}{"\n"}
 									{item.address_name}
