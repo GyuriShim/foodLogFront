@@ -17,6 +17,7 @@ import { Pressable } from "react-native"
 import SubSearchContext from "../contexts/SubSearchContext"
 import { AntIcon } from "../assets/icons/AntIcon"
 import SearchContext from "../contexts/SearchContext"
+import MapSearchResult from "../screens/MapSearchResult"
 
 const Stack = createStackNavigator()
 
@@ -113,6 +114,9 @@ const MainStack = () => {
 						backgroundColor: "rgba(190, 235, 255, 0.4)", 
 						borderBottomColor: "#ccc", 
 						borderBottomWidth:2 */}
+			<Stack.Screen name="MapSearchResult" component={MapSearchResult}
+				options={{headerShown: false}}
+			/>
 		</Stack.Navigator>
 	)
 }
