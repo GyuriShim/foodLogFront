@@ -175,7 +175,6 @@ const MapScreen = ({ navigation }) => {
 			if (result === "granted"){
 				Geolocation.getCurrentPosition(
 					position => {
-						// setLocation(position.coords)
 						if (isComponentMounted){
 							setLocation({
 								latitude: position.coords.latitude,
@@ -255,6 +254,7 @@ const MapScreen = ({ navigation }) => {
 				showsMyLocationButton={true}
 				customMapStyle={mapStyle}
 				onRegionChangeComplete={region => getMapLocation(region)}
+				maxZoomLevel = {18}
 			>
 				{markers.map((marker, index) => {
 					const coordinate = {
@@ -348,17 +348,6 @@ const MapScreen = ({ navigation }) => {
 							itemStyleSelected={styles.itemSelected}
 							itemLabelStyleSelected={styles.labelSelected}
 						/>
-						{/* <TagSelect
-                            value={[{id : "all", label: "전체"}]}
-                            data={ratingList}
-                            max={2}
-                            ref={ratingRef}
-                            onItemPress = {() => {}}
-                            itemStyle={styles.item}
-                            itemStyleSelected={styles.itemSelected}
-                            itemLabelStyleSelected={styles.labelSelected}
-                            onMaxError={() => {console.log("error")}}
-                        /> */}
 					</View>
 					<Text style={styles.title}>목적</Text>
 					<View style={{paddingHorizontal: 20}}>
