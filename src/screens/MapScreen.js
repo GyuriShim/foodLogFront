@@ -3,7 +3,7 @@ import styled from "styled-components"
 import MapView from "react-native-maps"
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler"
 import { FontIcon } from "../assets/icons/Fontisto"
-import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Alert, useWindowDimensions} from "react-native"
+import {Text, View, Platform, PermissionsAndroid, Image, StyleSheet, Animated, Pressable, Modal, Alert, useWindowDimensions, Dimensions} from "react-native"
 import Geolocation from "react-native-geolocation-service"
 import PropTypes from "prop-types"
 import { OcticonsIcon } from "../assets/icons/OcticonsIcon"
@@ -49,14 +49,9 @@ const requestPermission = async() => {
     }
 } */
 
-
-
-
+const windowWidth = Dimensions.get("window").width
 
 const MapScreen = ({ navigation }) => {
-
-	const width = useWindowDimensions().width
-
 	const [state, setState] = useState({})
 	const [location, setLocation] = useState()
 	const [isLocation, setIsLocation] = useState(false)
@@ -70,6 +65,7 @@ const MapScreen = ({ navigation }) => {
 	const [category, setCategory] = useState([])
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
+	const [activate, setActivate] = useState(false)
 
 	const getMapLocation = (region) => {
 		let longitudeDelta = region.longitudeDelta
@@ -253,7 +249,7 @@ const MapScreen = ({ navigation }) => {
 				showsUserLocation={true}
 				showsMyLocationButton={true}
 				customMapStyle={mapStyle}
-				onRegionChangeComplete={region => getMapLocation(region)}
+				onRegionChangeComplete={region => {getMapLocation(region), setActivate(true)}}
 				maxZoomLevel = {18}
 			>
 				{markers.map((marker, index) => {
@@ -398,28 +394,8 @@ const MapScreen = ({ navigation }) => {
 				</View>
 			</Modal>
 			<Pressable
-				onPress={()=>{getPlaces()}}
-				style={{
-					position: "absolute", 
-					left: width/2 - 60, 
-					top: "19%", 
-					width: 120, 
-					height: 30,
-					zIndex: 100, 
-					backgroundColor: "white",
-					borderRadius: 50,
-					shadowRadius: 5,
-					shadowColor: "black",
-					shadowOffset: {
-						width: 0,
-						height: 2
-					},
-					shadowOpacity: 0.25,
-					elevation: 5,
-					flexDirection: "row",
-					justifyContent: "center",
-					alignItems: "center",
-				}}>
+				onPress={()=>{getPlaces(), setActivate(false)}}
+				style={activate? styles.activateBtn: styles.inactiveBtn}>
 				<AntIcon name="reload1" size={15}/>
 				<Text> 결과 새로고침</Text>
 			</Pressable>
@@ -525,6 +501,48 @@ const styles = StyleSheet.create({
 		paddingTop: 15,
 		fontWeight: "600",
 		color: "black"
+	},
+	activateBtn: {
+		position: "absolute", 
+		left: windowWidth/2 - 60, 
+		top: "19%", 
+		width: 120, 
+		height: 30,
+		zIndex: 100, 
+		backgroundColor: "rgb(190, 235, 255)",
+		borderRadius: 50,
+		shadowRadius: 5,
+		shadowColor: "black",
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		elevation: 5,
+		flexDirection: "row",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	inactiveBtn: {
+		position: "absolute", 
+		left: windowWidth/2 - 60, 
+		top: "19%", 
+		width: 120, 
+		height: 30,
+		zIndex: 100, 
+		backgroundColor: "white",
+		borderRadius: 50,
+		shadowRadius: 5,
+		shadowColor: "black",
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		elevation: 5,
+		flexDirection: "row",
+		justifyContent: "center",
+		alignItems: "center",
 	}
 
 })
