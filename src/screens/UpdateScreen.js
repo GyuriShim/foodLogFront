@@ -129,7 +129,7 @@ function UpdateScreen({navigation, route}){
 				console.log(error)	
 			})
 		setLoading(true)
-		navigation.navigate("PostScreen", [review,postId])
+		navigation.navigate("PostScreen", postId)
 	}
 
 	const CustomRatingBar = () => {
