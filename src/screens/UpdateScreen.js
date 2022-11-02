@@ -83,7 +83,7 @@ function UpdateScreen({navigation, route}){
 			setError(null)
 			// loading 상태를 true 로 바꿉니다.
 			setLoading(true)
-			const response = await getPost(37)
+			const response = await getPost(route?.params)
 			setPost(response.data)
 			//setPlace(response.data.place)
 			//setComment(response.data.comment)
@@ -129,7 +129,7 @@ function UpdateScreen({navigation, route}){
 				console.log(error)	
 			})
 		setLoading(true)
-		navigation.navigate("PostScreen", [review,postId])
+		navigation.navigate("PostScreen", postId)
 	}
 
 	const CustomRatingBar = () => {
