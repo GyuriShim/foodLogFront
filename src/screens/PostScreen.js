@@ -253,9 +253,36 @@ function PostScreen({navigation, route}){
 						<Text>{/* formatDate(date) */}</Text>
 					</View>
 				</View>
-				<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
-					source={{ uri: pictures[0] }}
-				/>
+				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+					<ScrollView
+						horizontal={true}>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[0]}}
+							resizeMode="cover"
+						/>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[1]}}
+							resizeMode="cover"
+						/>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[2]}}
+							resizeMode="cover"
+						/>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[3]}}
+							resizeMode="cover"
+						/>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[4]}}
+							resizeMode="cover"
+						/>
+					</ScrollView>
+				</View>
 				<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
 					<Text style={{fontSize: 16}}>{place.name}</Text>
 					<CustomRatingBar
