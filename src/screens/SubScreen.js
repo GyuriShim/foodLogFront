@@ -1,8 +1,8 @@
-import { useIsFocused } from "@react-navigation/native"
-import React, { useLayoutEffect, useState } from "react"
+import React, { useContext, useLayoutEffect, useState } from "react"
 import { Button, FlatList, ScrollView, StatusBar, TextInput, View } from "react-native"
 import styled from "styled-components"
 import Post from "../components/Post"
+import { ProgressContext } from "../contexts/Progress"
 import { subscriberPost } from "../service/post"
 
 const Container = styled.View`
@@ -11,25 +11,25 @@ const Container = styled.View`
 	padding: 0px 15px 15px 15px
 `
 const SubScreen = ({navigation}) => {
-	const [loading, setLoading] = useState(false)
+	const {spinner} = useContext(ProgressContext)
 	const [postList, setPostList] = useState([])
-	const isFocused = useIsFocused()
 
 	const fetchSubscriberPost = async() => {
 		try {
-			setLoading(true)
+			spinner.start()
 			const response = await subscriberPost()
 			setPostList(response.data.content)
 			console.log(response.data.content)
 		} catch (error) {
 			console.log("error", error)
+		} finally {
+			spinner.stop()
 		}
-		setLoading(false)
 	}
 
 	useLayoutEffect(() => {
 		fetchSubscriberPost()
-	},[isFocused])
+	},[])
 
 	return(
 		<>

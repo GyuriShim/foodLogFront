@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react"
+import React, {useState, useEffect, useRef, useContext} from "react"
 import styled from "styled-components"
 import MapView from "react-native-maps"
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler"
@@ -12,6 +12,7 @@ import { getMap, getPlacePost } from "../service/map"
 import Button from "../components/Button"
 import { AntIcon } from "../assets/icons/AntIcon"
 import TagSelectExtension from "react-native-tag-select/src/TagSelectExtension"
+import { ProgressContext } from "../contexts/Progress"
 
 
 const Container = styled.View`
@@ -66,6 +67,7 @@ const MapScreen = ({ navigation }) => {
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [activate, setActivate] = useState(false)
+	const {spinner} = useContext(ProgressContext)
 
 	const getMapLocation = (region) => {
 		let longitudeDelta = region.longitudeDelta
@@ -140,7 +142,7 @@ const MapScreen = ({ navigation }) => {
 	const fetchMap = async () => {      
 		try {
 			setError(null)
-			setLoading(true)
+			spinner.start()
 			const mapRequest = {
 				latitude: location.latitude,
 				longitude: location.longitude,
@@ -156,9 +158,9 @@ const MapScreen = ({ navigation }) => {
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
+		} finally {
+			spinner.stop()
 		}
-    
-		setLoading(false)
 	}
 
 	useEffect(() => {

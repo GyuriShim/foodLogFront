@@ -6,7 +6,6 @@ import PropTypes from "prop-types"
 import { getItemFromAsync } from "../utils/StorageFun"
 import { getMember } from "../service/member"
 import { follower,following, Subscribe, Unsubscribe } from "../service/subscribe"
-import { useIsFocused } from "@react-navigation/native"
 import { getPlacesByMember } from "../service/place"
 import { ProgressContext } from "../contexts/Progress"
 
@@ -31,7 +30,6 @@ const AccountScreen = ({navigation, route}) => {
 	const [memberId, setMemberId] = useState()
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [refreshing, setRefeshing] = useState(false)
-	const isFocused = useIsFocused()
 	const {spinner} = useContext(ProgressContext)
 
 	const fetchProfile = async () => {
@@ -86,7 +84,7 @@ const AccountScreen = ({navigation, route}) => {
 
 	useEffect(() => {
 		fetchProfile()
-	}, [isFocused])
+	}, [])
 
 	useLayoutEffect(() => {
 		navigation.setOptions({headerTitle: userName})
