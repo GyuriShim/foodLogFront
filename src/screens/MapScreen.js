@@ -204,6 +204,30 @@ const MapScreen = ({ navigation }) => {
 		return null
 	}
 
+	const getMarkerImage = (foodCategory) => {
+		switch (foodCategory) {
+		case ("한식"):
+			return require("../assets/images/KOREAN.png")
+		case ("중식"):
+			return require("../assets/images/CHINESE.png")
+		case ("양식"):
+			return require("../assets/images/WESTERN.png")
+		case ("일식"):
+			return require("../assets/images/JAPANESE.png")
+		case ("아시아음식"):
+			return require("../assets/images/ASIAN.png")
+		case ("치킨"):
+			return require("../assets/images/CHICKEN.png")
+		case ("카페"):
+			return require("../assets/images/CAFE.png")
+		case ("분식"):
+			return require("../assets/images/SNACK.png")
+		case ("간식"):
+			return require("../assets/images/DESSERT.png")
+		}
+		return require("../assets/images/ETC.png")
+	}
+
 	if (!location) {
 		return (
 			<View>
@@ -257,14 +281,11 @@ const MapScreen = ({ navigation }) => {
 						latitude: marker.latitude,
 						longitude: marker.longitude
 					}
-					if (marker.category == "카페") {
-						const image = "../assets/images/marker.png"
-					}
 					return (
 						<MapView.Marker key={index} coordinate={coordinate} onPress={() => { setPlacePostId(marker.placePostId), setSubpostVisible(!subpostVisible) }}>
 							<Animated.View style={[styles.markerWrap]}>
 								<Animated.Image
-									source={require("../assets/images/marker.png")}
+									source={getMarkerImage(marker.category)}
 									style={[styles.marker,]}
 									resizeMode="cover"
 								/>
