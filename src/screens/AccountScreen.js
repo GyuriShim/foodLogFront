@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useState} from "react"
+import React, {useContext, useEffect, useLayoutEffect, useState} from "react"
 import { View, StyleSheet, Image, Text, ScrollView, Pressable } from "react-native"
 import styled from "styled-components"
 import MapView from "react-native-maps"
@@ -8,6 +8,7 @@ import { getMember } from "../service/member"
 import { follower,following, Subscribe, Unsubscribe } from "../service/subscribe"
 import { useIsFocused } from "@react-navigation/native"
 import { getPlacesByMember } from "../service/place"
+import { ProgressContext } from "../contexts/Progress"
 
 const Container = styled.View`
 	align-items: center
@@ -31,10 +32,11 @@ const AccountScreen = ({navigation, route}) => {
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [refreshing, setRefeshing] = useState(false)
 	const isFocused = useIsFocused()
+	const {spinner} = useContext(ProgressContext)
 
 	const fetchProfile = async () => {
 		try{
-			setLoading(true)
+			spinner.start()
 			var response
 			var followerRes
 			var followingRes
@@ -60,8 +62,9 @@ const AccountScreen = ({navigation, route}) => {
 			setUserFollower(followerRes.data.totalElements)
 		} catch(e){
 			console.log("catch error", e)
+		} finally{
+			spinner.stop()
 		}
-		setLoading(false)
 	}
 
 	useEffect(() => {
@@ -115,8 +118,6 @@ const AccountScreen = ({navigation, route}) => {
 				console.log(error)
 			})
 	}
-
-	if (loading) return <Text>로딩 중</Text>
 
 	return(
 		<>
