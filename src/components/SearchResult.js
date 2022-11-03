@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { View, Text, Pressable, StyleSheet, Image } from "react-native"
 import { Location } from "../assets/icons/Location"
 
-function SearchResult({item:{name, address, averageRating}, navigation}) {
+function SearchResult({item:{name, address, averageRating}, onPress, navigation}) {
 	const detailRating = Math.round(averageRating*10)/10
 	const CustomRatingBar = () => {
 		const defaultRating = Math.round(averageRating)
@@ -35,7 +35,8 @@ function SearchResult({item:{name, address, averageRating}, navigation}) {
 		)
 	}
 	return(
-		<Pressable style={{padding: 10, borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 1}}>
+		<Pressable style={{padding: 10, borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 1}} 
+			onPress={()=>onPress()}>
 			<View style={{flexDirection: "row", justifyContent: "space-between"}}>
 				<Text>{name}</Text>
 				<View style={{flexDirection: "row"}}>
