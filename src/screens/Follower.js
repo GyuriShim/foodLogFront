@@ -21,7 +21,7 @@ const Follower = ({navigation, route}) => {
 
 	useEffect(() => {
 		fetchFollower()
-	},[])
+	},[route])
 
 	return (
 		<FlatList
