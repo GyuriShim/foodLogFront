@@ -171,6 +171,7 @@ const MapScreen = ({ navigation }) => {
 		let isComponentMounted = true
 		requestPermission().then(result =>{
 			if (result === "granted"){
+
 				Geolocation.getCurrentPosition(
 					position => {
 						if (isComponentMounted){
@@ -192,12 +193,14 @@ const MapScreen = ({ navigation }) => {
 						maximumAge: 10000
 					}
 				)
+
 			}
 		})
+		spinner.stop()
 		return () => {
 			isComponentMounted = false
 		}   
-	}, [])
+	} , [])
 
 	const getValue = (value) => {
 		if (value != "") {
@@ -332,14 +335,14 @@ const MapScreen = ({ navigation }) => {
 						showsHorizontalScrollIndicator={true}
 					>
 						{placePost.contents.map((post, index) => {
-							return (<View style={styles.miniPost} key={index}>
+							return (<Pressable style={styles.miniPost} key={index} onPress={()=> navigation.navigate("PostScreen",post.postId)}>
 								<Image
 									source={{ uri: post.picture }}
 									style={styles.postImage}
 									resizeMode="cover"
 								/>
 								<Text numberOfLines={3} style={styles.review}>{post.review}</Text>
-							</View>)
+							</Pressable>)
 						})}
 					</Animated.ScrollView>
 				</View>
