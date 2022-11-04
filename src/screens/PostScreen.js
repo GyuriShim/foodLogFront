@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useState, useContext } from "react"
-import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
+import {RefreshControl,View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
 import { FlatList, TextInput } from "react-native-gesture-handler"
 import {Location} from "../assets/icons/Location"
 import styled from "styled-components"
 import Button from "../components/Button"
-import { format, formatDistanceToNow } from "date-fns"
-import {ko} from "date-fns/locale"
 import { getPost } from "../service/post"
 import { deletePost } from "../service/post"
 import { createComment, deleteComment } from "../service/comment"
 import { getItemFromAsync } from "../utils/StorageFun"
 import UserIdContext from "../contexts/UserId"
+import { formatDate } from "../utils/formatDate"
 
 const Box1 = styled.View`
   flex: 1
@@ -90,7 +89,7 @@ function PostScreen({navigation, route}){
 	const [place, setPlace] = useState({})
 	const [pictures, setPictures] = useState([])
 	const [purpose, setPurpose] = useState()
-	const [comment, setComment] = useState([])
+	const [comments, setComments] = useState([])
 	//const onSubmit(comment: string): void
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
@@ -102,6 +101,17 @@ function PostScreen({navigation, route}){
 	const [isChanged, setIsChanged] = useState(false)
 	const {userId} = useContext(UserIdContext)
 
+	const wait = (timeout) => {
+		return new Promise(resolve => setTimeout(resolve, timeout))
+	}
+	const [refreshing, setRefreshing] = React.useState(false)
+	
+	const onRefresh = useCallback(() => {
+		//React.
+		setRefreshing(true)
+		wait(2000).then(() => setRefreshing(false))
+	}, [])
+
 	const fetchPost = async () => {
 		try {
 			// 요청이 시작 할 때에는 error 와 users 를 초기화하고
@@ -110,13 +120,13 @@ function PostScreen({navigation, route}){
 			setLoading(true)
 			console.log("route", route)
 			const userInfo = JSON.parse(await getItemFromAsync("user"))
-			const response = await getPost(route?.params)
+			const response = await getPost(route?.params.postId)
 			setPost(response.data)
 			setPlace(response.data.place)
-			setComment(response.data.comment)
+			setComments(response.data.comment)
 			setPictures(response.data.pictures)
 			setPostId(response.data.postId)
-			setDate(response.data.date)
+			setDate(formatDate(response.data.date))
 			setRating(response.data.rating)
 			setWriterId(response.data.memberId)
 			setPurpose(response.data.purpose)
@@ -154,12 +164,12 @@ function PostScreen({navigation, route}){
 				console.log(error)
 			})
 	}
+
 	const deleteCommentAxios = async(postId, commentId) => {
 		await deleteComment(postId, commentId)
 			.then(response => {
 				if(response){
 					console.log(response.data)
-					console.log("delete comment success")
 					setIsChanged(!isChanged)
 				}
 			})
@@ -167,6 +177,7 @@ function PostScreen({navigation, route}){
 				console.log(error)
 			})
 	}
+
 	function Comment(comment, username, createdDate, memberProfileImage, commentId, memberId) {
 		return(
 			<View style={{flexDirection: "row", padding: 7, width: "98%", justifyContent:"space-between", borderBottomColor: "rgba(165, 212, 233, 0.5)", borderBottomWidth: 2, alignItems:"center"}}>
@@ -179,7 +190,7 @@ function PostScreen({navigation, route}){
 							<Text style={{fontWeight: "bold"}}>{username}</Text>
 						</Pressable>
 						<Text>{comment}</Text>
-						<Text style={{fontSize: 10}}>{createdDate}</Text>
+						<Text style={{fontSize: 10}}>{formatDate(createdDate)}</Text>
 					</View>
 				</View>
 				<View>
@@ -222,23 +233,14 @@ function PostScreen({navigation, route}){
 				}
 			</View>
 		)
-	}
-
-	const formatDate = () => {
-		const d = new Date(date)
-		const now = Date.now()
-		const diff = (now - d.getTime()) / 1000// 현재 시간과의 차이(초)
-		if (diff < 60 * 1) { // 1분 미만일땐 방금 전 표기
-			return "방금 전"
-		}
-		if (diff < 60 * 60 * 24 * 3) { // 3일 미만일땐 시간차이 출력(몇시간 전, 몇일 전)
-			return formatDistanceToNow(d, {addSuffix: true, locale: ko})
-		}
-		return format(d, "PPP EEE p", {locale: ko}) // 날짜 포맷
-	}
+	}	
 
 	return(
-		<ScrollView style={styles.avoid}>
+		<ScrollView style={styles.avoid}
+			refreshControl={
+				<RefreshControl
+					refreshing={refreshing}
+					onRefresh={onRefresh}/>}>
 			<View style={{width: "100%", marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
 				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
 					<Pressable onPress={() => navigation.navigate("account", writerId)}>
@@ -247,15 +249,43 @@ function PostScreen({navigation, route}){
 							<Text>{post.member}</Text> 
 						</View>
 					</Pressable>
-					<View style={{flexDirection: "row", alignItems: "center"}}>
+					<View style={{ flexDirection: "row", alignItems: "center" }}>
+						<Text style={{marginRight: 5}}>{date}</Text>
 						{userId ===  writerId&& <Button title="삭제" onPress={() => deletePostAxios(postId)}/>}
 						{userId ===  writerId&&<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>}
-						<Text>{/* formatDate(date) */}</Text>
+						
 					</View>
 				</View>
-				<Image style={{ width: "100%", height: 350, backgroundColor: "white", marginBottom: 5 }}
-					source={{ uri: pictures[0] }}
-				/>
+				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+					<ScrollView
+						horizontal={true}>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[0]}}
+							resizeMode="cover"
+						/>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[1]}}
+							resizeMode="cover"
+						/>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[2]}}
+							resizeMode="cover"
+						/>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[3]}}
+							resizeMode="cover"
+						/>
+						<Image
+							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+							source={{uri: pictures[4]}}
+							resizeMode="cover"
+						/>
+					</ScrollView>
+				</View>
 				<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
 					<Text style={{fontSize: 16}}>{place.name}</Text>
 					<CustomRatingBar
@@ -285,7 +315,7 @@ function PostScreen({navigation, route}){
 				</TouchableOpacity>
 			</View>
 			<View>
-				{comment.map((comment, key) =>{
+				{comments.map((comment, key) =>{
 					return (
 						<View>
 							{

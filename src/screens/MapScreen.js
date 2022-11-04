@@ -13,6 +13,7 @@ import Button from "../components/Button"
 import { AntIcon } from "../assets/icons/AntIcon"
 import TagSelectExtension from "react-native-tag-select/src/TagSelectExtension"
 import { ProgressContext } from "../contexts/Progress"
+import { ActivityIndicator } from "react-native-paper"
 
 
 const Container = styled.View`
@@ -171,6 +172,7 @@ const MapScreen = ({ navigation }) => {
 		let isComponentMounted = true
 		requestPermission().then(result =>{
 			if (result === "granted"){
+
 				Geolocation.getCurrentPosition(
 					position => {
 						if (isComponentMounted){
@@ -192,12 +194,14 @@ const MapScreen = ({ navigation }) => {
 						maximumAge: 10000
 					}
 				)
+
 			}
 		})
+		spinner.stop()
 		return () => {
 			isComponentMounted = false
 		}   
-	}, [])
+	} , [])
 
 	const getValue = (value) => {
 		if (value != "") {
@@ -232,8 +236,8 @@ const MapScreen = ({ navigation }) => {
 
 	if (!location) {
 		return (
-			<View>
-				<Text>Splash Screen</Text>
+			<View style={{justifyContent:"center", alignItems:"center"}}>
+				<ActivityIndicator size={32}></ActivityIndicator>
 			</View>
 		)
 	}
@@ -332,14 +336,14 @@ const MapScreen = ({ navigation }) => {
 						showsHorizontalScrollIndicator={true}
 					>
 						{placePost.contents.map((post, index) => {
-							return (<View style={styles.miniPost} key={index}>
+							return (<Pressable style={styles.miniPost} key={index} onPress={() => navigation.navigate("PostScreen", { postId: post.postId })}>
 								<Image
 									source={{ uri: post.picture }}
 									style={styles.postImage}
 									resizeMode="cover"
 								/>
 								<Text numberOfLines={3} style={styles.review}>{post.review}</Text>
-							</View>)
+							</Pressable>)
 						})}
 					</Animated.ScrollView>
 				</View>
