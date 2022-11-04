@@ -30,7 +30,7 @@ const ErrorText = styled.Text`
 const ModifyProfile = ({navigation}) => {
 	const [username, setUsername] = useState("")
 	const [originUsername, setOriginUsername] = useState("")
-	const [doubleCheck, setDoubleCheck] = useState(true)
+	const [doubleCheck, setDoubleCheck] = useState()
 	const [selfBio, setSelfBio] = useState("")
 	const [idErrorMessage, setIdErrorMessage] = useState("")
 	const [birthErrorMessage, setBirthErrorMessage] = useState("")
@@ -52,9 +52,11 @@ const ModifyProfile = ({navigation}) => {
 			setUsername(response.data.username)
 			setSelfBio(response.data.selfBio)
 			setUrl(response.data.profilePicture)
-			setBirthday(response.data.birthday)
+			//setBirthday(response.data.birthday)
 			setGender(response.data.gender)
 			setOriginUsername(response.data.username)
+			setDoubleCheck(true)
+			setDisabled(true)
 		} catch(e){
 			console.log("catch error", e)
 		}
@@ -178,9 +180,9 @@ const ModifyProfile = ({navigation}) => {
 	//중복확인 결과도 포함,,
 	useEffect(() => {
 		setDisabled(
-			!(username && birthday && !idErrorMessage  && !birthErrorMessage && doubleCheck)
+			!(birthday && !idErrorMessage  && !birthErrorMessage && doubleCheck)
 		)
-	}, [username, birthday, idErrorMessage, birthErrorMessage, doubleCheck])
+	}, [username, birthday, idErrorMessage, birthErrorMessage, doubleCheck, selfBio, url, gender])
 
 	if (loading) return <Text>로딩 중</Text>
 
