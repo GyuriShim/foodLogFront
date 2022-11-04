@@ -14,6 +14,7 @@ import KeySearchScreen from "../screens/KeySearchScreen"
 import {placeSearch} from "../screens/KeySearchScreen"
 import { FlatList } from "react-native-gesture-handler"
 import UserIdContext from "../contexts/UserId"
+import PlaceInfoContext from "../contexts/Place"
 
 const Container = styled.View` 
   flex: 1
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
 	},
 })
 function UploadScreen({onChangeDate, navigation, route }){
-	const [defaultRating, setdefaultRating] =useState(2)
+	const [defaultRating, setdefaultRating] =useState(0)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
 	const [date, setDate] = useState("")
@@ -115,7 +116,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 	const [rating, setRating] = useState()
 	const [purpose, setPurpose] = useState()
 	//const [place, setPlace] = useState()
-
+	const {placeInfo, setPlaceInfo} = useContext(PlaceInfoContext)
 	const {userId} = useContext(UserIdContext)
 	const formdata = new FormData() //지원
 	const formData = new FormData()
@@ -136,7 +137,6 @@ function UploadScreen({onChangeDate, navigation, route }){
 		setDate(splitDate[0])
 		hideDatePicker()
 	}
-
 
 	const createPost = async (review, rating, purpose, place) => {
 		const newPost = {
@@ -427,7 +427,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 						/>
 					</View>
 					<View style = {styles.Box2}>
-						<Text style = {{flex: 1}}>{route?.params?.place_name}</Text>
+						<Text style = {{flex: 1}}>{placeInfo?.place_name}</Text>
 						<Button style = {{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
 							title="상호명" onPress={() => navigation.navigate("KeySearchScreen")}/>
 						<TouchableOpacity>
@@ -474,11 +474,11 @@ function UploadScreen({onChangeDate, navigation, route }){
 					</Box6>
 				</ScrollView>
 				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null), setdefaultRating(null)}} />
+					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null), setdefaultRating(null), setPlaceInfo()}} />
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose, route?.params),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null)}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose, placeInfo),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
 					)}
 				</View>
 			</Container> 
