@@ -569,4 +569,3 @@ const styles = StyleSheet.create({
 	}
 
 })
-

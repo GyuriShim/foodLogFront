@@ -1,13 +1,28 @@
 import instance from "./request"
 
 //post 생성
-export function createPost(formData) {
+export function createPost(newPost) {
 	return instance({
 		url: "/v1/post",
 		method: "post",
-		data: formData,
+		data: {
+			memberId: newPost.memberId,
+			review: newPost.review,
+			rating: newPost.rating,
+			purpose: newPost.purpose,
+			date: newPost.date,
+			pictures: ["123", "456"],
+			place: {
+				kakaoId : newPost.kakaoId,
+				name : newPost.name,
+				address: newPost.address,
+				category: newPost.category,
+				longitude: newPost.longitude,
+				latitude: newPost.latitude,
+			},
+		},
 		headers: {
-			"Content-Type": "multipart/form-data",
+			"Content-Type": "application/json",
 		},
 	})
 }
