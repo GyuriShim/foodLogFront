@@ -62,6 +62,7 @@ function UpdateScreen({navigation, route}){
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 	const [purpose, setPurpose] = useState()
 	const [loading, setLoading] = useState(false)
+	const [updateLoading, setUpdateLoading] = useState(false)
 	const [pictures, setPictures] = useState([])
 	const [post, setPost] = useState({})
 	const [error, setError] = useState(null)
@@ -78,6 +79,7 @@ function UpdateScreen({navigation, route}){
 	}
 
 	const fetchPost = async () => {
+		setLoading(true)
 		try {
 			// 요청이 시작 할 때에는 error 와 users 를 초기화하고
 			setError(null)
@@ -104,32 +106,24 @@ function UpdateScreen({navigation, route}){
 		fetchPost()
 	}, [])
 
-	//console.log("data : ", post)
-	//console.log("pictures" , pictures)
-	//console.log("date", date)
-	//console.log("place",place)
-
-	// console.log("Picture", post.pictures[0])
-
 	if (loading) return <Text>로딩 중</Text>
 
 	const updatePostAxios = async(postId, review) => {
 		console.log("postId:", postId)
 		
-		setLoading(false)
+		setLoading(true)
 		await updatePost(postId, review)
 			.then(response => {
 				if(response){
-					console.log("UpdateScreen:" ,response.data)
-
-					console.log("update post success")
+					console.log("UpdateScreen:", response.data)
+					navigation.navigate("PostScreen", { postId: postId, review:review })
 				}
 			})
 			.catch((error)=> {
 				console.log(error)	
 			})
-		setLoading(true)
-		navigation.navigate("PostScreen", postId)
+		setLoading(false)
+		
 	}
 
 	const CustomRatingBar = () => {
@@ -161,10 +155,6 @@ function UpdateScreen({navigation, route}){
 			</View>
 		)
 	}
-
-
-
-
 
 	return(
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1, backgroundColor:"white"}}>
