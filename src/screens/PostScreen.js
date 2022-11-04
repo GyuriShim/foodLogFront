@@ -9,7 +9,7 @@ import { deletePost } from "../service/post"
 import { createComment, deleteComment } from "../service/comment"
 import { getItemFromAsync } from "../utils/StorageFun"
 import UserIdContext from "../contexts/UserId"
-import { formatDate } from "../utils/FormatDate"
+import { formatDate } from "../utils/formatDate"
 
 const Box1 = styled.View`
   flex: 1
