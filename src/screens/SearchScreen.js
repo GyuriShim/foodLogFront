@@ -14,8 +14,6 @@ const SearchScreen = ({navigation}) => {
 	const {category} = useContext(SearchCategoryContext)
 	const [loading, setLoading] = useState(false)
 	const [result, setResult] = useState([])
-	
-
 	const fetchSearchList = async() => {
 		try {
 			setLoading(true)
@@ -65,9 +63,9 @@ const SearchScreen = ({navigation}) => {
 		<View style={{flex: 1}}>
 			<FlatList
 				data={result}
-				renderItem={({item}) => (<SearchResult item={item} onPress={()=> navigation.navigate("MapSearchResult")}/>)}
+				renderItem={({item}) => (<SearchResult item={item} onPress={()=> navigation.navigate("MapSearchResult", {content: [item], coordinate: {latitude: item.latitude, longitude: item.longitude}})}/>)}
 			/>
-			{keyword && <Pressable style={styles.mapBtm} onPress={()=>navigation.navigate("MapSearchResult")}>
+			{keyword && <Pressable style={styles.mapBtm} onPress={()=>navigation.navigate("MapSearchResult", {content: result, coordinate: {latitude: result[0].latitude, longitude: result[0].longitude}})}>
 				<Text>지도에서 보기</Text>
 			</Pressable>
 			}
