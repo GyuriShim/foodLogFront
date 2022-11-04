@@ -5,7 +5,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
-import RNPickerSelect from "react-native-picker-select"
 import {selectImage} from "../screens/UploadScreen"
 import {CustomRatingBar} from "../screens/UploadScreen"
 import { getPost } from "../service/post"

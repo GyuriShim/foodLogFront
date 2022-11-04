@@ -9,6 +9,7 @@ import { follower,following, Subscribe, Unsubscribe } from "../service/subscribe
 import { getPlacesByMember } from "../service/place"
 import { ProgressContext } from "../contexts/Progress"
 
+
 const Container = styled.View`
 	align-items: center
 	background-color: white
@@ -31,6 +32,29 @@ const AccountScreen = ({navigation, route}) => {
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [refreshing, setRefeshing] = useState(false)
 	const {spinner} = useContext(ProgressContext)
+	/*const [placePostId, setPlacePostId] = useState(0)
+	const [postId, setPostId] = useState(0)
+	const [placePost, setPlacePost] = useState({ contents: [], place: { address: "", name: "" } })
+	const [isLocation, setIsLocation] = useState(false)
+
+
+	const getPlaces = async () => {
+		setIsLocation(!isLocation)
+	}
+	useEffect(() => {
+		const fetchPlacePost = async () => {
+			try {
+				setLoading(true)
+				if (placePostId != 0) {
+					const response = await getPlacePost(placePostId)
+					setPlacePost(response.data)
+				}
+			} catch (error) {
+				console.log("placePost error" , error)
+			}
+		}
+		fetchPlacePost()
+	}, [placePostId])*/
 
 	const fetchProfile = async () => {
 		try{
@@ -213,7 +237,7 @@ const AccountScreen = ({navigation, route}) => {
 							const image = "../assets/images/marker.png"
 						}
 						return (
-							<MapView.Marker key={index} coordinate={coordinate} onPress={() => navigation.navigate("UserPostsScreen")}>
+							<MapView.Marker key={index} coordinate={coordinate} onPress={() => {navigation.navigate("UserPostsScreen",{ placeId: marker.placeId , memberId: memberId}), console.log(marker)}}>
 								<View style={[styles.markerWrap]}>
 									<Image
 										source={getMarkerImage(marker.category)}

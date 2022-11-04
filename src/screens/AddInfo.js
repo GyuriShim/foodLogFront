@@ -134,7 +134,7 @@ const AddInfo = ({navigation}) => {
 				console.log("file", image)
 				setFile(image)
 				
-				// setResponse(profilePic)
+				//setResponse(profilePic)
 			}
 		)
 	}
@@ -193,7 +193,7 @@ const AddInfo = ({navigation}) => {
 				<TouchableOpacity onPress={onSelectImage}>
 					<Image 
 						style={styles.profile}
-						source={{uri: response?.assets[0]?.uri}} />
+						source={{uri: file?.uri}} />
 				</TouchableOpacity>
 				<Input
 					height= {40}
@@ -273,7 +273,7 @@ const AddInfo = ({navigation}) => {
 						title="BACK" 
 						isFilled={true} 
 						containerStyle={styles.smallButton}
-						onPress={() => {navigation.navigate("Login")}}
+						onPress={() => navigation.goBack()}
 					></Button>
 					<Button 
 						title="JOIN" 

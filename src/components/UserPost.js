@@ -1,10 +1,11 @@
 import React, { useState } from "react"
-import { Image, Pressable, StyleSheet, Text, View } from "react-native"
+import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native"
 import { Location } from "../assets/icons/Location"
 
-const UserPost = ({item:{rating, place, pictures, review, date}, onPress}) => {
+const UserPost = ({item:{rating, place, picture, review, date}, onPress}) => {
 	const defaultRating = rating
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
+	const {width} = useWindowDimensions()
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
@@ -36,7 +37,7 @@ const UserPost = ({item:{rating, place, pictures, review, date}, onPress}) => {
 	return(
 		<Pressable style={{width: "100%", backgroundColor: "rgba(165, 212, 233, 0.3)", marginBottom: 15, padding:5}}
 			onPress={() => onPress()}>
-			<Image style={{width: "100%", height: 350, backgroundColor: "white", marginBottom: 5}} source={{uri: pictures[0]}}/>
+			<Image style={{width: width*0.89, height: width*0.89, backgroundColor: "white", marginBottom: 5}} source={{uri: picture}}/>
 			<View style={{flexDirection: "row", alignItems: "center", justifyContent:"space-between"}}>
 				<Text style={{fontSize: 16}}>{place.name}</Text>
 				<CustomRatingBar/>
