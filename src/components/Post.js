@@ -1,6 +1,7 @@
 import React, {useState} from "react"
 import { Pressable, View, Image, StyleSheet, Text } from "react-native"
 import { Location } from "../assets/icons/Location"
+import { formatDate } from "../utils/FormatDate"
 
 const Post = ({item:{memberPicture, member, date, pictures, place, review, rating},onProfilePress, onPostPress}) => {
 	const defaultRating = rating
@@ -43,7 +44,7 @@ const Post = ({item:{memberPicture, member, date, pictures, place, review, ratin
 						<Text>{member}</Text> 
 					</View>
 				</Pressable>
-				<Text>{date}</Text>
+				<Text>{formatDate(date)}</Text>
 			</View>
 			<Pressable onPress={() => onPostPress()}>
 				<Image style={{width: "100%", height: 350, backgroundColor: "white", marginBottom: 5}} source={{uri: pictures[0]}}/>
