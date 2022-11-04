@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useState} from "react"
+import React, {useContext, useEffect, useLayoutEffect, useState} from "react"
 import { View, StyleSheet, Image, Text, ScrollView, Pressable } from "react-native"
 import styled from "styled-components"
 import MapView from "react-native-maps"
@@ -6,7 +6,8 @@ import PropTypes from "prop-types"
 import { getItemFromAsync } from "../utils/StorageFun"
 import { getMember } from "../service/member"
 import { follower,following, Subscribe, Unsubscribe } from "../service/subscribe"
-import { useIsFocused } from "@react-navigation/native"
+import { getPlacesByMember } from "../service/place"
+import { ProgressContext } from "../contexts/Progress"
 
 const Container = styled.View`
 	align-items: center
@@ -19,6 +20,7 @@ const Container = styled.View`
 
 const AccountScreen = ({navigation, route}) => {
 	const [url, setUrl] = useState()
+	const [markers, setMarkers] = useState([])
 	const [userFollower, setUserFollower] = useState()
 	const [userFollowing, setUserFolloing] = useState()
 	const [userName, setUserName] = useState()
@@ -28,18 +30,17 @@ const AccountScreen = ({navigation, route}) => {
 	const [memberId, setMemberId] = useState()
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [refreshing, setRefeshing] = useState(false)
-	const isFocused = useIsFocused()
+	const {spinner} = useContext(ProgressContext)
 
 	const fetchProfile = async () => {
 		try{
-			setLoading(true)
+			spinner.start()
 			var response
 			var followerRes
 			var followingRes
 			console.log("route",route)
 			const userInfo = JSON.parse(await getItemFromAsync("user"))
 			setMyId(userInfo.id)
-			console.log("user",userInfo)
 			if (route?.params) {
 				response = await getMember(route?.params)
 				followerRes = await follower(route?.params)
@@ -50,8 +51,6 @@ const AccountScreen = ({navigation, route}) => {
 				followingRes = await following(userInfo.id)
 			}
 			//const response = await getMember(route !== null? route?.params : userInfo.id)
-			console.log(response.data)
-			console.log(followerRes.data, followingRes.data)
 			setMemberId(response.data.memberId)
 			setUserName(response.data.username)
 			setSelfBio(response.data.selfBio)
@@ -61,13 +60,31 @@ const AccountScreen = ({navigation, route}) => {
 			setUserFollower(followerRes.data.totalElements)
 		} catch(e){
 			console.log("catch error", e)
+		} finally{
+			spinner.stop()
 		}
-		setLoading(false)
 	}
 
 	useEffect(() => {
+		const fetchMap = async () => {      
+			try {
+				setLoading(true)
+				const response = await getPlacesByMember(memberId)
+				console.log("response", response.data)
+				setMarkers(response.data)
+			} catch (e) {
+				console.log("catch error", e)
+			}
+			setLoading(false)
+		}
+		fetchMap()
+	}, [memberId])
+
+	console.log("markers : ", markers)
+
+	useEffect(() => {
 		fetchProfile()
-	}, [isFocused])
+	}, [])
 
 	useLayoutEffect(() => {
 		navigation.setOptions({headerTitle: userName})
@@ -78,7 +95,6 @@ const AccountScreen = ({navigation, route}) => {
 		await Subscribe(memberId)
 			.then(response => {
 				if(response){
-					console.log(response.data)
 					console.log("subscribe")
 					setRefeshing(!refreshing)
 				}
@@ -92,7 +108,6 @@ const AccountScreen = ({navigation, route}) => {
 		await Unsubscribe(memberId)
 			.then(response => {
 				if(response){
-					console.log(response.data)
 					console.log("unsubscribe")
 					setRefeshing(!refreshing)
 				}
@@ -101,8 +116,29 @@ const AccountScreen = ({navigation, route}) => {
 				console.log(error)
 			})
 	}
-
-	if (loading) return <Text>로딩 중</Text>
+	const getMarkerImage = (foodCategory) => {
+		switch (foodCategory) {
+		case ("한식"):
+			return require("../assets/images/KOREAN.png")
+		case ("중식"):
+			return require("../assets/images/CHINESE.png")
+		case ("양식"):
+			return require("../assets/images/WESTERN.png")
+		case ("일식"):
+			return require("../assets/images/JAPANESE.png")
+		case ("아시아음식"):
+			return require("../assets/images/ASIAN.png")
+		case ("치킨"):
+			return require("../assets/images/CHICKEN.png")
+		case ("카페"):
+			return require("../assets/images/CAFE.png")
+		case ("분식"):
+			return require("../assets/images/SNACK.png")
+		case ("간식"):
+			return require("../assets/images/DESSERT.png")
+		}
+		return require("../assets/images/ETC.png")
+	}
 
 	return(
 		<>
@@ -168,6 +204,26 @@ const AccountScreen = ({navigation, route}) => {
 					}}
 					customMapStyle={mapStyle}
 				>
+					{markers.map((marker, index) => {
+						const coordinate = {
+							latitude: marker.latitude,
+							longitude: marker.longitude
+						}
+						if (marker.category == "카페") {
+							const image = "../assets/images/marker.png"
+						}
+						return (
+							<MapView.Marker key={index} coordinate={coordinate} onPress={() => { }}>
+								<View style={[styles.markerWrap]}>
+									<Image
+										source={getMarkerImage(marker.category)}
+										style={[styles.marker,]}
+										resizeMode="cover"
+									/>
+								</View>
+							</MapView.Marker>
+						)
+					})}
 				</MapView>
 			</Container>
 		</>
@@ -183,6 +239,16 @@ AccountScreen.propTypes = {
 export default AccountScreen
 
 const styles = StyleSheet.create({
+	markerWrap: {
+		alignItems: "center",
+		justifyContent: "center",
+		width: 50,
+		height: 50
+	},
+	marker: {
+		width: 29,
+		height: 38,
+	},
 	profile: {
 		width: 81,
 		height: 81,

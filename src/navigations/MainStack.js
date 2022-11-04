@@ -17,6 +17,7 @@ import { Pressable } from "react-native"
 import SubSearchContext from "../contexts/SubSearchContext"
 import { AntIcon } from "../assets/icons/AntIcon"
 import SearchContext from "../contexts/SearchContext"
+import MapSearchResult from "../screens/MapSearchResult"
 
 const Stack = createStackNavigator()
 
@@ -92,8 +93,8 @@ const MainStack = () => {
 					headerTitle: "",
 				}}
 			/>
-			<Stack.Screen name="upload" component={UploadScreen}
-				//options={{title: "new post", headerBackTitle: "back"}}
+			<Stack.Screen name="UploadScreen" component={UploadScreen}
+				options={{title: "게시물 작성", headerBackTitle: "back"}}
 			/>
 			<Stack.Screen name="PostScreen" component={PostScreen}
 				options={{title: "게시물", headerBackTitle: "back"}}/>
@@ -113,6 +114,9 @@ const MainStack = () => {
 						backgroundColor: "rgba(190, 235, 255, 0.4)", 
 						borderBottomColor: "#ccc", 
 						borderBottomWidth:2 */}
+			<Stack.Screen name="MapSearchResult" component={MapSearchResult}
+				options={{headerShown: false}}
+			/>
 		</Stack.Navigator>
 	)
 }

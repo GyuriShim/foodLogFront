@@ -53,10 +53,15 @@ function RcmdPost({item:{imageUrl, store, address, contents, rating}, onPress}){
 				</View>
 				<View style={{flexDirection: "row", alignItems: "center", marginBottom: 3}}>
 					<Location name="location-outline" size={14}/>
-					<Text>{address}</Text>
+					<Text
+						numberOfLines={1}
+						style={{width:"95%"}}
+						ellipsizeMode="tail">{address}</Text>
 				</View>
 				<View>
-					<Text numberOfLines={5}>{contents}</Text>
+					<Text
+						numberOfLines={5}
+						ellipsizeMode="tail">{contents}</Text>
 				</View>
 			</View>
 		</Pressable>

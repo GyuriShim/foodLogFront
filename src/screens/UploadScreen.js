@@ -1,17 +1,19 @@
-import React,{useState, useEffect, useRef} from "react"
+import React,{useState, useEffect, useRef, useContext} from "react"
 import { launchImageLibrary } from "react-native-image-picker"
 import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet} from "react-native"
-//import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import {useRoute} from "@react-navigation/native"
 import axios from "axios"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import styled from "styled-components"
 import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
-import RNPickerSelect from "react-native-picker-select"
+import { Picker } from "@react-native-picker/picker"
 import ImagePicker from "react-native-image-picker"
 import { createPostApi } from "../service/post"
 import KeySearchScreen from "../screens/KeySearchScreen"
+import {placeSearch} from "../screens/KeySearchScreen"
+import { FlatList } from "react-native-gesture-handler"
+import UserIdContext from "../contexts/UserId"
 
 const Container = styled.View` 
   flex: 1
@@ -96,7 +98,7 @@ const styles = StyleSheet.create({
 		paddingLeft: 10,
 	},
 })
-function UploadScreen({onChangeDate, navigation }){
+function UploadScreen({onChangeDate, navigation, route }){
 	const [defaultRating, setdefaultRating] =useState(2)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
@@ -114,11 +116,13 @@ function UploadScreen({onChangeDate, navigation }){
 	const [purpose, setPurpose] = useState()
 	//const [place, setPlace] = useState()
 
+	const {userId} = useContext(UserIdContext)
 	const formdata = new FormData() //지원
 	const formData = new FormData()
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
+	const place = route.params
 	const showDatePicker = () => {
 		setVisible(!visible)
 	}
@@ -136,18 +140,18 @@ function UploadScreen({onChangeDate, navigation }){
 
 	const createPost = async (review, rating, purpose, place) => {
 		const newPost = {
-			memberId: 40,
+			memberId: userId,
 			review: review,
 			rating: rating,
 			purpose: purpose,
-			date: "2020-10-10",
+			date: date,
 			place: {
-				kakaoId : "1110210115",
-				name : "빨강파이프",
-				address: "경기 용인시 수지구 죽전로144번길 7-5",
-				category: "분식",
-				longitude: "127.124165839734",
-				latitude: "37.3235861851341"
+				kakaoId : place.id,
+				name : place.place_name,
+				address: place.road_address_name,
+				category: place.category_group_name,
+				longitude: place.x,
+				latitude: place.y
 			},
 			
 		}
@@ -255,7 +259,7 @@ function UploadScreen({onChangeDate, navigation }){
 		const image = {
 			uri: "",
 			type: "",
-			name: "",
+			fileName: "",
 			timestamp:"",
 		}
 		await launchImageLibrary(
@@ -263,19 +267,53 @@ function UploadScreen({onChangeDate, navigation }){
 				mediaType: "photo",
 				includeBase64: Platform.OS === "android",
 				includeExtra: true,
+				selectionLimit: 5,
 			},
-			(res) => {
-				if(res.didCancel){
+			(response) => {
+				if(response.didCancel){
 					return
 				}
-				setResponse(res)
-				if(res?.assets[0]?.timestamp !== null){
-					var originDate = res?.assets[0]?.timestamp.split("T")
+				console.log(response.assets[0].uri)
+				setResponse(response)
+				if(response?.assets[0]?.timestamp !== null){
+					var originDate = response?.assets[0]?.timestamp.split("T")
 					setDate(originDate[0])
+					
 				}
-				
+				console.log(response.assets[0].fileName)
 				
 			}
+
+		)
+	}
+	const flatlistImage = () => {
+		return (
+			<View style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}>
+				<Image
+					source={{uri: response?.assets[0]?.uri}}
+					resizeMode="cover"
+				/>
+				<Image
+					source={{uri: response?.assets[1]?.uri}}
+					resizeMode="cover"
+				/>
+				<Image
+					source={{uri: response?.assets[2]?.uri}}
+					resizeMode="cover"
+				/>
+				<Image
+					source={{uri: response?.assets[3]?.uri}}
+					resizeMode="cover"
+				/>
+				<Image
+					source={{uri: response?.assets[4]?.uri}}
+					resizeMode="cover"
+				/>
+				<Image
+					source={{uri: response?.assets[5]?.uri}}
+					resizeMode="cover"
+				/>
+			</View>
 
 		)
 	}
@@ -324,13 +362,49 @@ function UploadScreen({onChangeDate, navigation }){
 			<Container >
 				<ScrollView>
 					<Box1>
+						<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+							<ScrollView
+								horizontal={true}>
+							
+								{/* <FlatList
+							data={{uri: response?.assets?.uri}}
+							horizontal="true"
+							renderItem={({item, index})=>{
+								return(
+									<flatlistImage item={item} index = {index}/>
+								)
+							}
+							}
+						/> */}
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: response?.assets[0]?.uri}}
+									resizeMode="cover"
+								/>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: response?.assets[1]?.uri}}
+									resizeMode="cover"
+								/>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: response?.assets[2]?.uri}}
+									resizeMode="cover"
+								/>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: response?.assets[3]?.uri}}
+									resizeMode="cover"
+								/>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: response?.assets[4]?.uri}}
+									resizeMode="cover"
+								/>
+							</ScrollView>
+						</View>
 						<View style={{flex:0, padding:1}}>
 							<Button title="이미지 업로드" color={"lightblue"} onPress={selectImage}></Button>
-							<Image
-								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-								source={{uri: response?.assets[0]?.uri}}
-								resizeMode="cover"
-							/>
 						</View>
 					</Box1>
 					<View style = {styles.Box2}>
@@ -348,12 +422,14 @@ function UploadScreen({onChangeDate, navigation }){
 							onConfirm={handleConfirm}
 							onCancel={hideDatePicker}
 							is24Hour={true}
-							//display= "default"
-							//date={date}
+						//display= "default"
+						//date={date}
 						/>
 					</View>
 					<View style = {styles.Box2}>
-						<Button style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}title="상호명" onPress={() => navigation.navigate("KeySearchScreen")}/>
+						<Text style = {{flex: 1}}>{route?.params?.place_name}</Text>
+						<Button style = {{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
+							title="상호명" onPress={() => navigation.navigate("KeySearchScreen")}/>
 						<TouchableOpacity>
 						</TouchableOpacity>
 					</View>
@@ -373,26 +449,27 @@ function UploadScreen({onChangeDate, navigation }){
 						
 					</Box5>
 					<Box6>
-						<View>
+						<View > 
 							<Text>목적</Text>
-							<RNPickerSelect
+							{/* <SelectPicker */}
+							<Picker
+								mode={"dropdown"}
 								textInputProps={{ underlineColorAndroid: "transparent"}}
 								placeholder={{
 									label: placeholder,
 								}}
 								fixAndroidTouchableBug={true}//안드로이드에서 클릭을 여러번해야 picker가 나오는 경우가 있어 추가를 하였습니다. true로 설정하면 이런 에러가 사라집니다.
-								value={purpose}
+								selectedValue={purpose}
 								onValueChange={value =>  setPurpose(value)}
 								useNativeAndroidPickerStyle={false}
-								items={[
-									{ label: "친구", value: "FRIEND" },
-									{ label: "혼밥", value: "SOLO" },
-									{ label: "가족", value: "FAMILY" },
-									{ label: "회식", value: "MEETING" },
-									{ label: "데이트", value: "COUPLE" },
-									{ label: "기타", value: "ETC" },
-								]}
-							/> 
+							>
+								<Picker.Item label="혼밥" value="SOLO" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="데이트" value="COUPLE" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="친구" value="FRIEND" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="가족" value="FAMILY" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="회식" value="MEETING" fontFamily="SF-Pro-Text-Semibold"/>
+								<Picker.Item label="기타" value="ETC" fontFamily="SF-Pro-Text-Semibold"/>
+							</Picker>
 						</View>
 					</Box6>
 				</ScrollView>
@@ -401,7 +478,7 @@ function UploadScreen({onChangeDate, navigation }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose, place),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null)}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose, route?.params),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null)}}/>
 					)}
 				</View>
 			</Container> 

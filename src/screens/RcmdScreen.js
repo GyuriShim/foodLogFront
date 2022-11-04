@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react"
 import { Button, ScrollView, View, Text } from "react-native"
 import styled from "styled-components"
 import RcmdPost from "../components/RcmdPost"
+import { ProgressContext } from "../contexts/Progress"
 import PurposeContext from "../contexts/Purpose"
 import { recommend } from "../service/recommend"
 
@@ -16,9 +17,11 @@ const StyledText = styled.Text`
 `
 const RcmdScreen = ({navigation}) => {
 	const {value} = useContext(PurposeContext)
+	const {spinner} = useContext(ProgressContext)
 	const [content, setContent] = useState([])
 
 	const recommendAxios = async(foodPurpose) => {
+		spinner.start()
 		await recommend(foodPurpose)
 			.then(response => {
 				if(response){
@@ -30,6 +33,7 @@ const RcmdScreen = ({navigation}) => {
 			.catch((error)=> {
 				console.log(error)
 			})
+		spinner.stop()
 	}
 
 
@@ -45,9 +49,8 @@ const RcmdScreen = ({navigation}) => {
 				{content.map((content, key) =>{
 					return (
 						<View>
-							<RcmdPost onPress={() => 
-							navigation.navigate("PostScreen")} 
-							item={{imageUrl: content.picture, store:content.name, address:content.address, contents:content.review, rating: content.rating}}
+							<RcmdPost onPress={() => navigation.navigate("PostScreen", content.postId)} 
+								item={{imageUrl: content.picture, store:content.place.name, address:content.place.address, contents:content.review, rating: content.rating}}
 							/>
 						</View>	
 					)

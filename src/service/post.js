@@ -42,3 +42,21 @@ export function deletePost(postId) {
 		},
 	})
 }
+
+export function subscriberPost() {
+	return instance({
+		url: "/v1/post/subscriber",
+		method: "get",
+	})
+}
+
+export function getPostsByMemberAndPlace(memberId,placeId) {
+	return instance({
+		url: "/v1/post",
+		params: {
+			memberId: memberId,
+			placeId: placeId
+		},
+		method: "get",
+	})
+}
