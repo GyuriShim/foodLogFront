@@ -10,9 +10,10 @@ import { launchImageLibrary } from "react-native-image-picker"
 import { removeWhitespace, validateBirthday, validateUsername } from "../utils/common.js"
 import PropTypes from "prop-types"
 import UserContext from "../contexts/User.js"
-import { getItemFromAsync } from "../utils/StorageFun.js"
+import { getItemFromAsync, setItemToAsync } from "../utils/StorageFun.js"
 import moment from "moment"
 import { join, checkUsername } from "../service/login"
+import UserIdContext from "../contexts/UserId.js"
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -37,49 +38,43 @@ const AddInfo = ({navigation}) => {
 	const [birthday, setBirthday] = useState("")
 	const [response, setResponse] = useState(null)
 	const [disabled, setDisabled] = useState(true)
+	const [file, setFile] = useState(null)
 	const { dispatch } = useContext(UserContext)
+	const {userId, setUserId} = useContext(UserIdContext)
 	
 	// eslint-disable-next-line no-undef
-	const formData = new FormData()
+	
+
 
 	const selfBioRef = useRef()
 
-	const join = (formData) => {
-		try {			
-			// fetch("http://food-log-dku:8080/api/v1/join", {
-			// 	method: "POST",
-			// 	cache: "no-cache",
-			// 	headers: {
-			// 		Accept: "application/json",
-			// 		"Content-Type": "multipart/form-data"
-			// 	},
-			// 	body: formData
-			// }).then((response) => response.json()).then((data) => {
-			// 	console.log(data)
-			// }).catch((error)=>console.log("fetch error", error))
-			axios.post("http://10.0.2.2:8080/api/v1/join", formData, {
-				headers: {
-					accept: "application/json",
-					"Content-Type": "multipart/form-data",
-				},
-				transformRequest: formData => formData
-			})
-				.then((res) => {
-					console.log("222222222", res)
-					if (res.status === 200) {
-						console.log(res.data)
-					} else {
-						console.log(res)
-					}
-				})
-				.catch((error) => {
-					console.log("addInfo error", error)
-				})
-			console.log("hello", response)
+	const joinButton = async (data) => {
+		const userInfo = JSON.parse(await getItemFromAsync("user"))
+		// eslint-disable-next-line no-undef
+		const formdata = new FormData()
+		formdata.append("dto", JSON.stringify(data))
 
+		if (file != null) {
+			console.log("set file")
+			formdata.append("image", file)
+		}
+
+		try {		
+			await join(formdata)
+				.then((res) => {
+					console.log(res.data)
+					const user = {
+						"accessToken" : res.data.accessToken,
+						"id": res.data.id,
+						"email" : userInfo.email
+					}
+					setItemToAsync("user", JSON.stringify(user))
+					setUserId(res.data.id)
+					dispatch(true)
+				})
+				.catch((error) => console.log(error))
 		} catch (error) {
 			console.log("error", error)
-
 		}
 	}
 
@@ -92,17 +87,12 @@ const AddInfo = ({navigation}) => {
 				username: username,
 				birthday: birthday,
 				selfBio: selfBio,
-				gender: gender
+				gender: gender,
 			}
-			formData.append(
-				"memberJoinDto", new Blob([JSON.stringify(data)], { type: "application/json" })
-			)
-			console.log("hello", formData._parts)
-			join(formData)
+			await joinButton(data)
 		} catch (error) {
 			console.log("join button error", error)
 		}
-		dispatch(true)
 	}
 
 	const _handleDoubleCheckPress = async () => {
@@ -124,6 +114,7 @@ const AddInfo = ({navigation}) => {
 	//중복확인 버튼 누르면 서버랑 통신해서 중복되는 값 있는지 확인하는 코드 필요
 
 	const onSelectImage = () => {
+		
 		launchImageLibrary(
 			{
 				mediaType: "photo",
@@ -135,15 +126,14 @@ const AddInfo = ({navigation}) => {
 				if (res.didCancel){
 					return
 				}
-				//type 넣어주기
-
-				// eslint-disable-next-line no-undef
-				let file = {
+				const image = {
 					uri: res?.assets[0]?.uri,
-					type: "",
+					type: res?.assets[0]?.type,
 					name: res?.assets[0]?.fileName,
 				}
-				// formData.append("profileImage", file)
+				console.log("file", image)
+				setFile(image)
+				
 				// setResponse(profilePic)
 			}
 		)
