@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useContext } from "react"
-import {View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
+import {RefreshControl,View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
 import { FlatList, TextInput } from "react-native-gesture-handler"
 import {Location} from "../assets/icons/Location"
 import styled from "styled-components"
@@ -100,6 +100,17 @@ function PostScreen({navigation, route}){
 	const [commentContent, setCommentContent] = useState()
 	const [isChanged, setIsChanged] = useState(false)
 	const {userId} = useContext(UserIdContext)
+
+	const wait = (timeout) => {
+		return new Promise(resolve => setTimeout(resolve, timeout))
+	}
+	const [refreshing, setRefreshing] = React.useState(false)
+	
+	const onRefresh = useCallback(() => {
+		//React.
+		setRefreshing(true)
+		wait(2000).then(() => setRefreshing(false))
+	}, [])
 
 	const fetchPost = async () => {
 		try {
@@ -225,7 +236,11 @@ function PostScreen({navigation, route}){
 	}	
 
 	return(
-		<ScrollView style={styles.avoid}>
+		<ScrollView style={styles.avoid}
+			refreshControl={
+				<RefreshControl
+					refreshing={refreshing}
+					onRefresh={onRefresh}/>}>
 			<View style={{width: "100%", marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
 				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
 					<Pressable onPress={() => navigation.navigate("account", writerId)}>

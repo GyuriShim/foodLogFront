@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Button, ScrollView, View, Text } from "react-native"
+import { RefreshControl, Button, ScrollView, View, Text } from "react-native"
 import styled from "styled-components"
 import RcmdPost from "../components/RcmdPost"
 import { ProgressContext } from "../contexts/Progress"
@@ -19,6 +19,16 @@ const RcmdScreen = ({navigation}) => {
 	const {value} = useContext(PurposeContext)
 	const {spinner} = useContext(ProgressContext)
 	const [content, setContent] = useState([])
+
+	const wait = (timeout) => {
+		return new Promise(resolve => setTimeout(resolve, timeout))
+	}
+	const [refreshing, setRefreshing] = React.useState(false)
+	
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true)
+		wait(2000).then(() => setRefreshing(false))
+	}, [])
 
 	const recommendAxios = async(foodPurpose) => {
 		spinner.start()
@@ -45,7 +55,11 @@ const RcmdScreen = ({navigation}) => {
 		<>
 			<Container>
 			</Container>	
-			<ScrollView style={{paddingHorizontal: 15, backgroundColor: "white"}}>
+			<ScrollView style={{paddingHorizontal: 15, backgroundColor: "white"}}
+				refreshControl={
+					<RefreshControl
+						refreshing={refreshing}
+						onRefresh={onRefresh}/>}>
 				{content.map((content, key) =>{
 					return (
 						<View>
