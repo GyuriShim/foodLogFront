@@ -162,12 +162,34 @@ function UpdateScreen({navigation, route}){
 				<ScrollView>
 					<Box1>
 						<View style={{flex:0, padding:1}}>
-							<Image
-								style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-								//source={{uri: response?.assets[0]?.uri}}
-								source={{ uri: pictures[0] }}
-								resizeMode="cover"
-							/>
+							<ScrollView
+								horizontal={true}>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: pictures[0]}}
+									resizeMode="cover"
+								/>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: pictures[1]}}
+									resizeMode="cover"
+								/>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: pictures[2]}}
+									resizeMode="cover"
+								/>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: pictures[3]}}
+									resizeMode="cover"
+								/>
+								<Image
+									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
+									source={{uri: pictures[4]}}
+									resizeMode="cover"
+								/>
+							</ScrollView>
 						</View>
 					</Box1>
 					<View style = {styles.Box2}>
