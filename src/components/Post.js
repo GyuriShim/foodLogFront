@@ -1,7 +1,7 @@
 import React, {useState} from "react"
 import { Pressable, View, Image, StyleSheet, Text } from "react-native"
 import { Location } from "../assets/icons/Location"
-import { formatDate } from "../utils/FormatDate"
+import { formatDate } from "../utils/formatDate"
 
 const Post = ({item:{memberPicture, member, date, pictures, place, review, rating},onProfilePress, onPostPress}) => {
 	const defaultRating = rating
