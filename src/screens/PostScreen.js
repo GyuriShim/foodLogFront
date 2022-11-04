@@ -239,8 +239,9 @@ function PostScreen({navigation, route}){
 		<ScrollView style={styles.avoid}
 			refreshControl={
 				<RefreshControl
-					refreshing={refreshing}
-					onRefresh={onRefresh}/>}>
+					data={comments}
+					onRefresh={fetchPost}
+					refreshing={refreshing}/>}>
 			<View style={{width: "100%", marginBottom: 15, paddingBottom: 5, paddingHorizontal: 5}}>
 				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
 					<Pressable onPress={() => navigation.navigate("account", writerId)}>

@@ -14,6 +14,16 @@ const SubScreen = ({navigation}) => {
 	const {spinner} = useContext(ProgressContext)
 	const [postList, setPostList] = useState([])
 
+	const wait = (timeout) => {
+		return new Promise(resolve => setTimeout(resolve, timeout))
+	}
+	const [refreshing, setRefreshing] = React.useState(false)
+	
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true)
+		wait(2000).then(() => setRefreshing(false))
+	}, [])
+
 	const fetchSubscriberPost = async() => {
 		try {
 			spinner.start()
@@ -50,6 +60,8 @@ const SubScreen = ({navigation}) => {
 			</Container>
 			<View style={{flex: 1, backgroundColor: "white", paddingHorizontal: 15}}>
 				<FlatList
+					onRefresh={fetchSubscriberPost}
+					refreshing={refreshing}
 					data={postList}
 					renderItem={({ item }) => (<Post item={item} onProfilePress={() => navigation.navigate("account", item.memberId)} onPostPress={() => navigation.navigate("PostScreen", { postId: item.postId })}/>)}
 				/>
