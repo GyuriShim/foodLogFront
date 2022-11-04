@@ -8,6 +8,17 @@ export function getMember(id) {
 	})
 }
 
+export function modifyMember(formdata) {
+	return instance({
+		url: "/v1/member/profile",
+		method: "put",
+		data: formdata,
+		headers: {
+			"Content-Type" : "multipart/form-data"
+		}
+	})
+}
+
 export function getMemerList(username, page, size) {
 	return instance({
 		url: "/v1/member/list",
