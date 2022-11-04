@@ -121,7 +121,7 @@ function PostScreen({navigation, route}){
 			setLoading(true)
 			console.log("route", route)
 			const userInfo = JSON.parse(await getItemFromAsync("user"))
-			const response = await getPost(route?.params)
+			const response = await getPost(route?.params.postId)
 			setPost(response.data)
 			setPlace(response.data.place)
 			setComment(response.data.comment)

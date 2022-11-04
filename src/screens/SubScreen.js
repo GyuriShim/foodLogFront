@@ -51,7 +51,7 @@ const SubScreen = ({navigation}) => {
 			<View style={{flex: 1, backgroundColor: "white", paddingHorizontal: 15}}>
 				<FlatList
 					data={postList}
-					renderItem={({item}) => (<Post item={item} onProfilePress={() => navigation.navigate("account", item.memberId)} onPostPress={() => navigation.navigate("PostScreen", item.postId)}/>)}
+					renderItem={({ item }) => (<Post item={item} onProfilePress={() => navigation.navigate("account", item.memberId)} onPostPress={() => navigation.navigate("PostScreen", { postId: item.postId })}/>)}
 				/>
 			</View>
 		</>

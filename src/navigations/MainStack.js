@@ -18,6 +18,7 @@ import SubSearchContext from "../contexts/SubSearchContext"
 import { AntIcon } from "../assets/icons/AntIcon"
 import SearchContext from "../contexts/SearchContext"
 import MapSearchResult from "../screens/MapSearchResult"
+import UserPostsScreen from "../screens/UserPostsScreen"
 
 const Stack = createStackNavigator()
 
@@ -116,6 +117,9 @@ const MainStack = () => {
 						borderBottomWidth:2 */}
 			<Stack.Screen name="MapSearchResult" component={MapSearchResult}
 				options={{headerShown: false}}
+			/>
+			<Stack.Screen name="UserPostsScreen" component={UserPostsScreen}
+				options={{headerTitle: ""}}
 			/>
 		</Stack.Navigator>
 	)

@@ -213,7 +213,7 @@ const AccountScreen = ({navigation, route}) => {
 							const image = "../assets/images/marker.png"
 						}
 						return (
-							<MapView.Marker key={index} coordinate={coordinate} onPress={() => { }}>
+							<MapView.Marker key={index} coordinate={coordinate} onPress={() => navigation.navigate("UserPostsScreen")}>
 								<View style={[styles.markerWrap]}>
 									<Image
 										source={getMarkerImage(marker.category)}

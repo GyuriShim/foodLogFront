@@ -63,7 +63,7 @@ const RcmdScreen = ({navigation}) => {
 				{content.map((content, key) =>{
 					return (
 						<View>
-							<RcmdPost onPress={() => navigation.navigate("PostScreen", content.postId)} 
+							<RcmdPost onPress={() => navigation.navigate("PostScreen", { postId: content.postId })} 
 								item={{imageUrl: content.picture, store:content.place.name, address:content.place.address, contents:content.review, rating: content.rating}}
 							/>
 						</View>	
