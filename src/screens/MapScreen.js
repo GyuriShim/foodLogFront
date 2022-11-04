@@ -336,7 +336,7 @@ const MapScreen = ({ navigation }) => {
 						showsHorizontalScrollIndicator={true}
 					>
 						{placePost.contents.map((post, index) => {
-							return (<Pressable style={styles.miniPost} key={index} onPress={()=> navigation.navigate("PostScreen",post.postId)}>
+							return (<Pressable style={styles.miniPost} key={index} onPress={() => navigation.navigate("PostScreen", { postId: post.postId })}>
 								<Image
 									source={{ uri: post.picture }}
 									style={styles.postImage}
