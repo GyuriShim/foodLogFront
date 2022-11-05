@@ -140,6 +140,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 
 	const createPostAxios = async (review, rating, purpose, place) => {
 		const formData = new FormData()
+		const category = place.category_name.split(">")
 
 		const newPost = {
 			memberId: userId,
@@ -151,7 +152,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 				kakaoId : place.id,
 				name : place.place_name,
 				address: place.road_address_name,
-				category: place.category_group_name,
+				category: category[1].trim(),
 				longitude: place.x,
 				latitude: place.y
 			},
