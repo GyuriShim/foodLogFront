@@ -26,7 +26,8 @@ const MainTab = () => {
 						borderBottomColor: "rgb(216, 243, 255)",
 						borderTopWidth: 2,
 						borderBottomWidth: 2,
-					}
+					},
+					tabBarHideOnKeyboard: true
 				}}
 			>	
 				<Tab.Screen name="지도" component={MapScreen} options={{headerShown:false, tabBarIcon: props => Location({...props, name:"location-outline", size: 24})}}/>
