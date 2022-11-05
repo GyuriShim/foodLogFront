@@ -8,6 +8,7 @@ import { getMember } from "../service/member"
 import { follower,following, Subscribe, Unsubscribe } from "../service/subscribe"
 import { getPlacesByMember } from "../service/place"
 import { ProgressContext } from "../contexts/Progress"
+import { useIsFocused } from "@react-navigation/native"
 
 
 const Container = styled.View`
@@ -32,6 +33,7 @@ const AccountScreen = ({navigation, route}) => {
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [refreshing, setRefeshing] = useState(false)
 	const {spinner} = useContext(ProgressContext)
+	const isFocused = useIsFocused()
 	/*const [placePostId, setPlacePostId] = useState(0)
 	const [postId, setPostId] = useState(0)
 	const [placePost, setPlacePost] = useState({ contents: [], place: { address: "", name: "" } })
@@ -58,7 +60,7 @@ const AccountScreen = ({navigation, route}) => {
 
 	const fetchProfile = async () => {
 		try{
-			spinner.start()
+			//spinner.start()
 			var response
 			var followerRes
 			var followingRes
@@ -84,9 +86,9 @@ const AccountScreen = ({navigation, route}) => {
 			setUserFollower(followerRes.data.totalElements)
 		} catch(e){
 			console.log("catch error", e)
-		} finally{
+		}/*  finally{
 			spinner.stop()
-		}
+		} */
 	}
 
 	useEffect(() => {
@@ -108,7 +110,7 @@ const AccountScreen = ({navigation, route}) => {
 
 	useEffect(() => {
 		fetchProfile()
-	}, [])
+	}, [isFocused])
 
 	useLayoutEffect(() => {
 		navigation.setOptions({headerTitle: userName})
