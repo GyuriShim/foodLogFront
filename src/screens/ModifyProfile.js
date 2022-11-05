@@ -85,7 +85,7 @@ const ModifyProfile = ({navigation}) => {
 				gender: gender
 			}
 			
-			formdata.append("member", JSON.stringify(data))
+			formdata.append("member", encodeURIComponent(JSON.stringify(data)))
 			console.log(formdata)
 			if (file != null) {
 				console.log("set file")

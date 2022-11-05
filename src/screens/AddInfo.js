@@ -52,7 +52,7 @@ const AddInfo = ({navigation}) => {
 		const userInfo = JSON.parse(await getItemFromAsync("user"))
 		// eslint-disable-next-line no-undef
 		const formdata = new FormData()
-		formdata.append("dto", JSON.stringify(data))
+		formdata.append("dto", encodeURIComponent(JSON.stringify(data)))
 
 		if (file != null) {
 			console.log("set file")
