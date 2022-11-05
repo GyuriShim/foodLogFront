@@ -17,6 +17,7 @@ import UserIdContext from "../contexts/UserId"
 import { S3 } from "aws-sdk"
 import { readFile } from "react-native-fs"
 import { decode } from "base64-arraybuffer"
+import PlaceInfoContext from "../contexts/Place"
 
 
 const Container = styled.View` 
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
 	},
 })
 function UploadScreen({onChangeDate, navigation, route }){
-	const [defaultRating, setdefaultRating] =useState(2)
+	const [defaultRating, setdefaultRating] =useState(0)
 	const [maxRating, setMaxRating] = useState([1,2,3,4,5])
 	const [loading, setLoading] = useState(false)
 	const [date, setDate] = useState("")
@@ -119,7 +120,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 	const [rating, setRating] = useState()
 	const [purpose, setPurpose] = useState()
 	//const [place, setPlace] = useState()
-	const [urls, setUrls] = useState([])
+	const {placeInfo, setPlaceInfo} = useContext(PlaceInfoContext)
 	const {userId} = useContext(UserIdContext)
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
@@ -139,53 +140,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 		hideDatePicker()
 	}
 
-	const uploadImageOnS3 = async (files) => {
-		console.log(image)
-		const s3bucket = new S3({
-		  //accessKeyId: process.env.ACCESS_KEY_ID,
-		  //secretAccessKey: process.env.SECRET_ACCESS_KEY,
-		  //Bucket: process.env.BUCKET_NAME,
-		  accessKeyId: "AKIA2KMNSMDYSIFASYPI",
-		  secretAccessKey: "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",
-		  Bucket: "foodlogstorage",
-		  signatureVersion: "v4"
-		});
-		const locations = []
-
-		files.forEach(async(file) => {
-			let contentType = 'image/jpeg';
-			let contentDeposition = 'inline;filename="' + file.name + '"';
-			const base64 = await readFile(file.uri, 'base64');
-			const arrayBuffer = decode(base64);
-
-			s3bucket.createBucket(() => {
-				const params = {
-				Bucket: "foodlogstorage",
-				Key: file.name,
-				Body: arrayBuffer,
-				ContentDisposition: contentDeposition,
-				ContentType: contentType,
-				};
-
-				s3bucket.upload(params, (err, data) => {
-					if (err) {
-						console.log('error in callback');
-					}else{
-						console.log('success');
-						console.log("Response URL : "+ data.Location);
-						locations.push(data.Location)
-						setUrls(locations)
-					}
-				});
-			});
-		})
-		
-		createPostAxios(review, rating, purpose, urls)
-
-	};
-
-
-	const createPostAxios = async (review, rating, purpose, urls) => {
+	const createPost = async (review, rating, purpose, place) => {
 		const newPost = {
 			memberId: userId,
 			review: review,
@@ -400,7 +355,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 						/>
 					</View>
 					<View style = {styles.Box2}>
-						<Text style = {{flex: 1}}>{route?.params?.place_name}</Text>
+						<Text style = {{flex: 1}}>{placeInfo?.place_name}</Text>
 						<Button style = {{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
 							title="상호명" onPress={() => navigation.navigate("KeySearchScreen")}/>
 						<TouchableOpacity>
@@ -447,12 +402,11 @@ function UploadScreen({onChangeDate, navigation, route }){
 					</Box6>
 				</ScrollView>
 				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null), setdefaultRating(null)}} />
+					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null), setdefaultRating(null), setPlaceInfo()}} />
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {uploadImageOnS3(image), navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null)}}/>
-
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose, placeInfo),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
 					)}
 				</View>
 			</Container> 

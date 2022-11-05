@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/MaterialIcons"
 //import Pressable from "react-native/Libraries/Components/Pressable/Pressable"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { SafeAreaView } from "react-native-safe-area-context"
+import PlaceInfoContext from "../contexts/Place"
 
 
 
@@ -99,6 +100,7 @@ function KeySearchScreen ({navigation}) {
 	//const [data, setData] = useState()
 	const [place, setPlace] = useState()
 	const [inputText, setInputText] = useState("")
+	const {placeInfo, setPlaceInfo} = useContext(PlaceInfoContext)
 
 	
 
@@ -237,7 +239,7 @@ function KeySearchScreen ({navigation}) {
 					renderItem = {({item}) => 
 						<View style = {styles.row}>
 							<TouchableOpacity style = {{flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-								onPress = {()=> {navigation.navigate("UploadScreen",item), console.log(item)}}>
+								onPress = {()=> {navigation.pop(), setPlaceInfo(item)}}>
 
 								<Text>{item.place_name}{"\n"}
 									{item.address_name}

@@ -2,7 +2,6 @@ import React, {useState, useRef, useEffect, useContext} from "react"
 import {Image, StatusBar, View, Text, StyleSheet, TouchableOpacity, Platform, Alert} from "react-native"
 import styled from "styled-components/native"
 import { RadioButton } from "react-native-paper"
-import axios from "axios"
 import Input from "../components/Input.js"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import Button from "../components/Button.js"
@@ -12,8 +11,8 @@ import PropTypes from "prop-types"
 import UserContext from "../contexts/User.js"
 import { getItemFromAsync } from "../utils/StorageFun.js"
 import moment from "moment"
-import { join, checkUsername } from "../service/login"
-import { getMember } from "../service/member.js"
+import { checkUsername } from "../service/login"
+import { getMember, modifyMember } from "../service/member.js"
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -29,21 +28,18 @@ const ErrorText = styled.Text`
 `
 
 const ModifyProfile = ({navigation}) => {
-	const [username, setUsername] = useState("sdfljw123")
-	const [doubleCheck, setDoubleCheck] = useState(true)
+	const [username, setUsername] = useState("")
+	const [originUsername, setOriginUsername] = useState("")
+	const [doubleCheck, setDoubleCheck] = useState()
 	const [selfBio, setSelfBio] = useState("")
 	const [idErrorMessage, setIdErrorMessage] = useState("")
 	const [birthErrorMessage, setBirthErrorMessage] = useState("")
 	const [gender, setGender] = useState("M")
 	const [birthday, setBirthday] = useState("1999-11-27")
 	const [url, setUrl] = useState()
+	const [file, setFile] = useState(null)
 	const [disabled, setDisabled] = useState(true)
 	const [loading, setLoading] = useState(false)
-	const { dispatch } = useContext(UserContext)
-	var originUsername
-	
-	// eslint-disable-next-line no-undef
-	const formData = new FormData()
 
 	const selfBioRef = useRef()
 
@@ -56,9 +52,11 @@ const ModifyProfile = ({navigation}) => {
 			setUsername(response.data.username)
 			setSelfBio(response.data.selfBio)
 			setUrl(response.data.profilePicture)
-			setBirthday(String(response.data.birthday[0])+"-"+String(response.data.birthday[1])+"-"+String(response.data.birthday[2]))
+			//setBirthday(response.data.birthday)
 			setGender(response.data.gender)
-			originUsername = response.data.username
+			setOriginUsername(response.data.username)
+			setDoubleCheck(true)
+			setDisabled(true)
 		} catch(e){
 			console.log("catch error", e)
 		}
@@ -69,76 +67,48 @@ const ModifyProfile = ({navigation}) => {
 		fetchProfile()
 	}, [])
 
-	const join = async(formData) => {
-		try {			
-			await fetch("http://10.0.2.2:8080/api/v1/join", {
-				method: "POST",
-				cache: "no-cache",
-				headers: {
-					"Content-Type": "multipart/form-data"
-				},
-				body: formData
-			}).then((response) => response.json()).then((data) => {
-				console.log(data)
-			})
-			// await axios.post("http://10.0.2.2:8080/api/v1/join", formData, {
-			// 	headers: {
-			// 		accept: "application/json",
-			// 		"Content-Type": "multipart/form-data",
-			// 	},
-			// 	transformRequest: formData => formData
-			// })
-			// 	.then((res) => {
-			// 		console.log("222222222", res)
-			// 		if (res.status === 200) {
-			// 			console.log(res.data)
-			// 		} else {
-			// 			console.log(res)
-			// 		}
-			// 	})
-			// 	.catch((error) => {
-			// 		console.log("addInfo error", error)
-			// 	})
-			// console.log("hello", response)
-
-		} catch (error) {
-			console.log("error", error)
-
-		}
-	}
-
-	const _handleJoinButtonPress = async () => {
+	const _handleModifyButtonPress = async () => {
 		try {
 			const userInfo = JSON.parse(await getItemFromAsync("user"))
-			console.log("userInfo", userInfo)
+			// eslint-disable-next-line no-undef
+			const formdata = new FormData()
+
 			const data = {
-				email: userInfo.email,
 				username: username,
 				birthday: birthday,
 				selfBio: selfBio,
 				gender: gender
 			}
-			formData.append(
-				"memberJoinDto", new Blob([JSON.stringify(data)], { type: "application/json" })
-			)
-			console.log(data)
-			join(formData)
+			
+			formdata.append("member", JSON.stringify(data))
+			console.log(formdata)
+			if (file != null) {
+				console.log("set file")
+				formdata.append("file", file)
+			}
+	
+			await modifyMember(formdata)
+				.then((res) => {
+					console.log(res.data)
+					navigation.goBack()
+				})
+				.catch((error) => console.log("axios error", error))
 		} catch (error) {
 			console.log("join button error", error)
-		}
-		
+		}	
 	}
+
 
 	const _handleDoubleCheckPress = async () => {
 		try {
 			checkUsername(username)
 				.then((response) => {
-					if (response.data == true) {
-						Alert.alert("이미 사용중인 아이디입니다.")
-						setDoubleCheck(false)
-					} else {
+					if (response.data == false || username === originUsername) {
 						Alert.alert("사용가능한 아이디입니다.", username)
 						setDoubleCheck(true)
+					} else {
+						Alert.alert("이미 사용중인 아이디입니다.")
+						setDoubleCheck(false)
 					}
 				})
 		} catch(e) {
@@ -159,15 +129,13 @@ const ModifyProfile = ({navigation}) => {
 				if (res.didCancel){
 					return
 				}
-				//type 넣어주기
-
-				// eslint-disable-next-line no-undef
-				let file = {
+				const image = {
 					uri: res?.assets[0]?.uri,
-					type: "",
+					type: res?.assets[0]?.type,
 					name: res?.assets[0]?.fileName,
 				}
-				// formData.append("profileImage", file)
+				console.log("file", image)
+				setFile(image)
 				setUrl(res?.assets[0]?.uri)
 			}
 		)
@@ -212,9 +180,9 @@ const ModifyProfile = ({navigation}) => {
 	//중복확인 결과도 포함,,
 	useEffect(() => {
 		setDisabled(
-			!(username && birthday && !idErrorMessage  && !birthErrorMessage && doubleCheck)
+			!(birthday && !idErrorMessage  && !birthErrorMessage && doubleCheck)
 		)
-	}, [username, birthday, idErrorMessage, birthErrorMessage, doubleCheck])
+	}, [username, birthday, idErrorMessage, birthErrorMessage, doubleCheck, selfBio, url, gender])
 
 	if (loading) return <Text>로딩 중</Text>
 
@@ -327,7 +295,7 @@ const ModifyProfile = ({navigation}) => {
 						isFilled={true} 
 						disabled={disabled} 
 						containerStyle={styles.smallButton}
-						onPress={() => {navigation.goBack()}}
+						onPress={_handleModifyButtonPress}
 					></Button>
 					{/* join버튼 눌렀을 때 프로필 정보 서버로 보내줘야함 */}
 				</View>

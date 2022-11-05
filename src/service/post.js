@@ -67,7 +67,7 @@ export function subscriberPost() {
 
 export function getPostsByMemberAndPlace(memberId,placeId) {
 	return instance({
-		url: "/v1/post",
+		url: "/v1/posts",
 		params: {
 			memberId: memberId,
 			placeId: placeId

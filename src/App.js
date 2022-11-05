@@ -9,6 +9,7 @@ import { SearchContextProvider } from "./contexts/SearchContext"
 import { PurposeContextProvider } from "./contexts/Purpose"
 import { UserIdContextProvider } from "./contexts/UserId"
 import { SearchCategoryContextProvider } from "./contexts/SearchCategoryContext"
+import { PlaceInfoContextProvider } from "./contexts/Place"
 
 
 const App = () => {
@@ -25,18 +26,20 @@ const App = () => {
 	return (ready? <Loading /> :(
 		<UserProvider>
 			<UserIdContextProvider>
-				<PurposeContextProvider>
-					<SubSearchContextProvider>
-						<SearchContextProvider>
-							<SearchCategoryContextProvider>
-								<ProgressProvider>
-									<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
-									<Navigation />
-								</ProgressProvider>
-							</SearchCategoryContextProvider>
-						</SearchContextProvider>
-					</SubSearchContextProvider>
-				</PurposeContextProvider>
+				<PlaceInfoContextProvider>
+					<PurposeContextProvider>
+						<SubSearchContextProvider>
+							<SearchContextProvider>
+								<SearchCategoryContextProvider>
+									<ProgressProvider>
+										<StatusBar backgroundColor="#ffffff" barStyle="dark-content"/>
+										<Navigation />
+									</ProgressProvider>
+								</SearchCategoryContextProvider>
+							</SearchContextProvider>
+						</SubSearchContextProvider>
+					</PurposeContextProvider>
+				</PlaceInfoContextProvider>
 			</UserIdContextProvider>
 		</UserProvider>
 	)

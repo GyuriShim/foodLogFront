@@ -7,6 +7,16 @@ const Following = ({navigation, route}) => {
 	const [followingList, setFollowingList] = useState([])
 	const [loading, setLoading] = useState(false)
 
+	const wait = (timeout) => {
+		return new Promise(resolve => setTimeout(resolve, timeout))
+	}
+	const [refreshing, setRefreshing] = React.useState(false)
+	
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true)
+		wait(2000).then(() => setRefreshing(false))
+	}, [])
+
 	const fetchFollowing = async () => {
 		try {
 			setLoading(true)
@@ -25,7 +35,9 @@ const Following = ({navigation, route}) => {
 
 	return (
 		<FlatList
-			data={followingList}
+			data={followingList}// fetch로 데이터 호출
+			onRefresh={fetchFollowing}
+			refreshing={refreshing}
 			renderItem={({item}) => (<UserSearchResult item={item} onPress={() => navigation.navigate("account", item.memberId)}/>)}
 		/>
 	)

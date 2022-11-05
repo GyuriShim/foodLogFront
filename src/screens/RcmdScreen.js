@@ -58,8 +58,9 @@ const RcmdScreen = ({navigation}) => {
 			<ScrollView style={{paddingHorizontal: 15, backgroundColor: "white"}}
 				refreshControl={
 					<RefreshControl
-						refreshing={refreshing}
-						onRefresh={onRefresh}/>}>
+						data={RcmdPost}
+						onRefresh={recommendAxios}
+						refreshing={refreshing}/>}>
 				{content.map((content, key) =>{
 					return (
 						<View>
