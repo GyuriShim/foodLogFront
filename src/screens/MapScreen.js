@@ -573,4 +573,3 @@ const styles = StyleSheet.create({
 	}
 
 })
-

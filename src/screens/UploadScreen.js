@@ -9,7 +9,7 @@ import Button from "../components/Button"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import { Picker } from "@react-native-picker/picker"
 import ImagePicker from "react-native-image-picker"
-import { createPostApi } from "../service/post"
+import { createPost } from "../service/post"
 import KeySearchScreen from "../screens/KeySearchScreen"
 import {placeSearch} from "../screens/KeySearchScreen"
 import { FlatList } from "react-native-gesture-handler"
@@ -115,11 +115,11 @@ function UploadScreen({onChangeDate, navigation, route }){
 	const [review, setReview] = useState()
 	const [rating, setRating] = useState()
 	const [purpose, setPurpose] = useState()
+	const [postId, setPostId] = useState()
 	//const [place, setPlace] = useState()
 	const {placeInfo, setPlaceInfo} = useContext(PlaceInfoContext)
 	const {userId} = useContext(UserIdContext)
-	const formdata = new FormData() //지원
-	const formData = new FormData()
+	
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
@@ -138,7 +138,9 @@ function UploadScreen({onChangeDate, navigation, route }){
 		hideDatePicker()
 	}
 
-	const createPost = async (review, rating, purpose, place) => {
+	const createPostAxios = async (review, rating, purpose, place) => {
+		const formData = new FormData()
+
 		const newPost = {
 			memberId: userId,
 			review: review,
@@ -153,76 +155,34 @@ function UploadScreen({onChangeDate, navigation, route }){
 				longitude: place.x,
 				latitude: place.y
 			},
-			
 		}
 
-		const imageFile = {
-			name: "rn_image_picker_lib_temp_9b40ac5b-b785-4289-8a4a-2fd53aca9b52.jpg", 
-			type: "image/jpeg", 
-			uri: "file:///data/user/0/com.foodlog/cache/rn_image_picker_lib_temp_9b40ac5b-b785-4289-8a4a-2fd53aca9b52.jpg"
-		}
+		formData.append("post", JSON.stringify(newPost))
+
+		image.forEach(img => {
+			formData.append("file", img)
+		})
 		
-		
-		formData.append("post", new Blob([JSON.stringify(newPost)], {type: "application/json"}))
-		//formData.append('post', JSON.stringify(newPost), {type: "application/json;"})
-		formData.append("file", imageFile)
-				
-		const headers = {
-			"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
-			"access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTU2MDg3OCwiZXhwIjoxNjY1NTcxNjc4fQ.ak7j0JSbelOE8W0ZddyGO3MhbIpLdXMWG35FbEiJrAPidMMQZ1WG_TDE73tB1ynW-RbxyXPD1HTEmLy9Iq1E-w"
-		}
-
-		console.log(formData)
-
-		await axios.post("http://10.0.2.2:8080/api/v1/post",formData, {headers})
+		try{
+			await createPost(formData)
 			.then(response => {
 				if(response){
-					console.log(response)
+					console.log("response : ", response.data)
 					console.log("create post success")
+					let postId = response.data.postId
+					//setPostId(response.data.postId)
+					navigation.navigate("PostScreen", {postId: postId})
 				}
 			})
 			.catch((error)=> {
-				if (error.res) {
-					console.log("error1", error.response.data)
-					console.log("error2", error.response.status)
-					console.log("error3", error.response.headers)
-				} else if (error.request) {
-					console.log("error4", error.request)
-					console.log("error5", error.message)
-				} else {
-					console.log("error6", error.message)
-				}
+				console.log("error : ", error)
 			})
-			
-		/*
-			await axios.post("http://food-log-dku.com:8080/api/v1/post", formData, {
-				headers: {
-				  'Content-Type': 'multipart/form-data',
-				  'ACCESS-TOKEN': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NTQ2Njg4MiwiZXhwIjoxNjY1NDc3NjgyfQ.q6AHcVmnCioQvJU99NUM8aBkzl9oMBosXZ4EwnmPePHEGw1XyF7uuIC_MlrNgAaWA-GL6B02imd4TX115JyNZg'
-				},
-				transformRequest: (data, headers) => {
-				  return data;
-				},
-			  }).then(response => {
-				if(response){
-					console.log(response)
-					console.log("create post success")
-				}
-			})
-			.catch((error)=> {
-				if (error.res) {
-					console.log("error1", error.response.data)
-					console.log("error2", error.response.status)
-					console.log("error3", error.response.headers)
-				} else if (error.request) {
-					console.log("error4", error.request)
-					console.log("error5", error.message)
-				} else {
-					console.log("error6", error.message)
-				}
-			});*/
-
+		}catch(error){
+			console.log("error", error)
+		}
+		
 	}
+
 	const CustomRatingBar = () => {
 		return (
 			<View style={styles.customRatingBarStyle}>
@@ -256,12 +216,6 @@ function UploadScreen({onChangeDate, navigation, route }){
 
 	
 	const selectImage = async() => {
-		const image = {
-			uri: "",
-			type: "",
-			fileName: "",
-			timestamp:"",
-		}
 		await launchImageLibrary(
 			{
 				mediaType: "photo",
@@ -273,14 +227,25 @@ function UploadScreen({onChangeDate, navigation, route }){
 				if(response.didCancel){
 					return
 				}
-				console.log(response.assets[0].uri)
+				const imageFiles = []
+				
 				setResponse(response)
+
+				response.assets.forEach(asset => {
+					const imageFile = {
+						uri: asset.uri,
+						type: asset.type,
+						name: asset.fileName,
+					}
+					imageFiles.push(imageFile)
+				})
+
+				setImage(imageFiles)
+
 				if(response?.assets[0]?.timestamp !== null){
 					var originDate = response?.assets[0]?.timestamp.split("T")
-					setDate(originDate[0])
-					
+					setDate(originDate[0])	
 				}
-				console.log(response.assets[0].fileName)
 				
 			}
 
@@ -317,46 +282,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 
 		)
 	}
-	/* const formData = new FormData()
-	formData.append("multipartFile", image)
-	//alert(res.assets[0].uri)
-	const headers = {
-		"Content-Type" : "multipart/form-data; boundary=someArbitraryUniqueString",
-	}
-	console.log(image)
-	console.log(formData)
-
-	axios.post("https://localhost:8080/post", formData, {headers: headers})
-		.then(response => {
-			if(response){
-				console.log("rrrr", response.data)
-			}
-		})
-		.catch((error)=> {
-			if (error.res) {
-				console.log("errormessage", error)
-				// The request was made and the server responded with a status code
-				// that falls out of the range of 2xx
-				console.log(error.response.data)
-				console.log(error.response.status)
-				console.log(error.response.headers)
-			} else if (error.request) {
-			},
-			formdata.append("file", image)
-		)
-		
-		
-		//alert(res.assets[0].uri)
-		console.log("image:", image)
-		console.log("formData:", formData)
-
-		/*
-		axios.post("https://localhost:8080/post", formdata, {headers: headers})
-			.then(response => {
-				if(response){
-					console.log( response.data)
-				}
-			})*/	
+	
 	return (
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1, backgroundColor:"white"}}>
 			<Container >
@@ -478,7 +404,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose, placeInfo),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPostAxios(review, rating, purpose, placeInfo),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
 					)}
 				</View>
 			</Container> 

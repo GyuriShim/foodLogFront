@@ -217,12 +217,11 @@ function PostScreen({navigation, route}){
 							<View
 								activeOpacity={0.7}
 								key= {item}
-								onPress = {()=>setdefaultRating(item)}
 							>
 								<Image
 									style={styles.starImgStyle} 
 									source={
-										item <= defaultRating
+										item <= rating
 											? {uri: starImgFilled}
 											: {uri: starImgCorner}
 									}
@@ -252,7 +251,7 @@ function PostScreen({navigation, route}){
 					</Pressable>
 					<View style={{ flexDirection: "row", alignItems: "center" }}>
 						<Text style={{marginRight: 5}}>{date}</Text>
-						{userId ===  writerId&& <Button title="삭제" onPress={() => deletePostAxios(postId)}/>}
+						{userId ===  writerId&& <Button title="삭제" onPress={() => {deletePostAxios(postId), navigation.pop()}}/>}
 						{userId ===  writerId&&<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>}
 						
 					</View>
