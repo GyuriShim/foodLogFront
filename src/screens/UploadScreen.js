@@ -158,7 +158,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 			},
 		}
 
-		formData.append("post", JSON.stringify(newPost))
+		formData.append("post", encodeURIComponent(JSON.stringify(newPost)))
 
 		image.forEach(img => {
 			formData.append("file", img)
