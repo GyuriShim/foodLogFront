@@ -169,7 +169,9 @@ function UploadScreen({onChangeDate, navigation, route }){
 				if(response){
 					console.log("response : ", response.data)
 					console.log("create post success")
-					setPostId(response.data.postId)
+					let postId = response.data.postId
+					//setPostId(response.data.postId)
+					navigation.navigate("PostScreen", {postId: postId})
 				}
 			})
 			.catch((error)=> {
@@ -402,7 +404,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPostAxios(review, rating, purpose, placeInfo),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPostAxios(review, rating, purpose, placeInfo),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
 					)}
 				</View>
 			</Container> 
