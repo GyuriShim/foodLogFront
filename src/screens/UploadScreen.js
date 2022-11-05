@@ -14,11 +14,7 @@ import KeySearchScreen from "../screens/KeySearchScreen"
 import {placeSearch} from "../screens/KeySearchScreen"
 import { FlatList } from "react-native-gesture-handler"
 import UserIdContext from "../contexts/UserId"
-import { S3 } from "aws-sdk"
-import { readFile } from "react-native-fs"
-import { decode } from "base64-arraybuffer"
 import PlaceInfoContext from "../contexts/Place"
-
 
 const Container = styled.View` 
   flex: 1
@@ -114,14 +110,16 @@ function UploadScreen({onChangeDate, navigation, route }){
 	const [text, setText] = useState("Empty")
 	const placeholder = "목적을 입력해주세요."
 	const [response, setResponse] = useState(null)
-	const [image, setImage] = useState([])
+	const [image, setImage] = useState("")
 	
 	const [review, setReview] = useState()
 	const [rating, setRating] = useState()
 	const [purpose, setPurpose] = useState()
+	const [postId, setPostId] = useState()
 	//const [place, setPlace] = useState()
 	const {placeInfo, setPlaceInfo} = useContext(PlaceInfoContext)
 	const {userId} = useContext(UserIdContext)
+	
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
@@ -140,14 +138,15 @@ function UploadScreen({onChangeDate, navigation, route }){
 		hideDatePicker()
 	}
 
-	const createPost = async (review, rating, purpose, place) => {
+	const createPostAxios = async (review, rating, purpose, place) => {
+		const formData = new FormData()
+
 		const newPost = {
 			memberId: userId,
 			review: review,
 			rating: rating,
 			purpose: purpose,
 			date: date,
-			pictures: ["123", "456"],
 			place: {
 				kakaoId : place.id,
 				name : place.place_name,
@@ -157,37 +156,31 @@ function UploadScreen({onChangeDate, navigation, route }){
 				latitude: place.y
 			},
 		}
-		console.log(newPost)
-		const headers = {
-			"Content-Type" : "application/json",
-			'Authorization' : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMjE4MDg0NkBkYW5rb29rLmFjLmtyIiwiaXNzIjoiZm9vZCBsb2ciLCJtZW1iZXJJZCI6NDAsImlhdCI6MTY2NzU1NzY1MSwiZXhwIjoxNjY3NTY4NDUxfQ.tnxd4sk3gKSc71KodvcCDNcGnW13fPK_u0Abxalkqa8Bwa7o7sWx5GtNVkOxmyqKpP3eMiRXSO86u_-cMt6HQg"
+
+		formData.append("post", JSON.stringify(newPost))
+
+		image.forEach(img => {
+			formData.append("file", img)
+		})
+		
+		try{
+			await createPost(formData)
+			.then(response => {
+				if(response){
+					console.log("response : ", response.data)
+					console.log("create post success")
+					setPostId(response.data.postId)
+				}
+			})
+			.catch((error)=> {
+				console.log("error : ", error)
+			})
+		}catch(error){
+			console.log("error", error)
 		}
-
-		/*
-		await createPost(newPost)
-			.then(response => {
-				if(response){
-					console.log(response)
-					console.log("create post success")
-				}
-			})
-			.catch((error)=> {
-				console.log(error.request)
-				console.log(error)
-			})	*/
-		await axios("http://10.0.0.2:8080/api/v1/post/only", newPost, {headers})
-			.then(response => {
-				if(response){
-					console.log(response)
-					console.log("create post success")
-				}
-			})
-			.catch((error)=> {
-				console.log(error.request)
-				console.log(error)
-			})	
-
+		
 	}
+
 	const CustomRatingBar = () => {
 		return (
 			<View style={styles.customRatingBarStyle}>
@@ -227,34 +220,35 @@ function UploadScreen({onChangeDate, navigation, route }){
 				includeBase64: Platform.OS === "android",
 				includeExtra: true,
 				selectionLimit: 5,
-
 			},
 			(response) => {
 				if(response.didCancel){
 					return
 				}
-
+				const imageFiles = []
+				
 				setResponse(response)
-				
-				const newImages = []
-				response.assets.forEach((asset) => newImages.push({
-					name: asset.fileName,
-					type: asset.type,
-					uri: asset.uri
-				}))
-				
-				
-				setImage(newImages)
-				//console.log(image)
+
+				response.assets.forEach(asset => {
+					const imageFile = {
+						uri: asset.uri,
+						type: asset.type,
+						name: asset.fileName,
+					}
+					imageFiles.push(imageFile)
+				})
+
+				setImage(imageFiles)
+
 				if(response?.assets[0]?.timestamp !== null){
 					var originDate = response?.assets[0]?.timestamp.split("T")
-					setDate(originDate[0])
-					
+					setDate(originDate[0])	
 				}
+				
 			}
+
 		)
 	}
-
 	const flatlistImage = () => {
 		return (
 			<View style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}>
@@ -283,8 +277,10 @@ function UploadScreen({onChangeDate, navigation, route }){
 					resizeMode="cover"
 				/>
 			</View>
+
 		)
 	}
+	
 	return (
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1, backgroundColor:"white"}}>
 			<Container >
@@ -406,7 +402,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 					{loading ? (
 						<ActivityIndicator style={styles.spinner} />
 					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPost(review, rating, purpose, placeInfo),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPostAxios(review, rating, purpose, placeInfo),navigation.navigate("PostScreen"),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
 					)}
 				</View>
 			</Container> 
