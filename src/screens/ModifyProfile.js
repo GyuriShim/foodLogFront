@@ -8,11 +8,11 @@ import Button from "../components/Button.js"
 import { launchImageLibrary } from "react-native-image-picker"
 import { removeWhitespace, validateBirthday, validateUsername } from "../utils/common.js"
 import PropTypes from "prop-types"
-import UserContext from "../contexts/User.js"
 import { getItemFromAsync } from "../utils/StorageFun.js"
 import moment from "moment"
 import { checkUsername } from "../service/login"
 import { getMember, modifyMember } from "../service/member.js"
+import { ProgressContext } from "../contexts/Progress.js"
 
 const ErrorText = styled.Text`
     align-items: flex-start
@@ -35,16 +35,18 @@ const ModifyProfile = ({navigation}) => {
 	const [idErrorMessage, setIdErrorMessage] = useState("")
 	const [birthErrorMessage, setBirthErrorMessage] = useState("")
 	const [gender, setGender] = useState("M")
-	const [birthday, setBirthday] = useState("1999-11-27")
+	const [birthday, setBirthday] = useState("")
 	const [url, setUrl] = useState()
 	const [file, setFile] = useState(null)
 	const [disabled, setDisabled] = useState(true)
 	const [loading, setLoading] = useState(false)
+	const {spinner} = useContext(ProgressContext)
 
 	const selfBioRef = useRef()
 
 	const fetchProfile = async () => {
 		try{
+			spinner.start()
 			setLoading(true)
 			const userInfo = JSON.parse(await getItemFromAsync("user"))
 			const response = await getMember(userInfo.id)
@@ -52,15 +54,17 @@ const ModifyProfile = ({navigation}) => {
 			setUsername(response.data.username)
 			setSelfBio(response.data.selfBio)
 			setUrl(response.data.profilePicture)
-			//setBirthday(response.data.birthday)
+			setBirthday(response.data.birthday)
 			setGender(response.data.gender)
 			setOriginUsername(response.data.username)
 			setDoubleCheck(true)
 			setDisabled(true)
 		} catch(e){
 			console.log("catch error", e)
+		} finally {
+			spinner.stop()
 		}
-		setLoading(false)
+		
 	}
 
 	useEffect(() => {
@@ -69,6 +73,7 @@ const ModifyProfile = ({navigation}) => {
 
 	const _handleModifyButtonPress = async () => {
 		try {
+			spinner.start()
 			const userInfo = JSON.parse(await getItemFromAsync("user"))
 			// eslint-disable-next-line no-undef
 			const formdata = new FormData()
@@ -95,7 +100,9 @@ const ModifyProfile = ({navigation}) => {
 				.catch((error) => console.log("axios error", error))
 		} catch (error) {
 			console.log("join button error", error)
-		}	
+		}  finally {
+			spinner.stop()
+		}
 	}
 
 
@@ -183,8 +190,6 @@ const ModifyProfile = ({navigation}) => {
 			!(birthday && !idErrorMessage  && !birthErrorMessage && doubleCheck)
 		)
 	}, [username, birthday, idErrorMessage, birthErrorMessage, doubleCheck, selfBio, url, gender])
-
-	if (loading) return <Text>로딩 중</Text>
 
 	return (
 		<KeyboardAwareScrollView
