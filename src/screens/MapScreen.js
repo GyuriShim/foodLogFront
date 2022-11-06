@@ -116,7 +116,7 @@ const MapScreen = ({ navigation }) => {
 		{id : "CHICKEN", label: "치킨"},
 		{id : "DESSERT", label: "디저트"},
 		{id : "CAFE", label: "카페"},
-		{id : "ECT", label: "기타"},
+		{id : "ETC", label: "기타"},
 	]
 
 	console.log("this is rating, purpose, category" , rating, purpose, category)
