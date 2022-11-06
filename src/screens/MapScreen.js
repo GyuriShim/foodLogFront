@@ -52,6 +52,7 @@ const requestPermission = async() => {
 } */
 
 const windowWidth = Dimensions.get("window").width
+const windowHeight = Dimensions.get("window").height
 
 const MapScreen = ({ navigation }) => {
 	const [state, setState] = useState({})
@@ -272,7 +273,7 @@ const MapScreen = ({ navigation }) => {
 				<Text style={{fontSize: 14,color:"rgb(47, 93, 154)", fontFamily:"Arial", fontWeight: "700"}}>Filter</Text>
 			</TouchableOpacity>
 			<MapView
-				style={{ height: "85%", width: "100%", borderRadius: 90 }}
+				style={{ height: windowHeight - 196, width: "100%", borderRadius: 90 }}
 				initialRegion={{
 					latitude: location.latitude,
 					longitude: location.longitude,
@@ -329,7 +330,7 @@ const MapScreen = ({ navigation }) => {
 					</View>
                 
 					<View style={{flexDirection: "row", alignItems:"center"}}>
-						<OcticonsIcon name="location" size={12} color="black"/>
+						<OcticonsIcon name="location" size={13} color="black"/>
 						<Text numberOfLines={1} style={styles.storeAddress}>{placePost.place.address}</Text>
 					</View>
                 
@@ -488,24 +489,24 @@ const styles = StyleSheet.create({
 	postImage: {
 		width: 110,
 		height: 110,
-        
+		marginVertical: 4
 	},
 	storeName: {
-		fontSize: 15,
+		fontSize: 16,
 		color: "black"
 	},
 	storeAddress: {
-		fontSize: 10,
+		fontSize: 12,
 		paddingLeft: 2,
 		color: "black"
 	},
 	review: {
-		fontSize: 10,
+		fontSize: 12,
 		width: 110,
 		color: "black"
 	},
 	filter: {
-		height: "80%", 
+		//height: "80%", 
 		width: "100%", 
 		backgroundColor: "#fff", 
 		position:"absolute", 
@@ -516,7 +517,7 @@ const styles = StyleSheet.create({
 	item: {
 		marginTop: 5,
 		backgroundColor: "rgba(196, 196, 196, 0.45)",
-		width: 70,
+		width: windowWidth*0.19,
 		alignItems: "center"
 	},
 	itemSelected: {
@@ -535,7 +536,7 @@ const styles = StyleSheet.create({
 	activateBtn: {
 		position: "absolute", 
 		left: windowWidth/2 - 60, 
-		top: "19%", 
+		top: 118, 
 		width: 120, 
 		height: 30,
 		zIndex: 100, 
@@ -556,7 +557,7 @@ const styles = StyleSheet.create({
 	inactiveBtn: {
 		position: "absolute", 
 		left: windowWidth/2 - 60, 
-		top: "19%", 
+		top: 118, 
 		width: 120, 
 		height: 30,
 		zIndex: 100, 
