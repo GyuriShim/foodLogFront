@@ -59,7 +59,7 @@ const RcmdScreen = ({navigation}) => {
 				refreshControl={
 					<RefreshControl
 						data={RcmdPost}
-						onRefresh={recommendAxios}
+						onRefresh={() => recommendAxios(value)}
 						refreshing={refreshing}/>}>
 				{content.map((content, key) =>{
 					return (
