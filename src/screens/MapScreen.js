@@ -137,8 +137,11 @@ const MapScreen = ({ navigation }) => {
 				console.log("placePost error" , error)
 			}
 		}
-		fetchPlacePost()
-	}, [placePostId])
+		if (subpostVisible === true) {
+			fetchPlacePost()
+		}
+		
+	}, [subpostVisible])
 
 	const fetchMap = async () => {      
 		try {
