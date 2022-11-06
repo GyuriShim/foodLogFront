@@ -161,6 +161,7 @@ function PostScreen({navigation, route}){
 					console.log(response.data)
 					console.log("create comment success")
 					setIsChanged(!isChanged)
+					setCommentContent()
 				}
 			})
 			.catch((error)=> {
@@ -292,13 +293,13 @@ function PostScreen({navigation, route}){
 				{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
 				<TextInput
 					style = {styles.input}
-					//multiline = {true}
+					value = {commentContent}
 					placeholder = "댓글을 입력하세요"
 					onChangeText={text => setCommentContent(text)}
 					//textAlignVertical="center"
 				/>
 				<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-					<Button title="등록" onPress={() => createCommentAxios(postId, commentContent)}/>
+					<Button title="등록" onPress={() => {createCommentAxios(postId, commentContent)}}/>
 					{/* <View style = {styles.button}>
 						</View> */}
 				</TouchableOpacity>
