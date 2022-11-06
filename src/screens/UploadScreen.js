@@ -141,8 +141,6 @@ function UploadScreen({onChangeDate, navigation, route }){
 		const formData = new FormData()
 		const category = place.category_name.split(">")
 
-		const category = place.category_name.split(">")
-
 		const newPost = {
 			memberId: userId,
 			review: review,
@@ -163,6 +161,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 
 		image.forEach(img => {
 			formData.append("file", img)
+			console.log("img : ", img)
 		})
 		
 		try{
