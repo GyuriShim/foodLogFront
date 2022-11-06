@@ -226,6 +226,8 @@ function UploadScreen({onChangeDate, navigation, route }){
 				mediaType: "photo",
 				includeBase64: Platform.OS === "android",
 				includeExtra: true,
+				maxWidth: 512,
+				maxHeight: 512,
 				selectionLimit: 5,
 			},
 			(response) => {
