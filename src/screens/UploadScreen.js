@@ -314,7 +314,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 					</Box4>
 					<Box5>
 						<TextInput
-							style = {styled.input}
+							style = {{paddingLeft: 10}}
 							multiline = {true}
 							placeholder = "내용을 입력하세요"
 							textAlignVertical="center"
