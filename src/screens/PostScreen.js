@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useContext } from "react"
-import {RefreshControl,View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator}from "react-native"
+import {RefreshControl,View, Text, Pressable, StyleSheet, Image, ScrollView, TouchableOpacity,KeyboardAvoidingView, Platform, ActivityIndicator, useWindowDimensions}from "react-native"
 import { FlatList, TextInput } from "react-native-gesture-handler"
 import {Location} from "../assets/icons/Location"
 import styled from "styled-components"
@@ -100,6 +100,7 @@ function PostScreen({navigation, route}){
 	const [commentContent, setCommentContent] = useState()
 	const [isChanged, setIsChanged] = useState(false)
 	const {userId} = useContext(UserIdContext)
+	const {width} = useWindowDimensions()
 
 	const wait = (timeout) => {
 		return new Promise(resolve => setTimeout(resolve, timeout))
@@ -206,8 +207,6 @@ function PostScreen({navigation, route}){
 	}, [route.params, isChanged])
 
 
-	if (loading) return <Text>로딩 중</Text>
-
 	const CustomRatingBar = () => {
 		return (
 			<View style={styles.customRatingBarStyle}>
@@ -234,6 +233,17 @@ function PostScreen({navigation, route}){
 		)
 	}	
 
+	const FlatlistImage = ({item}) => {
+		return (
+			<Image
+				style={{width: width*0.9, height:width*0.9, justifyContent: "center", alignItems: "center", marginRight: 5}}
+				source={{uri: item}}
+				resizeMode="cover"
+			/>
+
+		)
+	}
+
 	return(
 		<ScrollView style={styles.avoid}
 			refreshControl={
@@ -251,40 +261,17 @@ function PostScreen({navigation, route}){
 					</Pressable>
 					<View style={{ flexDirection: "row", alignItems: "center" }}>
 						<Text style={{marginRight: 5}}>{date}</Text>
-						{userId ===  writerId&& <Button title="삭제" onPress={() => {deletePostAxios(postId), navigation.pop()}}/>}
+						{userId ===  writerId&&<Button title="삭제" onPress={() => {deletePostAxios(postId), navigation.pop()}}/>}
 						{userId ===  writerId&&<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>}
 						
 					</View>
 				</View>
-				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-					<ScrollView
-						horizontal={true}>
-						<Image
-							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-							source={{uri: pictures[0]}}
-							resizeMode="cover"
-						/>
-						<Image
-							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-							source={{uri: pictures[1]}}
-							resizeMode="cover"
-						/>
-						<Image
-							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-							source={{uri: pictures[2]}}
-							resizeMode="cover"
-						/>
-						<Image
-							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-							source={{uri: pictures[3]}}
-							resizeMode="cover"
-						/>
-						<Image
-							style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-							source={{uri: pictures[4]}}
-							resizeMode="cover"
-						/>
-					</ScrollView>
+				<View style={{ alignItems: "center", flex: 1, height: width*0.9}}>
+					<FlatList
+						data={pictures}
+						horizontal={true}
+						renderItem = {({item,index}) => (<FlatlistImage item={item}/>)}
+					/>
 				</View>
 				<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
 					<Text style={{fontSize: 16}}>{place.name}</Text>

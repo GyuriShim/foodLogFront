@@ -104,7 +104,7 @@ const AccountScreen = ({navigation, route}) => {
 			setLoading(false)
 		}
 		fetchMap()
-	}, [memberId])
+	}, [memberId, isFocused])
 
 	console.log("markers : ", markers)
 

@@ -1,7 +1,6 @@
 import React,{useState, useEffect, useRef, useContext} from "react"
 import { launchImageLibrary } from "react-native-image-picker"
-import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet} from "react-native"
-import {useRoute} from "@react-navigation/native"
+import {ScrollView, Image, StatusBar, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet, useWindowDimensions, FlatList} from "react-native"
 import axios from "axios"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import styled from "styled-components"
@@ -10,11 +9,9 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 import { Picker } from "@react-native-picker/picker"
 import ImagePicker from "react-native-image-picker"
 import { createPost } from "../service/post"
-import KeySearchScreen from "../screens/KeySearchScreen"
-import {placeSearch} from "../screens/KeySearchScreen"
-import { FlatList } from "react-native-gesture-handler"
 import UserIdContext from "../contexts/UserId"
 import PlaceInfoContext from "../contexts/Place"
+import { ProgressContext } from "../contexts/Progress"
 
 const Container = styled.View` 
   flex: 1
@@ -114,12 +111,14 @@ function UploadScreen({onChangeDate, navigation, route }){
 	
 	const [review, setReview] = useState()
 	const [rating, setRating] = useState()
-	const [purpose, setPurpose] = useState()
+	const [purpose, setPurpose] = useState("SOLO")
 	const [postId, setPostId] = useState()
 	//const [place, setPlace] = useState()
 	const {placeInfo, setPlaceInfo} = useContext(PlaceInfoContext)
 	const {userId} = useContext(UserIdContext)
-	
+	const {spinner} = useContext(ProgressContext)
+	const {width} = useWindowDimensions()
+
 	const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
 	const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
 
@@ -140,6 +139,8 @@ function UploadScreen({onChangeDate, navigation, route }){
 
 	const createPostAxios = async (review, rating, purpose, place) => {
 		const formData = new FormData()
+		const category = place.category_name.split(">")
+
 		const category = place.category_name.split(">")
 
 		const newPost = {
@@ -165,21 +166,25 @@ function UploadScreen({onChangeDate, navigation, route }){
 		})
 		
 		try{
+			spinner.start()
+			console.log(newPost.place.category)
 			await createPost(formData)
-			.then(response => {
-				if(response){
-					console.log("response : ", response.data)
-					console.log("create post success")
-					let postId = response.data.postId
-					//setPostId(response.data.postId)
-					navigation.navigate("PostScreen", {postId: postId})
-				}
-			})
-			.catch((error)=> {
-				console.log("error : ", error)
-			})
+				.then(response => {
+					if(response){
+						console.log("response : ", response.data)
+						console.log("create post success")
+						let postId = response.data.postId
+						//setPostId(response.data.postId)
+						navigation.navigate("PostScreen", {postId: postId})
+					}
+				})
+				.catch((error)=> {
+					console.log("error : ", error)
+				})
 		}catch(error){
 			console.log("error", error)
+		}finally{
+			spinner.stop()
 		}
 		
 	}
@@ -231,7 +236,6 @@ function UploadScreen({onChangeDate, navigation, route }){
 				const imageFiles = []
 				
 				setResponse(response)
-
 				response.assets.forEach(asset => {
 					const imageFile = {
 						uri: asset.uri,
@@ -252,34 +256,13 @@ function UploadScreen({onChangeDate, navigation, route }){
 
 		)
 	}
-	const flatlistImage = () => {
+	const FlatlistImage = ({item: {uri}}) => {
 		return (
-			<View style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}>
-				<Image
-					source={{uri: response?.assets[0]?.uri}}
-					resizeMode="cover"
-				/>
-				<Image
-					source={{uri: response?.assets[1]?.uri}}
-					resizeMode="cover"
-				/>
-				<Image
-					source={{uri: response?.assets[2]?.uri}}
-					resizeMode="cover"
-				/>
-				<Image
-					source={{uri: response?.assets[3]?.uri}}
-					resizeMode="cover"
-				/>
-				<Image
-					source={{uri: response?.assets[4]?.uri}}
-					resizeMode="cover"
-				/>
-				<Image
-					source={{uri: response?.assets[5]?.uri}}
-					resizeMode="cover"
-				/>
-			</View>
+			<Image
+				style={{width: width*0.9, height:width*0.9, justifyContent: "center", alignItems: "center", paddingRight: 5}}
+				source={{uri: uri}}
+				resizeMode="cover"
+			/>
 
 		)
 	}
@@ -289,48 +272,14 @@ function UploadScreen({onChangeDate, navigation, route }){
 			<Container >
 				<ScrollView>
 					<Box1>
-						<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-							<ScrollView
-								horizontal={true}>
-							
-								{/* <FlatList
-							data={{uri: response?.assets?.uri}}
-							horizontal="true"
-							renderItem={({item, index})=>{
-								return(
-									<flatlistImage item={item} index = {index}/>
-								)
-							}
-							}
-						/> */}
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: response?.assets[0]?.uri}}
-									resizeMode="cover"
-								/>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: response?.assets[1]?.uri}}
-									resizeMode="cover"
-								/>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: response?.assets[2]?.uri}}
-									resizeMode="cover"
-								/>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: response?.assets[3]?.uri}}
-									resizeMode="cover"
-								/>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: response?.assets[4]?.uri}}
-									resizeMode="cover"
-								/>
-							</ScrollView>
+						<View style={{ alignItems: "center", flex: 1, height: width*0.9}}>
+							<FlatList
+								data={response?.assets}
+								horizontal={true}
+								renderItem = {({item,index}) => (<FlatlistImage item={item}/>)}
+							/>
 						</View>
-						<View style={{flex:0, padding:1}}>
+						<View style={{flex:0, paddingTop:5}}>
 							<Button title="이미지 업로드" color={"lightblue"} onPress={selectImage}></Button>
 						</View>
 					</Box1>
@@ -399,15 +348,13 @@ function UploadScreen({onChangeDate, navigation, route }){
 							</Picker>
 						</View>
 					</Box6>
+				
+					<View style={{flexDirection: "row", justifyContent: "space-evenly", marginVertical: 10}}>
+						<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null), setdefaultRating(null), setPlaceInfo(), setReview(null), setPurpose("SOLO")}} />
+						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPostAxios(review, rating, purpose, placeInfo),setResponse(null), setdefaultRating(null), setPlaceInfo(),  setDate(null), setReview(null), setPurpose("SOLO")}}/>
+
+					</View>
 				</ScrollView>
-				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null), setDate(null), setdefaultRating(null), setPlaceInfo()}} />
-					{loading ? (
-						<ActivityIndicator style={styles.spinner} />
-					) :  (
-						<Button title="다음" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {createPostAxios(review, rating, purpose, placeInfo),setResponse(null), setdefaultRating(null), setPlaceInfo()}}/>
-					)}
-				</View>
 			</Container> 
 		</KeyboardAwareScrollView>
 	)

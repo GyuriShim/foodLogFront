@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState, useLayoutEffect} from "react"
-import { ScrollView, Text, View, StyleSheet, BackHandler } from "react-native"
+import { Text, View, BackHandler, ActivityIndicator, RefreshControl } from "react-native"
 import { FlatList } from "react-native-gesture-handler"
 import EmptySearchResult from "../components/EmptySearchResult"
 import UserSearchResult from "../components/UserSearchResult"
@@ -10,26 +10,60 @@ const SubSearch = ({navigation}) => {
 	const {userKeyword, onChangeSearchText} = useContext(SubSearchContext)
 	const [loading, setLoading] = useState(false)
 	const [member, setMember] = useState([])
-	const [totalPage, setTotalPage] = useState()
+	const [totalElements, setTotalElements] = useState()
+	const [noMorePost, setNoMorePost] = useState(false)
+	const [refreshing, setRefeshing] = useState(false)
+	var last = false
 	var page = 0
 	const size = 15
+	const [pageNum, setPageNum] = useState()
 	
 	const fetchMemberList = async() => {
 		try {
 			setLoading(true)
-			console.log("1 ",page)
-			const response = await getMemerList(userKeyword, page, size)
+			const response = await getMemerList(userKeyword, 0, size)
+			console.log(response.data)
 			setMember(response.data.content)
-			setTotalPage(response.data.totalPages)
-			console.log(response.data.content)
-			console.log(response.data.totalPages)
-			page += 1
-			console.log("2 ",page)
+			setTotalElements(response.data.totalElements)
+			setPageNum(response.data.totalPages)
+			last = response.data.last
+			if (last) {
+				setNoMorePost(true)
+			}
+			console.log("전체 페이지",response.data.totalPages)
 		} catch (e) {
 			console.log("catch error", e)
 		}
 		setLoading(false)
 	}
+	const fetchMoreMemberList = async(page) => {
+		var moreMemeber = []
+		try {
+			setLoading(true)
+			const response = await getMemerList(userKeyword, page, size)
+			console.log(response.data)
+			moreMemeber = response.data.content
+			last = response.data.last
+			if (last) {
+				setNoMorePost(true)
+			}
+			console.log("전체 페이지",response.data.totalPages)
+		} catch (e) {
+			console.log("catch error", e)
+		}
+		setLoading(false)
+		return moreMemeber
+	}
+
+	const onRefresh = async() => {
+		if(!member || member.length === 0 || refreshing){
+			return
+		}
+		setRefeshing(true)
+		fetchMemberList()
+		setRefeshing(false)
+	}
+
 	useEffect(() => {
 		BackHandler.addEventListener(
 			"hardwareBackPress",
@@ -39,63 +73,61 @@ const SubSearch = ({navigation}) => {
 	},[])
 
 	useLayoutEffect(()=> {
-		page = 0
-		fetchMemberList()
+		setNoMorePost(false)
+		if (userKeyword==="") {
+			return
+		} else {
+			fetchMemberList()
+		}
 	},[userKeyword])
 	
 	const clear = () => {
+		page = 0
 		onChangeSearchText("")
 		setMember([])
 	}
 	
 	if(userKeyword === ""){
 		return <EmptySearchResult type="EMPTY_KEYWORD"/>
+	} else if(member.length === 0){
+		return <EmptySearchResult type="NOT_FOUND"/>
 	}
 
-	const _handleLoadMore = () => {
-		if (page === totalPage) {
+	if (loading) return <Text>로딩 중</Text>
+	const _handleLoadMore = async() => {
+		if (last || noMorePost || !member || member.length < size) {
 			return
-		} else {
-			fetchMemberList()
 		}
+		page += 1
+		const olderPosts = await fetchMoreMemberList(page)
+		console.log(totalElements)
+		if (olderPosts.length < size || last){
+			setNoMorePost(true)
+		}
+		setMember(member.concat(olderPosts))
 	}
-
-	/* const onScroll = (e) => {
-		const {contentSize, layoutMeasurement, contentOffset} = e.nativeEvent
-		const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y
-		if (distanceFromBottom < 72) {
-			console.log("바닥이 가까워요.")
-			if (loading) {
-				return
-			} else {
-				console.log("3 ",page)
-				fetchMemberList()
-			}
-		} else {
-			console.log("바닥과 멀어졌어요.")
-		}
-	} */
 
 	return(
 		<View style={{flex:1}}>
 			<FlatList
 				data={member}
-				//이거 parameter 수정중이였슴(스택으로 계정 화면 쌓일때 헤더 타이틀 바꾸는거), 
-				//아니면 account 스크린에,, 웅 이것도 차피 파라미터는 넘겨줘야하네
-				//그리고 왼쪽 위 뒤로가기 버튼 눌렀을 때
-				//검색 내용 초기화 시키기,, 스크롤 렌더링,, 안대
 				renderItem={({item}) => (<UserSearchResult item={item} onPress={() => navigation.navigate("account", item.id)}/>)}
-				keyExtractor={(item, index) => item.id}
-				onEndReached={() => _handleLoadMore()}
+				keyExtractor={(item) => item.id}
+				onEndReached={_handleLoadMore}
 				onEndReachedThreshold={1}
-				//onScroll={onScroll}
+				ListFooterComponent={
+					!noMorePost && (
+						<ActivityIndicator style={{height: 64}} size={32} color="#6200ee"/>
+					)
+				}
+				refreshControl={
+					<RefreshControl onRefresh={onRefresh} refreshing={refreshing}/>
+				}
 			/>
 		</View>
 		
 	)
 }
-const styles = StyleSheet.create({
-	block: {}
-})
+
 
 export default SubSearch
