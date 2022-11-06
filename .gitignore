@@ -55,9 +55,11 @@ buck-out/
 
 # Bundle artifact
 *.jsbundle
+android/app/src/main/assets/index.android.bundle
 
 # Ruby / CocoaPods
 /ios/Pods/
 /vendor/bundle/
 
 .env
+android/gradle.properties
