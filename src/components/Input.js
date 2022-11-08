@@ -30,6 +30,7 @@ const Input = forwardRef(
 			returnKeyType,
 			maxLength,
 			multiline,
+			keyboardType
 		},
 		ref
 	) => {
@@ -56,6 +57,7 @@ const Input = forwardRef(
 					autoCorrect={false}
 					underlineColorAndroid="transparent"
 					multiline={multiline}
+					keyboardType={keyboardType}
 				/>
 			</Container>
 		)
@@ -77,6 +79,7 @@ Input.propTypes = {
 	returnKeyType: PropTypes.oneOf(["done", "next"]),
 	maxLength: PropTypes.number,
 	multiline: PropTypes.bool,
+	keyboardType: PropTypes.oneOf(["default", "number-pad", "decimal-pad", "numeric", "email-address", "phone-pad", "url"])
 }
 
 export default Input
