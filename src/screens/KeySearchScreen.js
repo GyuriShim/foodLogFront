@@ -202,7 +202,7 @@ function KeySearchScreen ({navigation}) {
 	} */
 
 	const _handleLoadMore = () => {
-		placeSearch()
+		//placeSearch()
 	}
 	const renderItem = () => {
 		//console.log(input)
