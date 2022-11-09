@@ -226,6 +226,8 @@ function UploadScreen({onChangeDate, navigation, route }){
 				mediaType: "photo",
 				includeBase64: Platform.OS === "android",
 				includeExtra: true,
+				maxWidth: 512,
+				maxHeight: 512,
 				selectionLimit: 5,
 			},
 			(response) => {
@@ -314,7 +316,7 @@ function UploadScreen({onChangeDate, navigation, route }){
 					</Box4>
 					<Box5>
 						<TextInput
-							style = {styled.input}
+							style = {{paddingLeft: 10}}
 							multiline = {true}
 							placeholder = "내용을 입력하세요"
 							textAlignVertical="center"

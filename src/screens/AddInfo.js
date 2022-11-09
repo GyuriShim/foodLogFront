@@ -234,6 +234,7 @@ const AddInfo = ({navigation}) => {
 					}}
 					placeholder="생년월일 8자리를 입력해주세요."
 					maxLength={10}
+					keyboardType="number-pad"
 				>
 				</Input>
 				<ErrorText>{birthErrorMessage}</ErrorText>

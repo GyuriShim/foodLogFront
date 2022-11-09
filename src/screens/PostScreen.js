@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 		width: 40,
 		height: 40,
 		borderRadius: 50,
-		backgroundColor: "black",
+		backgroundColor: "gray",
 		alignItems: "center",
 		marginRight: 5
 	},
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
 	},
 	avoid:{
 		flex: 1,
-		padding: 10
+		padding: 10,
 	},
 	commentProfile: {
 		width: 40,
@@ -99,6 +99,7 @@ function PostScreen({navigation, route}){
 	const [rating, setRating] = useState()
 	const [commentContent, setCommentContent] = useState()
 	const [isChanged, setIsChanged] = useState(false)
+	const [memberProfile, setMemberProfile] = useState()
 	const {userId} = useContext(UserIdContext)
 	const {width} = useWindowDimensions()
 
@@ -131,6 +132,7 @@ function PostScreen({navigation, route}){
 			setRating(response.data.rating)
 			setWriterId(response.data.memberId)
 			setPurpose(response.data.purpose)
+			setMemberProfile(response.data.memberPicture)
 			console.log(response.data.postId)
 		} catch (e) {
 			setError(e)
@@ -159,6 +161,7 @@ function PostScreen({navigation, route}){
 					console.log(response.data)
 					console.log("create comment success")
 					setIsChanged(!isChanged)
+					setCommentContent()
 				}
 			})
 			.catch((error)=> {
@@ -255,7 +258,7 @@ function PostScreen({navigation, route}){
 				<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 5}}>   
 					<Pressable onPress={() => navigation.navigate("account", writerId)}>
 						<View style={{flexDirection: "row", alignItems: "center"}}>
-							<Image style={styles.profile}/>
+							<Image style={styles.profile} source={{uri: memberProfile}}/>
 							<Text>{post.member}</Text> 
 						</View>
 					</Pressable>
@@ -290,18 +293,18 @@ function PostScreen({navigation, route}){
 				{/* style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}  */}
 				<TextInput
 					style = {styles.input}
-					//multiline = {true}
+					value = {commentContent}
 					placeholder = "댓글을 입력하세요"
 					onChangeText={text => setCommentContent(text)}
 					//textAlignVertical="center"
 				/>
 				<TouchableOpacity style = {{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} activeOpacity={0.5}>
-					<Button title="등록" onPress={() => createCommentAxios(postId, commentContent)}/>
+					<Button title="등록" onPress={() => {createCommentAxios(postId, commentContent)}}/>
 					{/* <View style = {styles.button}>
 						</View> */}
 				</TouchableOpacity>
 			</View>
-			<View>
+			<View style={{marginBottom: 20}}>
 				{comments.map((comment, key) =>{
 					return (
 						<View>

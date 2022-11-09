@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from "react"
-import {ScrollView, Image, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet} from "react-native"
+import {ScrollView, Image, View, Text,  TouchableOpacity, Platform, TextInput, ActivityIndicator, StyleSheet, useWindowDimensions, FlatList} from "react-native"
 import axios from "axios"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import styled from "styled-components"
@@ -66,6 +66,7 @@ function UpdateScreen({navigation, route}){
 	const [post, setPost] = useState({})
 	const [error, setError] = useState(null)
 	const [comment, setComment] = useState([])
+	const {width} = useWindowDimensions()
 
 	const postId = route.params
 
@@ -155,54 +156,36 @@ function UpdateScreen({navigation, route}){
 		)
 	}
 
+	const FlatlistImage = ({item}) => {
+		return (
+			<Image
+				style={{width: width*0.9, height:width*0.9, justifyContent: "center", alignItems: "center", marginRight: 5}}
+				source={{uri: item}}
+				resizeMode="cover"
+			/>
+
+		)
+	}
+
 	return(
 		<KeyboardAwareScrollView contentContainerStyle={{flex:1, backgroundColor:"white"}}>
 			<Container >
 				<ScrollView>
 					<Box1>
-						<View style={{flex:0, padding:1}}>
-							<ScrollView
-								horizontal={true}>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: pictures[0]}}
-									resizeMode="cover"
-								/>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: pictures[1]}}
-									resizeMode="cover"
-								/>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: pictures[2]}}
-									resizeMode="cover"
-								/>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: pictures[3]}}
-									resizeMode="cover"
-								/>
-								<Image
-									style={{width: 200, height:200, justifyContent: "center", alignItems: "center"}}
-									source={{uri: pictures[4]}}
-									resizeMode="cover"
-								/>
-							</ScrollView>
+						<View style={{alignItems: "center", flex: 1, height: width*0.9}}>
+							<FlatList
+								data={pictures}
+								horizontal={true}
+								renderItem = {({item,index}) => (<FlatlistImage item={item}/>)}
+							/>
 						</View>
 					</Box1>
 					<View style = {styles.Box2}>
-						{date ? 
-							<Text style={{flex: 1}}>{date}</Text> :
-							<Text style={{flex: 1}}>날짜</Text>}
+						<Text style={{flex: 1}}>{date}</Text>
 					</View>
-					<Box3>
-						<View style = {{flex: 0, padding: 1}}>
-							{place ?
-								<Text style={{flex: 1}}>{place.name}</Text> :
-								<Text style={{flex: 1}}>상호명</Text>}
-						</View>
-					</Box3>
+					<View style = {styles.Box2}>
+						<Text style={{flex: 1}}>{place.name}</Text>
+					</View>
 					<Box4>
 						<CustomRatingBar
 							value={rating}
@@ -220,23 +203,17 @@ function UpdateScreen({navigation, route}){
 					</View>
 					<Box6>
 						<View>
-							{purpose ?
-								<Text style={{flex: 1}}>{post.purpose}
-								</Text> :
-								<Text style={{flex: 1}}>목적
-								</Text>
-							}
+							<Text style={{flex: 1}}>
+								{post.purpose}
+							</Text> 
 						</View>
 					</Box6>
-				</ScrollView>
-				<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"5%"}}>
-					<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null),setPurpose(null)}} />
-					{loading ? (
-						<ActivityIndicator style={styles.spinner} />
-					) :  (
+					<View style={{flexDirection: "row", justifyContent: "space-evenly", paddingTop:"1%", marginBottom: 20}}>
+						<Button title="취소" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {navigation.goBack(), setResponse(null),setPurpose(null)}} />
 						<Button title="수정" color={"rgba(165, 212, 233, 0.5)"} containerStyle={styles.button} onPress={() => {updatePostAxios(postId, review)}}/>
-					)}
-				</View>
+					</View>
+				</ScrollView>
+				
 			</Container>
 		</KeyboardAwareScrollView>
 	)
@@ -254,6 +231,7 @@ const styles = StyleSheet.create({
 		alignContent: "center",
 		alignItems: "center",
 		paddingLeft: 10,
+		height: 30
 	},
 	Box5:{
 		flex:10,
