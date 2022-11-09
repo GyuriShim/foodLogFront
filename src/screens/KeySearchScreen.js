@@ -98,7 +98,7 @@ function KeySearchScreen ({navigation}) {
 	const [placeObj, setPlaceObj] = useState({})
 	const [input, setInput] = useState(inputText)
 	//const [data, setData] = useState()
-	const [place, setPlace] = useState()
+	const [place, setPlace] = useState([])
 	const [inputText, setInputText] = useState("")
 	const {placeInfo, setPlaceInfo} = useContext(PlaceInfoContext)
 	const [state, setState] = useState()
@@ -166,27 +166,23 @@ function KeySearchScreen ({navigation}) {
 				console.log(response.data.meta)
 				//console.log(response.data.documents)
 				console.log(response.data.meta.pageable_count)
-				setPlace(response.data.documents)
+				if (!response.data.meta.is_end) {
+					setPlace(place.concat(response.data.documents))
+				}
 				setPlaceObj({
 					name: place.place_name
 				})
-				setPage({
-					page: response.page})
-				/* if(response.data.meta.is_end) == "false"{
-					setState({
-						//data: response.data.concat(????), // 기존 data에 추가.
-						page: response.page + 1
-					}) 
+				setPage(response.page)
 
-				} */
+				//console.log(place.place_name)
+				console.log("------", state)
 			})
-			//console.log(place.place_name)
-			console.log(state)
 		
 		} catch (error) {
 			console.log(error.message)
 		} 
 	}
+	console.log("place", place)
 				
 	//place = res.get(url, headers = headers).json()["documents"]
 	//res.json())
@@ -204,8 +200,9 @@ function KeySearchScreen ({navigation}) {
 		setPlace(input)
 		setInput("")
 	} */
+
 	const _handleLoadMore = () => {
-		this.placeSearch()
+		placeSearch()
 	}
 	const renderItem = () => {
 		//console.log(input)
@@ -248,8 +245,8 @@ function KeySearchScreen ({navigation}) {
 				{/* <Text>{placeObj.name}</Text> */}
 				<FlatList
 					data = {place}
-					onEndReached={_handleLoadMore}
-					onEndReachedThreshold={1}
+					onEndReached={_handleLoadMore()}
+					onEndReachedThreshold={0}
 					renderItem = {({item}) => 
 						<View style = {styles.row}>
 							<TouchableOpacity style = {{flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
