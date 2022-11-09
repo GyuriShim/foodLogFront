@@ -39,7 +39,7 @@ function SearchResult({item:{name, address, averageRating}, onPress, navigation}
 			onPress={()=>onPress()}>
 			<View style={{flexDirection: "row", justifyContent: "space-between"}}>
 				<Text>{name}</Text>
-				<View style={{flexDirection: "row"}}>
+				<View style={{flexDirection: "row", justifyContent: "flex-end"}}>
 					<CustomRatingBar/>
 					<Text style={{fontSize:12}}>{"("}{detailRating}{")"}</Text>
 				</View>

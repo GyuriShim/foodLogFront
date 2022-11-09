@@ -48,7 +48,7 @@ function RcmdPost({item:{imageUrl, store, address, contents, rating}, onPress}){
 			<Image style={{height: "100%", width: windowHeight*0.2, backgroundColor: "gray"}} source={{uri: imageUrl}}/>
 			<View style={{flexDirection: "column", width: windowWidth-30-windowHeight*0.2, padding: 5}}>
 				<View style={{flexDirection: "row", justifyContent: "space-between", marginBottom: 2}}>
-					<Text>{store}</Text>
+					<Text style={{width: windowWidth-30-windowHeight*0.2 - 70, fontWeight:"600"}} numberOfLines={1}>{store}</Text>
 					<CustomRatingBar/>
 				</View>
 				<View style={{flexDirection: "row", alignItems: "center", marginBottom: 3}}>

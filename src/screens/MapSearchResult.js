@@ -64,13 +64,37 @@ const MapSearchResult = ({navigation, route}) => {
 		return require("../assets/images/ETC.png")
 	}
 
-	/* if (coordinate == undefined) {
+	const CustomRatingBar = ({averageRating}) => {
+		const defaultRating = Math.round(averageRating*10)/10
+		const [maxRating, setMaxRating] = useState([1,2,3,4,5])
+		const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
+		const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
+		
 		return (
-			<View style={{justifyContent:"center", alignItems:"center"}}>
-				<ActivityIndicator size={32}></ActivityIndicator>
+			<View style={styles.customRatingBarStyle}>
+				{
+					maxRating.map((item, key)=>{
+						return (
+							<View
+								activeOpacity={0.7}
+								key= {item}
+							>
+								<Image
+									style={styles.starImgStyle} 
+									source={
+										item <= defaultRating
+											? {uri: starImgFilled}
+											: {uri: starImgCorner}
+									}
+								/>
+							</View>
+						)						
+					})
+				}
 			</View>
 		)
-	} */
+	}
+
 	return(
 		<View style={{backgroundColor: "white", flex: 1, padding: 15, justifyContent:"space-between"}}>
 			<Pressable 
@@ -131,11 +155,15 @@ const MapSearchResult = ({navigation, route}) => {
 						paddingRight: 16,
 					}}>
 						<Text numberOfLines={1} style={styles.storeName}>{placePost.place.name}</Text>
-						<Pressable
-							onPress={() => setSubpostVisible(!subpostVisible)}
-						>
-							<OcticonsIcon name="x" size={20} color="black"/>
-						</Pressable>
+						<View style={{flexDirection: "row", justifyContent: "center"}}>
+							<CustomRatingBar averageRating={placePost.averageRating}/>
+							<Text style={{fontSize:12, marginRight: 8}}>{"("}{placePost.averageRating}{")"}</Text>
+							<Pressable
+								onPress={() => setSubpostVisible(!subpostVisible)}
+							>
+								<OcticonsIcon name="x" size={20} color="black"/>
+							</Pressable>
+						</View>
                     
 					</View>
                 
@@ -246,7 +274,8 @@ const styles = StyleSheet.create({
 	},
 	storeName: {
 		fontSize: 15,
-		color: "black"
+		color: "black",
+		width: windowWidth - 130,
 	},
 	storeAddress: {
 		fontSize: 10,
@@ -257,5 +286,16 @@ const styles = StyleSheet.create({
 		fontSize: 10,
 		width: 110,
 		color: "black"
+	},
+	customRatingBarStyle : {
+		justifyContent: "flex-end",
+		flexDirection: "row",
+		marginTop: 3,
+	},
+	starImgStyle : {
+		padding: 5,
+		width: 12,
+		height: 12,
+		resizeMode: "cover"
 	},
 })

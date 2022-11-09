@@ -109,12 +109,13 @@ const MapScreen = ({ navigation }) => {
 	]
 
 	const categoryList = [
+		{id : "KOREAN", label: "한식"},
 		{id : "WESTERN", label: "양식"},
 		{id : "CHINESE", label: "중식"},
 		{id : "JAPANESE", label: "일식"},
-		{id : "KOREAN", label: "한식"},
-		{id : "SNACK", label: "분식"},
 		{id : "ASIAN", label: "아시안"},
+		{id : "SNACK", label: "분식"},
+		{id : "BAR", label: "술집"},
 		{id : "CHICKEN", label: "치킨"},
 		{id : "DESSERT", label: "디저트"},
 		{id : "CAFE", label: "카페"},
@@ -240,8 +241,41 @@ const MapScreen = ({ navigation }) => {
 			return require("../assets/images/SNACK.png")
 		case ("간식"):
 			return require("../assets/images/DESSERT.png")
+		case ("술집"):
+			return require("../assets/images/BAR.png")
 		}
 		return require("../assets/images/ETC.png")
+	}
+
+	const CustomRatingBar = ({averageRating}) => {
+		const defaultRating = Math.round(averageRating*10)/10
+		const [maxRating, setMaxRating] = useState([1,2,3,4,5])
+		const starImgFilled =  "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png"
+		const starImgCorner = "https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png"
+		
+		return (
+			<View style={styles.customRatingBarStyle}>
+				{
+					maxRating.map((item, key)=>{
+						return (
+							<View
+								activeOpacity={0.7}
+								key= {item}
+							>
+								<Image
+									style={styles.starImgStyle} 
+									source={
+										item <= defaultRating
+											? {uri: starImgFilled}
+											: {uri: starImgCorner}
+									}
+								/>
+							</View>
+						)						
+					})
+				}
+			</View>
+		)
 	}
 
 	if (!location) {
@@ -317,7 +351,7 @@ const MapScreen = ({ navigation }) => {
 					setSubpostVisible(!subpostVisible)
 				}}
 			>
-				<Pressable style={{flex:1, backgroundColor:"transparent",}} onPress={()=>setSubpostVisible(!subpostVisible)}/>
+				<Pressable style={{flex:1, backgroundColor:"transparent",}} onPress={()=>{setSubpostVisible(!subpostVisible), console.log(placePost)}}/>
 				<View style={styles.subPost}>
 					<View style={{
 						flexDirection: "row", 
@@ -327,11 +361,16 @@ const MapScreen = ({ navigation }) => {
 						paddingRight: 16,
 					}}>
 						<Text numberOfLines={1} style={styles.storeName}>{placePost.place.name}</Text>
-						<Pressable
-							onPress={() => setSubpostVisible(!subpostVisible)}
-						>
-							<OcticonsIcon name="x" size={20} color="black"/>
-						</Pressable>
+						<View style={{flexDirection: "row", justifyContent: "center"}}>
+							<CustomRatingBar averageRating={placePost.averageRating}/>
+							<Text style={{fontSize:12, marginRight: 8}}>{"("}{placePost.averageRating}{")"}</Text>
+							<Pressable
+								onPress={() => setSubpostVisible(!subpostVisible)}
+							>
+								<OcticonsIcon name="x" size={20} color="black"/>
+							</Pressable>
+						</View>
+						
                     
 					</View>
                 
@@ -499,7 +538,8 @@ const styles = StyleSheet.create({
 	},
 	storeName: {
 		fontSize: 16,
-		color: "black"
+		color: "black",
+		width: windowWidth - 130
 	},
 	storeAddress: {
 		fontSize: 12,
@@ -580,6 +620,17 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
-	}
+	},
+	customRatingBarStyle : {
+		justifyContent: "flex-end",
+		flexDirection: "row",
+		marginTop: 3,
+	},
+	starImgStyle : {
+		padding: 5,
+		width: 12,
+		height: 12,
+		resizeMode: "cover"
+	},
 
 })
