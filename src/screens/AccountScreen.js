@@ -162,6 +162,8 @@ const AccountScreen = ({navigation, route}) => {
 			return require("../assets/images/SNACK.png")
 		case ("간식"):
 			return require("../assets/images/DESSERT.png")
+		case ("술집"):
+			return require("../assets/images/BAR.png")
 		}
 		return require("../assets/images/ETC.png")
 	}
