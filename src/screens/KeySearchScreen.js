@@ -101,6 +101,8 @@ function KeySearchScreen ({navigation}) {
 	const [place, setPlace] = useState()
 	const [inputText, setInputText] = useState("")
 	const {placeInfo, setPlaceInfo} = useContext(PlaceInfoContext)
+	const [state, setState] = useState()
+	const [page, setPage] = useState()
 
 	
 
@@ -152,7 +154,7 @@ function KeySearchScreen ({navigation}) {
 	const placeSearch = async() => {
 		try{
 			await axios({
-				url : `https://dapi.kakao.com/v2/local/search/keyword.json?query=${inputText}&size=10&&x=${coordinate.longitude}&y=${coordinate.latitude}&input_coord=WGS84`,
+				url : `https://dapi.kakao.com/v2/local/search/keyword.json?query=${inputText}&&x=${coordinate.longitude}&y=${coordinate.latitude}&input_coord=WGS84`,
 				method : "GET",
 				//data: {query: "해피덮"},
 				headers : ({
@@ -161,19 +163,26 @@ function KeySearchScreen ({navigation}) {
 			}).then((response) =>
 			{
 				
-				console.log(response.data.documents)
+				console.log(response.data.meta)
+				//console.log(response.data.documents)
+				console.log(response.data.meta.pageable_count)
 				setPlace(response.data.documents)
 				setPlaceObj({
 					name: place.place_name
 				})
-				//res.json())
-				//.then((resData) => {
-				//const data = res.query.documents[0]
-				//console.log(res.query.documents[0])
-				
+				setPage({
+					page: response.page})
+				/* if(response.data.meta.is_end) == "false"{
+					setState({
+						//data: response.data.concat(????), // 기존 data에 추가.
+						page: response.page + 1
+					}) 
+
+				} */
 			})
 			//console.log(place.place_name)
-			console.log(place)
+			console.log(state)
+		
 		} catch (error) {
 			console.log(error.message)
 		} 
@@ -195,6 +204,9 @@ function KeySearchScreen ({navigation}) {
 		setPlace(input)
 		setInput("")
 	} */
+	const _handleLoadMore = () => {
+		this.placeSearch()
+	}
 	const renderItem = () => {
 		//console.log(input)
 		return (
@@ -236,6 +248,8 @@ function KeySearchScreen ({navigation}) {
 				{/* <Text>{placeObj.name}</Text> */}
 				<FlatList
 					data = {place}
+					onEndReached={_handleLoadMore}
+					onEndReachedThreshold={1}
 					renderItem = {({item}) => 
 						<View style = {styles.row}>
 							<TouchableOpacity style = {{flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
