@@ -151,29 +151,28 @@ function KeySearchScreen ({navigation}) {
 			</View>
 		)
 	}
+
 	const placeSearch = async() => {
 		try{
 			await axios({
 				url : `https://dapi.kakao.com/v2/local/search/keyword.json?query=${inputText}&&x=${coordinate.longitude}&y=${coordinate.latitude}&input_coord=WGS84`,
 				method : "GET",
-				//data: {query: "해피덮"},
 				headers : ({
 					"Authorization": "KakaoAK a5511114012c0013be3072d88f677c4c",
 				}),
 			}).then((response) =>
 			{
-				
 				console.log(response.data.meta)
-				//console.log(response.data.documents)
+				console.log(response.data.documents)
 				console.log(response.data.meta.pageable_count)
 				if (!response.data.meta.is_end) {
-					setPlace(place.concat(response.data.documents))
-				}
+					setState(place.concat(response.data.documents))
+				} 
+				setPlace(response.data.documents)
 				setPlaceObj({
 					name: place.place_name
 				})
 				setPage(response.page)
-
 				//console.log(place.place_name)
 				console.log("------", state)
 			})
@@ -182,6 +181,7 @@ function KeySearchScreen ({navigation}) {
 			console.log(error.message)
 		} 
 	}
+
 	console.log("place", place)
 				
 	//place = res.get(url, headers = headers).json()["documents"]
@@ -202,7 +202,7 @@ function KeySearchScreen ({navigation}) {
 	} */
 
 	const _handleLoadMore = () => {
-		//placeSearch()
+		placeSearch()
 	}
 	const renderItem = () => {
 		//console.log(input)
@@ -245,7 +245,7 @@ function KeySearchScreen ({navigation}) {
 				{/* <Text>{placeObj.name}</Text> */}
 				<FlatList
 					data = {place}
-					onEndReached={_handleLoadMore()}
+					onEndReached={_handleLoadMore}
 					onEndReachedThreshold={0}
 					renderItem = {({item}) => 
 						<View style = {styles.row}>
