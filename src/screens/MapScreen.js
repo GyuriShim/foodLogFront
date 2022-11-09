@@ -14,6 +14,7 @@ import { AntIcon } from "../assets/icons/AntIcon"
 import TagSelectExtension from "react-native-tag-select/src/TagSelectExtension"
 import { ProgressContext } from "../contexts/Progress"
 import { ActivityIndicator } from "react-native-paper"
+import UserGeoContext from "../contexts/UserGeo"
 
 
 const Container = styled.View`
@@ -70,6 +71,7 @@ const MapScreen = ({ navigation }) => {
 	const [error, setError] = useState(null)
 	const [activate, setActivate] = useState(false)
 	const {spinner} = useContext(ProgressContext)
+	const {userGeo, setUserGeo} = useContext(UserGeoContext)
 
 	const getMapLocation = (region) => {
 		let longitudeDelta = region.longitudeDelta
@@ -187,6 +189,10 @@ const MapScreen = ({ navigation }) => {
 								longitudeDelta: 0.1
 							})
 							setIsLocation(!isLocation)
+							setUserGeo({
+								latitude: position.coords.latitude,
+								longitude: position.coords.longitude
+							})
 						}
 					},
 					error => {
