@@ -221,12 +221,12 @@ const AccountScreen = ({navigation, route}) => {
 					</View>
 				</View>
 				<MapView
-					style={{height: "74%", width: "100%"}}
+					style={{height: "75%", width: "100%"}}
 					initialRegion={{
 						latitude: 35.90, 
 						longitude: 127.5,
-						latitudeDelta: 5,
-						longitudeDelta: 5
+						latitudeDelta: 6,
+						longitudeDelta: 6
 					}}
 					customMapStyle={mapStyle}
 				>
