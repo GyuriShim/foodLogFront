@@ -128,7 +128,7 @@ function PostScreen({navigation, route}){
 			setComments(response.data.comment)
 			setPictures(response.data.pictures)
 			setPostId(response.data.postId)
-			setDate(formatDate(response.data.date))
+			setDate(response.data.date)
 			setRating(response.data.rating)
 			setWriterId(response.data.memberId)
 			setPurpose(response.data.purpose)

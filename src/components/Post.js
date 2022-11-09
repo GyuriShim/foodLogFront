@@ -44,7 +44,7 @@ const Post = ({item:{memberPicture, member, date, pictures, place, review, ratin
 						<Text>{member}</Text> 
 					</View>
 				</Pressable>
-				<Text>{formatDate(date)}</Text>
+				<Text>{date}</Text>
 			</View>
 			<Pressable onPress={() => onPostPress()}>
 				<Image style={{width: "100%", height: 350, backgroundColor: "white", marginBottom: 5}} source={{uri: pictures[0]}}/>
