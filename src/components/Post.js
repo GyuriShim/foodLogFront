@@ -49,7 +49,7 @@ const Post = ({item:{memberPicture, member, date, pictures, place, review, ratin
 			<Pressable onPress={() => onPostPress()}>
 				<Image style={{width: "100%", height: 350, backgroundColor: "white", marginBottom: 5}} source={{uri: pictures[0]}}/>
 				<View style={{flexDirection: "row", alignItems: "center", justifyContent:"space-between"}}>
-					<Text style={{fontSize: 16}}>{place.name}</Text>
+					<Text style={{fontSize: 16, fontWeight:"600"}}>{place.name}</Text>
 					<CustomRatingBar/>
 				</View>
 				

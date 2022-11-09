@@ -277,7 +277,7 @@ function PostScreen({navigation, route}){
 					/>
 				</View>
 				<View style ={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-					<Text style={{fontSize: 16}}>{place.name}</Text>
+					<Text style={{fontSize: 16, fontWeight:"600"}}>{place.name}</Text>
 					<CustomRatingBar
 					/> 
 				</View>
