@@ -184,7 +184,7 @@ const AccountScreen = ({navigation, route}) => {
 							style={{
 								width: "70%", 
 								height: "80%", 
-								backgroundColor: "rgba(196, 196, 196, 0.22)", 
+								backgroundColor: "rgba(180, 201, 255, 0.2)", 
 								borderRadius:5, 
 								flexDirection: "row", 
 								justifyContent:"space-evenly",
@@ -200,14 +200,14 @@ const AccountScreen = ({navigation, route}) => {
 							</Pressable>
 							{myId===memberId? 
 								(<Pressable style={{justifyContent: "center"}} onPress={() => navigation.navigate("Modify")}>
-									<Text>수정</Text>
+									<Text style={{color: "#494949"}}>수정</Text>
 								</Pressable>)
 								:(isFollowing===false?
 									(<Pressable style={{justifyContent: "center"}} onPress={() => subscribeAxios(memberId)}>
-										<Text>구독</Text>
+										<Text style={{color: "#FF8383"}}>구독</Text>
 									</Pressable>):
 									(<Pressable style={{justifyContent: "center"}} onPress={() => unsubscribeAxios(memberId)}>
-										<Text>구독중</Text>
+										<Text style={{color: "#397DFF"}}>구독중</Text>
 									</Pressable>
 									)
 								)
@@ -227,8 +227,8 @@ const AccountScreen = ({navigation, route}) => {
 					initialRegion={{
 						latitude: 35.90, 
 						longitude: 127.5,
-						latitudeDelta: 6,
-						longitudeDelta: 6
+						latitudeDelta: 5.5,
+						longitudeDelta: 5.5
 					}}
 					customMapStyle={mapStyle}
 				>
@@ -254,6 +254,25 @@ const AccountScreen = ({navigation, route}) => {
 					})}
 				</MapView>
 			</Container>
+			<View style={{
+				position:"absolute", 
+				bottom: 30, 
+				right: 30, 
+				backgroundColor: "#D8F3FF", 
+				paddingVertical: 5, 
+				paddingHorizontal: 10, 
+				borderRadius: 50,
+				shadowRadius: 5,
+				shadowColor: "black",
+				shadowOffset: {
+					width: 0,
+					height: 2
+				},
+				shadowOpacity: 0.25,
+				elevation: 5,
+			}}>
+				<Text style={{fontSize: 14}}>게시글 수: {markers.length}</Text>
+			</View>
 		</>
 	)
 }
