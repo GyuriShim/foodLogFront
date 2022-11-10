@@ -133,7 +133,6 @@ function PostScreen({navigation, route}){
 			setWriterId(response.data.memberId)
 			setPurpose(response.data.purpose)
 			setMemberProfile(response.data.memberPicture)
-			console.log(response.data.postId)
 		} catch (e) {
 			setError(e)
 			console.log("catch error", e)
@@ -264,7 +263,7 @@ function PostScreen({navigation, route}){
 					</Pressable>
 					<View style={{ flexDirection: "row", alignItems: "center" }}>
 						<Text style={{marginRight: 5}}>{date}</Text>
-						{userId ===  writerId&&<Button title="삭제" onPress={() => {deletePostAxios(postId), navigation.pop()}}/>}
+						{userId ===  writerId&&<Button containerStyle={{marginRight: 5}} title="삭제" onPress={() => {deletePostAxios(postId), navigation.pop()}}/>}
 						{userId ===  writerId&&<Button title="수정" onPress= {() => {navigation.navigate("UpdateScreen", postId)}}></Button>}
 						
 					</View>
