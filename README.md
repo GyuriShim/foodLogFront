@@ -39,7 +39,7 @@
 <br>
 
 ## 🧭 기능 명세
-![기능명세](https://user-images.githubusercontent.com/62203487/234789861-3109cbfa-ed5f-41f1-a1ae-1db9fceae726.png)
+<img src="https://user-images.githubusercontent.com/62203487/234789861-3109cbfa-ed5f-41f1-a1ae-1db9fceae726.png" width="800px"/>
 
 **주요 UI 프로토타입**
 ![주요페이지_프로토타입](https://user-images.githubusercontent.com/62203487/234790368-12d1027b-fa44-44a9-900a-a04f615bbaa4.png)
@@ -142,7 +142,7 @@ MariaDB는 추천이나 지도에서 게시물을 보여주어야 할 때 사용
 아마존 클라우드 서비스로 기본적으로 지원하는 기능(모니터링, 로그 관리, 백업, 복구, 클러스터링 등)이 다양하기 때문에 소규모 개발에 집중할 수 있다는 장점이 있다. 기능 개발을 하면서 우리가 집중해야 할 곳에 더 집중할 수 있다는 장점이 크기 때문에 AWS 서비스를 사용하게 되었다.
 
 ### React Native
-![](https://img.shields.io/badge/ReactNative-61DAFB?style=flat-square&logo=React&logoColor=white)
+![](https://img.shields.io/badge/ReactNative-61DAFB?style=flat-square&logo=React&logoColor=white)  
 프론트엔드 모바일 앱 개발용 오픈소스 프로젝트로써 ios와 안드로이드에서 동일하게 동작이 가능한 크로스 플랫폼이라는 가장 큰 장점을 가지고 있다. 네이티브 어플리케이션 개발을 위한 자바스크립트 프레임워크로 Android, iOS 기반의 API로 개발하여 속도가 빠르고 안정적이다. 리액트 네이티브는 개발자들이 안드로이드용 자바/코틀린, iOS용 오브젝티브-C/스위프트와 같은 언어로 작성한 네이티브 코드와 인터페이스가 가능하도록 브릿지(Bridge)를 제공하므로 더 많은 유연성을 제공한다. 변경된 코드를 저장하기만 해도 자동으로 변경된 내용이 적용된 화면을 확인할 수 있는 패스트 리프레쉬 기능을 제공하여 수정된 내용에 대한 결과를 즉각적으로 확인할 수 있다.
 
 ### RESTful API
