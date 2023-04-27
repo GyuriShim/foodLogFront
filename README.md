@@ -8,7 +8,9 @@
 | 심규리 | UI 디자인, Frontend 개발                        |
 | 양지원  | UI 디자인, Frontend 개발                        |
 | 유하연 | Backend 개발, infra 구축 및 관리, Frontend API 연결 |
-| 김예슬 | Backend 개발, Frontend API 연결                |
+| 김예슬 | Backend 개발, Frontend API 연결                |  
+
+📌[Backend Repository](https://github.com/yuhalog/FoodLog-server)
 
 ### 📱실행 화면
 <img src="https://user-images.githubusercontent.com/62203487/230327608-23260b16-4c40-4902-9f59-16cc6a078914.png" width="800px"/>
@@ -78,40 +80,6 @@
 
 <br>
 
-## 💽 ERD
-
-**초기 Class Diagram**
-![ClassDiagram](https://user-images.githubusercontent.com/62270401/197323043-4c925ee8-777a-4f00-bb14-b9d3423db117.png)
-실제 구현시 쓰이는 클래스들을 추출하고 그에 따라 클래스에 필요한 속성 또는 변수들을 기술하고 연관 관계를 그렸다. 이 중 실제로 데이터베이스에서 가장 중심이 되는 클래스는 Member, Subscribe, Post, Comment 테이블이고 각각 필요한 변수들을 저장해두었다. 또한 각각 과정을 수행할 때 필요한 클래스를 생성하고 연관 관계를 명시했다.
-
-Member는 여러개의 Post와 댓글을 생성할 수 있기 때문에 일대다 관계로 형성했고 하나의 Post에 여러개의 댓글이 있기 때문에 포스트와 댓글 또한 일대다 관계로 형성했다. Post 클래스에 필요한 목적과 음식종류, 그리고 Member클래스에 필요한 Gender는 enum타입으로 구성했다. 이외에도 포스트에 필요한 장소의 위치와 사진 url을 저장하는 엔티티는 따로 구성했다.
-
-<br>
-
-![ERD-1](https://user-images.githubusercontent.com/62270401/197323034-8a714b86-938a-44e6-aebe-adb74eca768b.png)
-모든 테이블에는 객체를 구별하기 위한 id 데이터가 프라이머리키로 들어가고 운영시 편리함을 위해 생성시간과 수정시간이 포함된다.
-
-Member 테이블에는 성별, 생일 등 추천에 필요한 데이터와 프로필 작성을 위한 데이터가 들어간다.
-Member는 다른 멤버를 구독할 수 있기 때문에 Subscribe 테이블을 따로 만들어서 Member와 일대다 관계를 맺는다. Subscribe 테이블에는 멤버의 id와 멤버가 구독하는 사용자의 id 데이터가 들어가게 된다.
-
-다음으로 Post 테이블에는 사용자가 게시물 작성을 하면 입력받는 데이터 리뷰, 별점, 음식종류등이 들어가고, 음식점의 위치(위도, 경도)와 게시물 리스트, 평균 별점을 나타내기 위한 Place 테이블과 다대일 관계를 맺는다.
-그리고 Comment 테이블에는 댓글 내용과 댓글을 작성한 멤버id, 게시물 id가 포함된다.
-
-<br>
-
-### 발생했던 문제들과 변경된 ERD
-- 장소를 위해 카카오 API를 사용했다. ➡️ 카카오 API의 정보를 따로 저장하는 테이블로 Place를 사용했고, 부수적으로 필요한 정보(별점, 게시물 개수)은 PlacePost 테이블로 따로 분리하여 사용했다.
-- 추천을 위해서 Place에 대한 가장 많은 목적을 저장할 Cloumn이 필요했다.
-
-
-위와 같은 상황들로 수정한 ERD는 다음과 같다.
-![ERD-2](https://user-images.githubusercontent.com/62270401/197323013-a33a2ff7-b8a1-4d2b-9b1b-4ac0d22cf6cd.png)
-
-**최종적으로 AWS RDS에 올라가있는 DB 테이블 구조**
-![RDS](https://user-images.githubusercontent.com/62270401/197322966-15b9b65a-ba0e-45bc-940a-6b6d7f90a9f8.png)
-
-<br>
-
 ## 🌐 사용 기술 및 분석
 ![기술스택](https://user-images.githubusercontent.com/62270401/197323754-3e6f9292-fa69-4275-b452-13de22c47940.png)
 
@@ -119,6 +87,10 @@ Member는 다른 멤버를 구독할 수 있기 때문에 Subscribe 테이블을
 
 ### 시스템 구성도
 <img src="https://user-images.githubusercontent.com/62203487/234791974-f1df2f98-8c8a-455c-98f2-fbe0af6f6cd1.png" width="800px"/>
+
+### React Native
+![](https://img.shields.io/badge/ReactNative-61DAFB?style=flat-square&logo=React&logoColor=white)  
+프론트엔드 모바일 앱 개발용 오픈소스 프로젝트로써 ios와 안드로이드에서 동일하게 동작이 가능한 크로스 플랫폼이라는 가장 큰 장점을 가지고 있다. 네이티브 어플리케이션 개발을 위한 자바스크립트 프레임워크로 Android, iOS 기반의 API로 개발하여 속도가 빠르고 안정적이다. 리액트 네이티브는 개발자들이 안드로이드용 자바/코틀린, iOS용 오브젝티브-C/스위프트와 같은 언어로 작성한 네이티브 코드와 인터페이스가 가능하도록 브릿지(Bridge)를 제공하므로 더 많은 유연성을 제공한다. 변경된 코드를 저장하기만 해도 자동으로 변경된 내용이 적용된 화면을 확인할 수 있는 패스트 리프레쉬 기능을 제공하여 수정된 내용에 대한 결과를 즉각적으로 확인할 수 있다.
 
 ### Spring boot, Apache Tomcat, Spring JPA
 ![](https://img.shields.io/badge/SpringBoot-6DB33F?style=flat-square&logo=SpringBoot&logoColor=white)
@@ -139,10 +111,6 @@ MariaDB는 추천이나 지도에서 게시물을 보여주어야 할 때 사용
 ![](https://img.shields.io/badge/EC2-FF9900?style=flat-square&logo=AmazonEC2&logoColor=white)
 ![](https://img.shields.io/badge/S3-569A31?style=flat-square&logo=AmazonS3&logoColor=white)  
 아마존 클라우드 서비스로 기본적으로 지원하는 기능(모니터링, 로그 관리, 백업, 복구, 클러스터링 등)이 다양하기 때문에 소규모 개발에 집중할 수 있다는 장점이 있다. 기능 개발을 하면서 우리가 집중해야 할 곳에 더 집중할 수 있다는 장점이 크기 때문에 AWS 서비스를 사용하게 되었다.
-
-### React Native
-![](https://img.shields.io/badge/ReactNative-61DAFB?style=flat-square&logo=React&logoColor=white)  
-프론트엔드 모바일 앱 개발용 오픈소스 프로젝트로써 ios와 안드로이드에서 동일하게 동작이 가능한 크로스 플랫폼이라는 가장 큰 장점을 가지고 있다. 네이티브 어플리케이션 개발을 위한 자바스크립트 프레임워크로 Android, iOS 기반의 API로 개발하여 속도가 빠르고 안정적이다. 리액트 네이티브는 개발자들이 안드로이드용 자바/코틀린, iOS용 오브젝티브-C/스위프트와 같은 언어로 작성한 네이티브 코드와 인터페이스가 가능하도록 브릿지(Bridge)를 제공하므로 더 많은 유연성을 제공한다. 변경된 코드를 저장하기만 해도 자동으로 변경된 내용이 적용된 화면을 확인할 수 있는 패스트 리프레쉬 기능을 제공하여 수정된 내용에 대한 결과를 즉각적으로 확인할 수 있다.
 
 ### RESTful API
 ![GraphQL-REST-비교](https://user-images.githubusercontent.com/62270401/197323724-9fbb311d-d7be-4eb2-9d78-d83f1b5f486a.png)
