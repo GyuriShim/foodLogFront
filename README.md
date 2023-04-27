@@ -1,10 +1,6 @@
 # 🍽 푸드로그 Food Log | App
 <img width="100" alt="logo" src="https://user-images.githubusercontent.com/62270401/197328264-e86b073e-868d-4b7d-8730-c0fdc69e2ef3.png">
 
-### 📱실행 화면
-<img src="https://user-images.githubusercontent.com/62203487/230327608-23260b16-4c40-4902-9f59-16cc6a078914.png" width="800px"/>
-<br/>
-
 ## 👩🏻‍💻 멤버 및 역할
 
 | 이름  | 역할                                         |
@@ -14,6 +10,9 @@
 | 유하연 | Backend 개발, infra 구축 및 관리, Frontend API 연결 |
 | 김예슬 | Backend 개발, Frontend API 연결                |
 
+### 📱실행 화면
+<img src="https://user-images.githubusercontent.com/62203487/230327608-23260b16-4c40-4902-9f59-16cc6a078914.png" width="800px"/>
+<br/>
 
 ## 💁🏻‍♀️ 프로젝트 제안
 
@@ -42,7 +41,7 @@
 <img src="https://user-images.githubusercontent.com/62203487/234789861-3109cbfa-ed5f-41f1-a1ae-1db9fceae726.png" width="800px"/>
 
 **주요 UI 프로토타입**
-![주요페이지_프로토타입](https://user-images.githubusercontent.com/62203487/234790368-12d1027b-fa44-44a9-900a-a04f615bbaa4.png)
+<img src="https://user-images.githubusercontent.com/62203487/234790368-12d1027b-fa44-44a9-900a-a04f615bbaa4.png" width="800px"/>
 
 
 **1. 지도**
@@ -119,7 +118,7 @@ Member는 다른 멤버를 구독할 수 있기 때문에 Subscribe 테이블을
 협업을 위해 노션, 구글 드라이브로 문서를 관리하고 일정을 확인하고, github를 통해 형상관리를 했다.
 
 ### 시스템 구성도
-![사용기술](https://user-images.githubusercontent.com/62203487/234791974-f1df2f98-8c8a-455c-98f2-fbe0af6f6cd1.png)
+<img src="https://user-images.githubusercontent.com/62203487/234791974-f1df2f98-8c8a-455c-98f2-fbe0af6f6cd1.png" width="800px"/>
 
 ### Spring boot, Apache Tomcat, Spring JPA
 ![](https://img.shields.io/badge/SpringBoot-6DB33F?style=flat-square&logo=SpringBoot&logoColor=white)
